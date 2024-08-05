@@ -12,6 +12,9 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "Platform/Core/Include/CoreOS.hpp"
+#include "GameUtility/Base/Include/GUParse.hpp"
+#include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 
@@ -20,36 +23,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+using namespace gu;
 
 #if PLATFORM_CPU_X86_FAMILY && PLATFORM_DESKTOP && _WIN64
 extern "C" { _declspec(dllexport) extern const UINT  D3D12SDKVersion = 613; }
 extern "C" { _declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\"; }
 #endif
 
-namespace
-{
-	enum class GPUVender
-	{
-		Nvidia,
-		AMD,
-		Intel,
-		CountOfGPUVender
-	};
-}
+bool RHIInstance::SHOULD_CREATE_WITH_WARP  = false;
+bool RHIInstance::ALLOW_SOFTWARE_RENDERING = false;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak):
-	core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
+RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugCreateInfo):
+	core::RHIInstance(debugCreateInfo)
 {
 	/*-------------------------------------------------------------------
 	-                   Enable CPU and GPU Debugger
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
-	if (_enableCPUDebugger) { EnabledDebugLayer(); }
+	if (debugCreateInfo.EnableCPUDebugger) { EnabledDebugLayer(); }
 
-	if (_enableGPUDebugger) { EnabledShaderBasedValidation();}
+	if (debugCreateInfo.EnableGPUDebugger) { EnabledShaderBasedValidation();}
 
 	/*-------------------------------------------------------------------
 	-                   Create Factory
@@ -64,6 +61,12 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	---------------------------------------------------------------------*/
 	EnabledGPUClashDebuggingModes();
 
+	/*-------------------------------------------------------------------
+	-           CommandLineから必要なコマンドを取得する
+	---------------------------------------------------------------------*/
+	SHOULD_CREATE_WITH_WARP  = Parse::Contains(CommandLine::Get(), SP("warp"));
+	ALLOW_SOFTWARE_RENDERING = Parse::Contains(CommandLine::Get(), SP("allowSoftwareRendering"));
+
 	printf("StartInstance\n");
 }
 
@@ -77,103 +80,187 @@ RHIInstance::~RHIInstance()
 #pragma endregion Constructor and Destructor
 
 #pragma region Public Function
-/****************************************************************************
-*                     SearchHighPerformanceAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
-* 
-*  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
-*             (High) xGPU, dGPU iGPU (Low) selected
-* 
+/*!**********************************************************************
+*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
+*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.
 *  @param[in] void
-* 
-*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
-*****************************************************************************/
+*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+*************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 }
 
-/****************************************************************************
-*                     SearchMinimumPowerAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
-* 
-*  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
-*             (Low) iGPU, dGPU xGPU (High)
-* 
+/*!**********************************************************************
+*  @brief     最も性能が低い(消費電力が低い)物理デバイスを自動で選定します. 高い順にiGPU (integrated GPU), dGPU(discrete GPU), xGPU(外部GPU)の順に優先されます
+*  @note      DirectX12では統合GPU, ディスクリートGPU, 外部GPUの順に選択されます.　@n
 *  @param[in] void
-* 
-*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
-*****************************************************************************/
+*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+*************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_MINIMUM_POWER);
 }
 
-/****************************************************************************
-*                     SearchAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
-* 
-*  @brief     Search Proper Physical Device Adapter
-* 
-*  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
-* 
-*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
-*****************************************************************************/
-gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+/*!**********************************************************************
+*  @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+*  @param[in] const DXGI_GPU_PREFERENCE 選択するGPUの種類
+*  @return    gu::SharedPointer<RHIDisplayAdapter> : 物理デバイスのポインタ
+*************************************************************************/
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE gpuPreference) const
 {
-	AdapterComPtr adapter = nullptr;
-
-	// (High) xGPU, dGPU iGPU (Low) selected
-#if DXGI_MAX_FACTORY_INTERFACE >= 6
-	if (_factory->EnumAdapterByGpuPreference(0, preference, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND)
+	/*-------------------------------------------------------------------
+	-      次の物理デバイスをどの順番で調べるかを決定する関数
+	---------------------------------------------------------------------*/
+	auto ProceedNextAdapter = [&](const DXGI_GPU_PREFERENCE preference, const uint32 adapterIndex, AdapterComPtr& adapter)
 	{
-		throw std::runtime_error("failed to search adapter");
-	}
-#else
-	for (UINT i = 0; _factory->EnumAdapters(i, (IDXGIAdapter**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
-	{
-		DXGI_ADAPTER_DESC desc; adapter->GetDesc(&desc);
-		const bool isDiscreteGPU = desc.DedicatedVideoMemory != 0;
+		#if DXGI_MAX_FACTORY_INTERFACE >= 6
+			return _factory->EnumAdapterByGpuPreference(adapterIndex, preference, IID_PPV_ARGS(&adapter));
+		#else
+			return _factory->EnumAdapters(adapterIndex, (IDXGIAdapter**)adapter.GetAddressOf());
+		#endif
+	};
 
-		if ((preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE &&  isDiscreteGPU) ||  
-			(preference == DXGI_GPU_PREFERENCE_MINIMUM_POWER    && !isDiscreteGPU))
+	// ProceedNextAdapterで一時的に引数として使用する物理デバイス
+	AdapterComPtr tempAdapter = nullptr;
+	AdapterComPtr firstSelectedAdapter   = nullptr; // 最初に取得出来た物理デバイス
+	AdapterComPtr bestIntegratedAdapter = nullptr; // 最大容量のVideoMemoryを持った統合GPU
+	AdapterComPtr bestDiscreteAdapter   = nullptr; // 最大容量のVideoMemoryを持ったDiscreteGPU
+
+	/*-------------------------------------------------------------------
+	-          物理デバイスの一覧を取得する 
+	-   (見つけ次第ポインタを返すでも良いが, 数が少ない点とより詳細にカスタマイズが出来る点から)
+	-   ProceedNextAdapterによって, DXGI_MAX_FACTIRY_INTERFACE >= 6である限りはソートされています.
+	---------------------------------------------------------------------*/
+	for (uint32 i = 0; ProceedNextAdapter(gpuPreference, i, tempAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
+	{
+		if (tempAdapter == nullptr) { continue; }
+
+		// 物理デバイスの情報を取得します. 
+		DXGI_ADAPTER_DESC adapterDesc = {};
+		tempAdapter->GetDesc(&adapterDesc);
+
+		// 自分好みのベンダータイプがあれば取得しておく
+		const auto preferredVendor = GetPreferredAdapterVendor();
+
+		/* WARP (Windows Advanced Rasterization Platform)アダプタかどうかを調べます. 
+		*  WARPとは, D３Dハードウェアを使用できない場合に, 高速なレンダリングを有効化することが出来ます. */
+		const bool isWARP = adapterDesc.VendorId == (uint32)core::DisplayAdapterVendorType::Microsoft;
+
+		// WARPが要求された場合, 他のすべてのアダプタを拒否する. 
+		// WARPが要求されていない場合、ソフトウェアレンダリングサポートが許可されていなければ、WARPデバイスを拒否する。
+		const bool skipWARPProcess = (SHOULD_CREATE_WITH_WARP && !isWARP) || 
+			                         (!SHOULD_CREATE_WITH_WARP && isWARP && !ALLOW_SOFTWARE_RENDERING);
+
+		// 後続の処理を実行するかを決める
+		const bool skipAdapterProcess = skipWARPProcess;
+
+		/*-------------------------------------------------------------------
+		-      対象の物理デバイスを見つける
+		---------------------------------------------------------------------*/
+		if (skipAdapterProcess) { continue; }
+
+		if (firstSelectedAdapter == nullptr)
 		{
-			break;
+			firstSelectedAdapter = tempAdapter;
+		}
+
+		const bool isDiscreteGPU = adapterDesc.DedicatedVideoMemory != 0;
+
+		/*-------------------------------------------------------------------
+		-     Discrete GPUの場合
+		---------------------------------------------------------------------*/
+		if (isDiscreteGPU)
+		{
+			const bool isFirstSelected   = bestDiscreteAdapter == nullptr;
+			const bool isPreferredVender = preferredVendor != core::DisplayAdapterVendorType::Unknown && (uint32)preferredVendor == adapterDesc.VendorId;
+			
+			// まだDicreteGPUがない場合は強制的に見つけたことにする. 
+			if (isFirstSelected) 
+			{ 
+				bestDiscreteAdapter = tempAdapter; 
+				
+				if (isPreferredVender) { break;    }
+				else                   { continue; }
+			}
+
+			DXGI_ADAPTER_DESC bestDiscreteDesc = {};
+			bestDiscreteAdapter->GetDesc(&bestDiscreteDesc);
+
+			/*-------------------------------------------------------------------
+			-     自分好みのベンダーがある場合はそれを使用して強制終了
+			---------------------------------------------------------------------*/
+			if (isPreferredVender)
+			{
+				bestDiscreteAdapter = tempAdapter;
+				break;
+			}
+			/*-------------------------------------------------------------------
+			-     自分好みのベンダーがない場合は最大容量のメモリを持つ物理デバイスを使用する
+			---------------------------------------------------------------------*/
+			else
+			{
+				if (adapterDesc.DedicatedVideoMemory > bestDiscreteDesc.DedicatedVideoMemory)
+				{
+					bestDiscreteAdapter = tempAdapter;
+				}
+			}
+		}
+		/*-------------------------------------------------------------------
+		-     統合GPUの場合: そのまま最初に見つけたものを代入する
+		---------------------------------------------------------------------*/
+		else
+		{
+			bestIntegratedAdapter = tempAdapter;
 		}
 	}
-#endif
 
-	return gu::MakeShared<RHIDisplayAdapter>(SharedFromThis(), adapter);
+	/*-------------------------------------------------------------------
+	-        GPU Preferenceにあった物理デバイスを取得する. 
+	        見つからない場合は強制的に最初に選んだものを使用する. 
+	---------------------------------------------------------------------*/
+	if (gpuPreference == DXGI_GPU_PREFERENCE::DXGI_GPU_PREFERENCE_MINIMUM_POWER)
+	{
+		tempAdapter = bestIntegratedAdapter;
+	}
+	else if (gpuPreference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE)
+	{
+		tempAdapter = bestDiscreteAdapter;
+	}
+	else
+	{
+		tempAdapter = firstSelectedAdapter;
+	}
+
+	if (tempAdapter == nullptr) 
+	{
+		tempAdapter = firstSelectedAdapter;
+	}
+
+	// Adapterが見つからなかった場合はWARPデバイスを使用する
+	return firstSelectedAdapter ? gu::MakeShared<RHIDisplayAdapter>(SharedFromThis(), tempAdapter) : nullptr;
 }
 
-/****************************************************************************
-*                     EnumrateAdapters
-*************************************************************************//**
-*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
-* 
-*  @brief     Return all availablle adapter lists
-* 
+/*!**********************************************************************
+*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
+*  @attention この関数は, 配列の順番が特に指定がありません.
 *  @param[in] void
-* 
-*  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>>
-*****************************************************************************/
-gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
+*************************************************************************/
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters() const
 {
 	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
 	---------------------------------------------------------------------*/
-	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, AdapterComPtr& adapter)
+	auto ProceedNextAdapter = [&](uint32 adapterIndex, AdapterComPtr& adapter)
 	{
-#if DXGI_MAX_FACTORY_INTERFACE >= 6
-		return _factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
-#else
-		return _factory->EnumAdapters(adapterIndex, (IDXGIAdapter**)adapter.GetAddressOf());
-#endif
+		#if DXGI_MAX_FACTORY_INTERFACE >= 6
+			return _factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
+		#else
+			return _factory->EnumAdapters(adapterIndex, (IDXGIAdapter**)adapter.GetAddressOf());
+		#endif
 	};
 
 	/*-------------------------------------------------------------------
@@ -191,18 +278,12 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 	return adapterLists;
 }
 
-/****************************************************************************
-*                     LogAdapters
-*************************************************************************//**
-*  @fn        void RHIInstance::LogAdapters()
-* 
-*  @brief     Show all available adapter information using Output debug string
-* 
+/*!**********************************************************************
+*  @brief     出力欄に全ての物理デバイスを記入します
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
-void RHIInstance::LogAdapters()
+*  @return    void
+*************************************************************************/
+void RHIInstance::LogAdapters() const
 {
 	auto adapterList = EnumrateAdapters();
 	
@@ -213,40 +294,23 @@ void RHIInstance::LogAdapters()
 
 }
 
-/****************************************************************************
-*                     HasLoadedDirectXAgilitySDK
-*************************************************************************//**
-*  @fn        bool RHIInstance::HasLoadedDirectXAgilitySDK() const
-*
-*  @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
-*
-*  @param[in] void
-*
-*  @return 　　bool
-*****************************************************************************/
 #if D3D12_CORE_ENABLED
+/*!**********************************************************************
+*  @brief     DirectXAgilitySDKがロード済みかを返します
+*************************************************************************/
 bool RHIInstance::HasLoadedDirectXAgilitySDK() const
 {
-	return ::GetModuleHandleA("D3D12Core.dll") != NULL;
+	return platform::core::OS::GetDLLHandle(SP("D3D12Core.dll")) != nullptr;
 }
 #endif
 #pragma endregion Public Function
 
 
 #pragma region Debugger
-/****************************************************************************
-*                     EnabledDebugLayer
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledDebugLayer(void)
-* 
-*  @brief     Enabled CPU debug layer(debug mode only use)
-* 
-*  @param[in] void
-* 
-*  @return 　　void
-* 
-*  @details   it must be called before the D3D12 device is created.
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief    DirectX12におけるCPUのデバッグ機能をOnにする
+*  @note     デバッグモードにしか使用できません
+*************************************************************************/
 void RHIInstance::EnabledDebugLayer()
 {
 	DebugComPtr debugController;
@@ -259,28 +323,21 @@ void RHIInstance::EnabledDebugLayer()
 	debugController.Reset();
 }
 
-/****************************************************************************
-*                   EnabledShaderBasedValiation
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledShaderBasedValidation(void)
-* 
-*  @brief     Enabled GPU debugger (fpsに大きな影響を与えます.)
-* 
-*  @param[in] void
-* 
-*  @return 　　void
-* 
-*  @details   GPU-based valiation helps to identify the following errors.@n
-*             1. Use of uninitialized or incompatible descriptors in a shader.@n
-*             2. Use of descriptors referencing deleted Resources in a shader.@n
-*             3. Validation of promoted resource states and resource state decay.@n
-*             4. Indexing beyond the end of the descriptor heap in a shader.@n
-*             5. Shader accesses of resources in incompatible state.@n
-*             6. Use of uninitialized or incompatible Samplers in a shader.@n
-*****************************************************************************/
+
+/*!**********************************************************************
+*  @brief     GPUベースのバリデーション
+*  @note      FPSに強く影響を与えることから, Release時には使用しないようにしてください
+*  @details   以下のことが行えます. @n
+*             1. 初期化されていない、または互換性のないディスクリプタをシェーダで使用する @n
+*             2. 削除されたResourceを参照するディスクリプタをシェーダで使用する @n
+*             3. 昇格したリソースの状態とリソースの状態の減衰の検証 @n
+*             4. シェーダーにおけるディスクリプタ・ヒープの終端を超えたインデックス付け @n
+*             5. 互換性のない状態でシェーダーがリソースにアクセスした @n
+*             6. 初期化されていない、または互換性のないサンプラーをシェーダーで使用する @n
+*************************************************************************/
 void RHIInstance::EnabledShaderBasedValidation()
 {
-#if D3D12_MAX_DEBUG_INTERFACE >= 3
+#if PLATFORM_OS_WINDOWS && D3D12_MAX_DEBUG_INTERFACE >= 3
 	DebugComPtr debugController;
 
 	// Get Debugger
@@ -294,20 +351,15 @@ void RHIInstance::EnabledShaderBasedValidation()
 #endif
 }
 
-/****************************************************************************
-*                     EnabledGPUClashDebuggingModes
-*************************************************************************//**
-*  @fn        void RHIInstance::EnabledGPUClashDebuggingModes()
-*
-*  @brief     GPU Clashの解析を行うため,　予期しないデバイス削除エラーが検出された後にDREDデータにアクセスし, エラー原因を解析できるようにします.
-* 　　　　　　　　この関数はあくまで有効化するだけです.実際の検知は別で行います. 
-*
-*  @param[in] void
-*
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     Deviceが削除されたときの情報を記述する(DRED)などの有効化
+*************************************************************************/
 void RHIInstance::EnabledGPUClashDebuggingModes()
 {
+	_useDRED            = false;
+	_useLightWeightDRED = false;
+	_useDREDContext     = false;
+
 	/*-------------------------------------------------------------------
 	-                Dred setting default
 	---------------------------------------------------------------------*/
@@ -316,15 +368,20 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings.GetAddressOf()))))
 	{
 		// Turn on AutoBreadCrumbs and Page Fault reporting.
+		// GPUクラッシュ時にどの命令が問題を引き起こしたかを特定する
 		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		
+		// メモリアクセス違反が発生した場所を特定する
 		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 
 		_useDRED = true;
-		OutputDebugStringA("dred enabled\n");
+		_useLightWeightDRED = false;
+
+		_RPT0(_CRT_WARN, "DRED enabled\n");
 	}
 	else
 	{
-		OutputDebugStringA(" DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
+		_RPT0(_CRT_WARN, "DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
 	}
 #endif
 
@@ -337,7 +394,7 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	{
 		dredSettings1->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 		_useDREDContext = true;
-		OutputDebugStringA("dred breadcrumb context enabled\n");
+		_RPT0(_CRT_WARN, "dred breadcrumb context enabled\n");
 	}
 #endif
 
@@ -354,7 +411,7 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 		dredSettings2->UseMarkersOnlyAutoBreadcrumbs(true);
 		_useDREDContext = true;
 		_useLightWeightDRED = true;
-		OutputDebugStringA("dred breadcrumb context enabled\n");
+		_RPT0(_CRT_WARN, "dred breadcrumb context enabled\n");
 	}
 #endif
 }

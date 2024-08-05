@@ -48,8 +48,8 @@ AudioSource3D::~AudioSource3D()
 
 /****************************************************************************
 *                       Play
-*************************************************************************//**
-*  @fn        bool AudioSource3D::Play()
+****************************************************************************/
+/* @fn        bool AudioSource3D::Play()
 *  @brief     AudioSource Play
 *  @param[in] void
 *  @return 　　bool
@@ -63,8 +63,8 @@ bool AudioSource3D::Play()
 
 /****************************************************************************
 *                       ApplyChange
-*************************************************************************//**
-*  @fn        void AudioSource3D::ApplyChange()
+****************************************************************************/
+/* @fn        void AudioSource3D::ApplyChange()
 *  @brief     Apply the changes to the listener and audio source that you set.
 *  @param[in] void
 *  @return 　　void
@@ -113,8 +113,8 @@ bool AudioSource3D::ApplyChange()
 
 /****************************************************************************
 *                       Calculate3DSound
-*************************************************************************//**
-*  @fn        Audio3DParameter& AudioSource3D::Calculate3DSound(const X3DAUDIO_LISTENER* listener, const X3DAUDIO_EMITTER* emitter)
+****************************************************************************/
+/* @fn        Audio3DParameter& AudioSource3D::Calculate3DSound(const X3DAUDIO_LISTENER* listener, const X3DAUDIO_EMITTER* emitter)
 *  @brief     Apply the changes to the listener and audio source that you set.
 *  @param[in] const X3DAUDIO_LISTENER* listener
 *  @param[in] const X3DAUDIO_EMITTER* emitter
@@ -160,8 +160,8 @@ Audio3DParameter AudioSource3D::Calculate3DSound(const X3DAUDIO_LISTENER* listen
 #pragma region Property
 /****************************************************************************
 *                       SetListenerFront
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetListenerFront(const DirectX::XMFLOAT3& front)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetListenerFront(const DirectX::XMFLOAT3& front)
 *  @brief     Set Lister side front vector (local)
 *  @param[in] const DirectX::XMFLOAT3& front
 *  @return 　　void
@@ -173,8 +173,8 @@ void AudioSource3D::SetListenerFront(const Float3& front)
 
 /****************************************************************************
 *                       SetListenerUp
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetListenerUp(const DirectX::XMFLOAT3& up)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetListenerUp(const DirectX::XMFLOAT3& up)
 *  @brief     Set Lister side up vector
 *  @param[in] const DirectX::XMFLOAT3& up
 *  @return 　　void: This value must be orthogonal to the front vector.
@@ -186,8 +186,8 @@ void AudioSource3D::SetListenerUp(const Float3& up)
 
 /****************************************************************************
 *                       SetListenerPosition
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetListenerPosition(const DirectX::XMFLOAT3& position)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetListenerPosition(const DirectX::XMFLOAT3& position)
 *  @brief     Set Lister side position
 *  @param[in] const DirectX::XMFLOAT3& position
 *  @return 　　void
@@ -199,8 +199,8 @@ void AudioSource3D::SetListenerPosition(const Float3& position)
 
 /****************************************************************************
 *                       SetListenerVelocity
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetListenerVelocity(const DirectX::XMFLOAT3& velocity)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetListenerVelocity(const DirectX::XMFLOAT3& velocity)
 *  @brief     Set Lister side velocity
 *  @param[in] const DirectX::XMFLOAT3& velocity
 *  @return 　　void
@@ -212,8 +212,8 @@ void AudioSource3D::SetListenerVelocity(const Float3& velocity)
 
 /****************************************************************************
 *                       SetEmitterFront
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterFront(const DirectX::XMFLOAT3& front)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterFront(const DirectX::XMFLOAT3& front)
 *  @brief     Set Emitter side front vector
 *  @param[in] const DirectX::XMFLOAT3& front
 *  @return 　　void
@@ -225,8 +225,8 @@ void AudioSource3D::SetEmitterFront(const Float3& front)
 
 /****************************************************************************
 *                       SetEmitterUp
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterUp(const DirectX::XMFLOAT3& up)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterUp(const DirectX::XMFLOAT3& up)
 *  @brief     Set Emitter side up vector
 *  @param[in] const DirectX::XMFLOAT3& up
 *  @return 　　void
@@ -238,8 +238,8 @@ void AudioSource3D::SetEmitterUp(const Float3& up)
 
 /****************************************************************************
 *                       SetEmitterPosition
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterPosition(const DirectX::XMFLOAT3& position)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterPosition(const DirectX::XMFLOAT3& position)
 *  @brief     Set Emitter side position
 *  @param[in] const DirectX::XMFLOAT3& position
 *  @return 　　void
@@ -251,8 +251,8 @@ void AudioSource3D::SetEmitterPosition(const Float3& position)
 
 /****************************************************************************
 *                       SetEmitterVelocity
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterVelocity(const DirectX::XMFLOAT3& velocity)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterVelocity(const DirectX::XMFLOAT3& velocity)
 *  @brief     Set Emitter side velocity
 *  @param[in] const DirectX::XMFLOAT3& velocity
 *  @return 　　void
@@ -264,8 +264,8 @@ void AudioSource3D::SetEmitterVelocity(const Float3& velocity)
 
 /****************************************************************************
 *                       SetEmitterDopplerLevel
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterDopplerLevel(float level)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterDopplerLevel(float level)
 *  @brief     Set Emitter side doppler level
 *  @param[in] float level
 *  @return 　　void
@@ -277,8 +277,8 @@ void AudioSource3D::SetEmitterDopplerLevel(float level)
 
 /****************************************************************************
 *                       SetEmitterRadius
-*************************************************************************//**
-*  @fn        void AudioSource3D::SetEmitterRadius(const DirectX::XMFLOAT3& radius)
+****************************************************************************/
+/* @fn        void AudioSource3D::SetEmitterRadius(const DirectX::XMFLOAT3& radius)
 *  @brief     Defining the range of sound
 *  @param[in] float radius
 *  @return 　　void

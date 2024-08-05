@@ -24,9 +24,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-using namespace gc;
-using namespace gc::core;
-using namespace gc::basepass;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -59,8 +57,8 @@ void ZPrepass::OnResize(const std::uint32_t width, const std::uint32_t height)
 
 /****************************************************************************
 *                          Draw
-*************************************************************************//**
-*  @fn        void ZPrepass::Draw(const GPUResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 *
 *  @brief     Draw zprepass texture (ZPrepass : the texture which saves z values from render scene camera)
 *
@@ -98,8 +96,8 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 
 /****************************************************************************
 *                          Add
-*************************************************************************//**
-*  @fn        void ZPrepass::Add(const GameModelPtr& actor)
+****************************************************************************/
+/* @fn        void ZPrepass::Add(const GameModelPtr& actor)
 *
 *  @brief     Add model
 *
@@ -114,8 +112,8 @@ void ZPrepass::Add(const GameModelPtr& actor)
 
 /****************************************************************************
 *                          Clear
-*************************************************************************//**
-*  @fn        void ZPrepass::Clear()
+****************************************************************************/
+/* @fn        void ZPrepass::Clear()
 *
 *  @brief     Clear registered model buffer
 *
@@ -148,8 +146,8 @@ ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
 #pragma region Setup Function
 /****************************************************************************
 *                          PreparePipelineState
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     void ZPrepass::PreparePipelineState(const gu::tstring& name)
 *
@@ -178,8 +176,8 @@ void ZPrepass::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("VSMain"), { SP("Shader\\Core")}});
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("PSMain"), {SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
@@ -197,8 +195,8 @@ void ZPrepass::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *                          PrepareFrameBuffers
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
@@ -233,7 +231,7 @@ void ZPrepass::PrepareFrameBuffers(const gu::tstring& name)
 		auto renderInfo    = GPUTextureMetaData::RenderTarget(_width, _height, PixelFormat::R32_FLOAT, clearColor);
 		auto depthInfo     = GPUTextureMetaData::DepthStencil(_width, _height, PixelFormat::D32_FLOAT, clearDepthColor);
 
-		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		renderInfo.Usage = (TextureCreateFlags::UnorderedAccess | TextureCreateFlags::RenderTargetable);
 
 		const auto renderTexture = device->CreateTexture(renderInfo, name + SP("RenderTarget"));
 		const auto depthTexture  = device->CreateTexture(depthInfo , name + SP("DepthStemcil"));

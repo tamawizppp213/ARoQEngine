@@ -29,6 +29,10 @@
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameCore/Rendering/Model/Include/ExternalSceneProcessor.hpp"
+
+#include "GameUtility/File/Private/Json/Include/JsonReader.hpp"
+// 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,12 +42,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #if PLATFORM_OS_WINDOWS
     #ifdef _DEBUG
-        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
+        int main(const gu::int32 argumentCount, const char** argumentVector)
     #else
         int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCommandLine, _In_ int nShowCommand)
     #endif
 #else
-        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
+        int main(const gu::int32 argumentCount, const char** argumentVector)
 #endif
 /*---------------------------------------------------------------
             Main FunctionÇÃé¿ëï
@@ -57,7 +61,7 @@
                 CommandLineÇÃéÊìæ
     -----------------------------------------------------------------*/
 #if PLATFORM_OS_WINDOWS && !_DEBUG
-    const gu::char8* constLine = const_cast<gu::char8*>(lpCommandLine);
+    const char* constLine = const_cast<char*>(lpCommandLine);
     const auto argument = gu::CommandLine::BuildFromArgumentVector(1, &constLine);
 #else
     const auto argument = gu::CommandLine::BuildFromArgumentVector(argumentCount, argumentVector);
@@ -65,6 +69,13 @@
 
     gu::CommandLine::SetUp(argument.CString());
 
+    /*---------------------------------------------------------------
+				JsonÉtÉ@ÉCÉãÇÃì«Ç›çûÇ›
+    -----------------------------------------------------------------*/
+   /* gu::file::json::JsonReader reader;
+    reader.Read(SP("Resources/test.json"), false);*/
+
+    const auto scene = engine::ExternalSceneProcessor::Import(SP("D:\\Program\\ARoQEngine\\ARoQEngine\\Resources\\YYB Hatsune Miku_10th\\YYB Hatsune Miku_10th_v1.02.pmx"));
     /********************************************
     **         Initialize
     *********************************************/

@@ -17,7 +17,6 @@
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include <d3d12.h>
-#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -50,17 +49,11 @@ RHIFrameBuffer::~RHIFrameBuffer()
 #pragma endregion Constructor and Destructor
 
 #pragma region Prepare
-/****************************************************************************
-*                      Prepare
-*************************************************************************//**
-*  @fn        void RHIFrameBuffer::Prepare()
-*
-*  @brief     Prepare heap and resource view (render target and depth stencil)
-*
+/*!**********************************************************************
+*  @brief     Descriptor HeapÇ∆äeÉrÉÖÅ[ÇçÏê¨ÇµÇ‹Ç∑.
 *  @param[in] void
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHIFrameBuffer::Prepare()
 {
 	const auto rhiDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
@@ -73,7 +66,7 @@ void RHIFrameBuffer::Prepare()
 	{
 		_renderTargetHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::RTV));
 		_renderTargetHeap->GetHeap()->SetName(L"DirectX12::RenderTargetHeap");
-		_rtvSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		_rtvByteSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 
 	/*-------------------------------------------------------------------
@@ -83,7 +76,7 @@ void RHIFrameBuffer::Prepare()
 	{
 		_depthStencilHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::DSV));
 		_depthStencilHeap->GetHeap()->SetName(L"DirectX12::DepthStencilHeap");
-		_dsvSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+		_dsvByteSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	}
 
 	/*-------------------------------------------------------------------
@@ -93,7 +86,7 @@ void RHIFrameBuffer::Prepare()
 	_renderTargetSRVs.Resize(_renderTargets.Size());
 	_renderTargetUAVs.Resize(_renderTargets.Size());
 
-	for (size_t i = 0; i < _renderTargets.Size(); ++i)
+	for (gu::uint32 i = 0; i < (gu::uint32)_renderTargets.Size(); ++i)
 	{
 		_renderTargetViews[i] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[i],0,0, nullptr);
 		_renderTargetSRVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[i],0,0, nullptr);

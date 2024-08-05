@@ -12,8 +12,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
-#include <stdexcept>
-#include <cassert>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +25,8 @@ using namespace rhi::core;
 RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
-	assert(_device);
-	assert(_renderPass);
+	Check(_device);
+	Check(_renderPass);
 	CheckResourceFormat();
 }
 
@@ -59,40 +58,40 @@ void RHIFrameBuffer::CheckResourceFormat()
 	for (int i = 0; i < _renderTargets.Size(); ++i)
 	{
 		if (!_renderTargets[i]) { continue; }
-		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
-		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
+		if (_renderTargets[i]->GetDimension() != ResourceDimension::Texture2D) { throw "Wrong render target dimension"; }
+		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::TextureCreateFlags::RenderTargetable))
 		{ 
-			throw std::runtime_error("Wrong resource usage"); 
+			throw "Wrong resource usage"; 
 		}
 	}
 
 	if (_depthStencil)
 	{
-		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
+		if (_depthStencil->GetDimension() != ResourceDimension::Texture2D ) { throw "Wrong depthStencil dimension"; }
+		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), TextureCreateFlags::DepthStencilTargetable)) { throw "Wrong resource usage"; }
 	}
 }
 #pragma endregion Prepare
 #pragma region Property
-Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
+Viewport RHIFrameBuffer::GetFullViewport(const gu::uint32 index) const noexcept
 {
-	assert(index < _renderTargets.Size());
+	Check(index < _renderTargets.Size());
 	return
 	{
 		0.0f, 0.0f,
-		(float)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
-		(float)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels()),
+		(float)_renderTargets[index]->GetWidth(0),
+		(float)_renderTargets[index]->GetHeight(0),
 		0.0f, 1.0f
 	};
 }
-ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcept
+ScissorRect RHIFrameBuffer::GetFullScissorRect(const gu::uint32 index) const noexcept
 {
-	assert(index < _renderTargets.Size());
+	Check(index < _renderTargets.Size());
 	return 
 	{
 		0,0, 
-		(long)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
-		(long)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels())
+		(long)_renderTargets[index]->GetWidth(0),
+		(long)_renderTargets[index]->GetHeight(0)
 	};
 }
 
@@ -107,9 +106,9 @@ void RHIFrameBuffer::SetRenderTargets(const gu::DynamicArray<TexturePtr>& textur
 	}
 }
 
-void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
+void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const gu::uint32 index)
 {
-	assert(index < _renderTargets.Size());
+	Check(index < _renderTargets.Size());
 	_renderTargetViews[index]->SetTexture(texture);
 	_renderTargetSRVs[index]->SetTexture(texture);
 	_renderTargetUAVs[index]->SetTexture(texture);

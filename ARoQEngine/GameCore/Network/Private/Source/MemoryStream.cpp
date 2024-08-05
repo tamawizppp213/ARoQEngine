@@ -38,8 +38,8 @@ MemoryStream::~MemoryStream()
 #pragma region Main Function
 /****************************************************************************
 *                     Seek
-*************************************************************************//**
-*  @fn        void MemoryStream::Seek(const std::int64_t offset, SeekOrigin origin)
+****************************************************************************/
+/* @fn        void MemoryStream::Seek(const std::int64_t offset, SeekOrigin origin)
 *
 *  @brief     Sets the read position in the current stream to the specified value
 *
@@ -62,8 +62,8 @@ void MemoryStream::Seek(const std::int64_t offset, const SeekOrigin origin)
 
 /****************************************************************************
 *                     Write
-*************************************************************************//**
-*  @fn        void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
+****************************************************************************/
+/* @fn        void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
 *
 *  @brief     Write to memory streamBuffer. Already allocate buffer is written.
 *             If _position + count >= stream size, this stream buffer is resized.
@@ -97,8 +97,8 @@ void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uin
 
 /****************************************************************************
 *                     AppendByte
-*************************************************************************//**
-*  @fn        void MemoryStream::AppendByte(const uint8_t byte)
+****************************************************************************/
+/* @fn        void MemoryStream::AppendByte(const uint8_t byte)
 *
 *  @brief     Push back byte
 *
@@ -113,8 +113,8 @@ void MemoryStream::AppendByte(const uint8_t byte)
 
 /****************************************************************************
 *                      Append
-*************************************************************************//**
-*  @fn        void MemoryStream::Append(const std::vector<std::uint8_t>& buffer)
+****************************************************************************/
+/* @fn        void MemoryStream::Append(const std::vector<std::uint8_t>& buffer)
 *
 *  @brief     Push back bytes
 *
@@ -132,8 +132,8 @@ void MemoryStream::Append(const std::vector<std::uint8_t>& buffers)
 
 /****************************************************************************
 *                     Read
-*************************************************************************//**
-*  @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
+****************************************************************************/
+/* @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
 *
 *  @brief     Read byte array and proceed byte indexer
 		      Not taking endian into account
@@ -157,8 +157,8 @@ std::vector<std::uint8_t> MemoryStream::Read(const std::uint64_t count)
 
 /****************************************************************************
 *                     Read
-*************************************************************************//**
-*  @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
+****************************************************************************/
+/* @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
 *
 *  @brief     Read memory stream to write to already allocated buffer. Return dataSize
 *
@@ -186,8 +186,8 @@ MemoryStream::DataSize MemoryStream::Read(std::vector<std::uint8_t>& destBuffer,
 
 /****************************************************************************
 *                      Clear
-*************************************************************************//**
-*  @fn        void MemoryStream::Clear()
+****************************************************************************/
+/* @fn        void MemoryStream::Clear()
 *
 *  @brief     Clear buffer
 *

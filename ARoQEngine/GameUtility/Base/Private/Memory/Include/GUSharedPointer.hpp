@@ -26,8 +26,8 @@ namespace gu
 {
 	/****************************************************************************
 	*				  			   GUSharedPointer
-	*************************************************************************//**
-	*  @class     GUSharedPointer
+	****************************************************************************/
+	/* @class     GUSharedPointer
 	*  @brief     if the reference count is 0, the resource ownered by this will destroy.
 	*****************************************************************************/
 	template<class ElementType,  SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
@@ -39,7 +39,7 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Release the pointer and decrement the reference counter.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void Reset() 
 		{
 			ReleaseSharedReference(); 
@@ -48,7 +48,7 @@ namespace gu
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -56,14 +56,14 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  Constructs an empty shared pointer.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		SharedPointer() : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() { };
 
 		SharedPointer(decltype(__nullptr)) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
 		*  Destructor 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		~SharedPointer()
 		{
 			Reset();
@@ -71,33 +71,33 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		explicit SharedPointer(OtherType* pointer) 
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) {};
 		
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		explicit SharedPointer(ElementType* pointer) 
 			:details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) { };
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class Deleter>
 		SharedPointer(ElementType* pointer, Deleter deleter)
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType, class Deleter>
 		SharedPointer(OtherType* pointer, Deleter deleter) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a shared pointer from the weak pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		explicit SharedPointer(const WeakPointer<ElementType,Mode>& pointer) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
 		{
 			AddSharedReference();
@@ -106,7 +106,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Copy constructs a shared pointer from the same type shared pointer,
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		SharedPointer(const SharedPointer<ElementType,Mode>& pointer) 
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
 		{
@@ -116,7 +116,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Copy constructs a shared pointer from the other type shared pointer,
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		SharedPointer(const SharedPointer<OtherType, Mode>& pointer) 
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
@@ -127,7 +127,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Copy constructs a shared pointer from the other type shared pointer,
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		SharedPointer& operator=(const SharedPointer<OtherType, Mode>& right) noexcept 
 		{
@@ -149,7 +149,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Move Constructs a shared pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		SharedPointer(SharedPointer&& right) noexcept : 
 			ObserverPointerBase(type::Forward<ObserverPointerBase>(right))
 		{
@@ -163,9 +163,21 @@ namespace gu
 			return *this;
 		}
 
+		// operator== for nullptr comparison
+		__forceinline bool operator==(decltype(nullptr)) const noexcept
+		{
+			return _elementPointer == nullptr;
+		}
+
+		// operator!= for nullptr comparison
+		__forceinline bool operator!=(decltype(nullptr)) const noexcept
+		{
+			return _elementPointer != nullptr;
+		}
+
 		/*----------------------------------------------------------------------
 		*  for static_pointer_cast. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		SharedPointer(ElementType* pointer, details::smart_pointer::ReferenceControllerBase<Mode>* referenceController)
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, referenceController)
 		{
@@ -182,7 +194,7 @@ namespace gu
 		template<class OtherType, SharedPointerThreadMode OtherMode>
 		friend class SharedPointer;
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 
@@ -202,8 +214,8 @@ namespace gu
 
 	/****************************************************************************
 	*				  			   EnableSharedFromThis
-	*************************************************************************//**
-	*  @class     EnableSharedFromThis
+	****************************************************************************/
+	/* @class     EnableSharedFromThis
 	*  @brief     自分自身のクラスからスマートポインタの参照を渡すときに使用します. 
 	*             現在, MakeShared時, インタフェース部分に(platform::coreとかに継承)継承を入れると認識しない場合があります. 
 	*             そのため, MakeSharedを実際に適用するクラス(platform::windowsに継承)に直接継承を入れるようにしてください.
@@ -246,7 +258,7 @@ namespace gu
 		EnableSharedFromThis& operator=(EnableSharedFromThis const&) { return *this; }
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		WeakPointer<ElementType, Mode> _weakPointer = nullptr;
 	};
@@ -254,7 +266,7 @@ namespace gu
 #pragma region Shared Pointer Implement
 	/*----------------------------------------------------------------------
 	*  Cast function
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Element1, class Element2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
 	[[nodiscard]] SharedPointer<Element1, Mode> StaticPointerCast(const SharedPointer<Element2, Mode>& element)
 	{
@@ -278,7 +290,7 @@ namespace gu
 
 	/*----------------------------------------------------------------------
 	*  @brief :  return the new shared pointer
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE, class... Arguments>
 	SharedPointer<ElementType, Mode> MakeShared(Arguments&&... arguments)
 	{

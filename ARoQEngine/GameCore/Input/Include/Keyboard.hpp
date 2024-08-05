@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,8 +25,8 @@
 
 /****************************************************************************
 *				  			Keyboard
-*************************************************************************//**
-*  @class     Keyboard
+****************************************************************************/
+/* @class     Keyboard
 *  @brief     Keyboard Input 
 *****************************************************************************/
 class Keyboard
@@ -37,11 +38,11 @@ public:
 	bool Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd);
 	void Update();
 	void Finalize();
-	bool IsPress  (int keyCode);
-	bool IsTrigger(int keyCode);
-	bool IsRelease(int keyCode);
+	bool IsPress  (int keyCode) const;
+	bool IsTrigger(int keyCode) const;
+	bool IsRelease(int keyCode) const;
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	
 	/****************************************************************************
@@ -58,15 +59,15 @@ private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	bool CreateHWND();
-	bool CreateHInstance();
+	bool CreateHWND() const;
+	bool CreateHInstance() const;
 	bool CreateKeyboardDevice();
 	bool CreateDataFormat();
 	bool CreateCooperativeLevel();
 
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	LPDIRECTINPUT8       _dInput    = nullptr;
 	LPDIRECTINPUTDEVICE8 _keyboard  = nullptr;

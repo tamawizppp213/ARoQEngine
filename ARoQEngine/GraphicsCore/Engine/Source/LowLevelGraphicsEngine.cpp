@@ -46,30 +46,24 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 #pragma endregion Destructor
 
 #pragma region Main Function
-/****************************************************************************
-*                     Start Up
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
-* 
-*  @brief     Windows api start up lowlevel graphics engine
-* 
-*  @param[in] APIVersion apiVersion
-*  @param[in] HWND hwnd
-*  @param[in] HINSTANCE hInstance
-* 
-*  @return 　　void
-*****************************************************************************/
-void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
+/*!**********************************************************************
+*  @brief     Graphics Engineを起動し, 描画フレームをスタートします.
+*  @param[in] const rhi::core::GraphicsAPI
+*  @param[in] void* window handle
+*  @param[in] void* instance Handle
+*  @return    void
+*************************************************************************/
+void LowLevelGraphicsEngine::StartUp(const GraphicsAPI apiVersion, void* hwnd, void* hInstance)
 {
 	_apiVersion = apiVersion;
 	/*-------------------------------------------------------------------
 	-      Create Instance
 	---------------------------------------------------------------------*/
 #if _DEBUG
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, { true, false, false });
 	_instance->LogAdapters();
 #else
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, { false, false, false });
 #endif
 
 	/*-------------------------------------------------------------------
@@ -81,6 +75,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	-      Create logical device
 	---------------------------------------------------------------------*/
 	_device = _adapter->CreateDevice();
+
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
@@ -137,17 +132,11 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	_hasInitialized = true;
 }
 
-/****************************************************************************
-*                     BeginDrawFrame
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::BeginDrawFrame()
-* 
-*  @brief     The first call to the Draw function generates the back buffer image and executes the Default render pass.
-* 
+/*!**********************************************************************
+*  @brief     CommandListを開き, 描画フレームをスタートします.
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void LowLevelGraphicsEngine::BeginDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -161,19 +150,14 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	graphicsCommandList->BeginRecording(false);
 	computeCommandList ->BeginRecording(false);
+	_beginDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
 }
 
-/****************************************************************************
-*                     EndDrawFrame
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::EndDrawFrame()
-* 
-*  @brief     Call at the end of the Draw function to execute the command list and Flip the Swapchain. 
-* 
+/*!**********************************************************************
+*  @brief     CommandListを閉じ, 描画フレームを終了し, バックバッファを切り替えます.
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void LowLevelGraphicsEngine::EndDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -188,7 +172,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	if (graphicsCommandList->IsOpen())
 	{
 		graphicsCommandList->EndRenderPass();
-		graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
+		graphicsCommandList->CopyResource(_swapchain->GetBuffer((gu::uint8)_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
 		graphicsCommandList->EndRecording();
 	}
 
@@ -213,19 +197,19 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	---------------------------------------------------------------------*/
 	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
 	SetUpFence(); // reset fence value for the next frame
+
+	_endDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
+	_gpuTimer = (_endDrawFrameTimeStamp.GPUMicroseconds - _beginDrawFrameTimeStamp.GPUMicroseconds) / 1e6;
+	_cpuTimer = (_endDrawFrameTimeStamp.CPUMicroseconds - _beginDrawFrameTimeStamp.CPUMicroseconds) / 1e6;
+	
 }
 
-/****************************************************************************
-*                     FlushCommandQueue
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
-*
-*  @brief     Execute command queue 
-*
-*  @param[in] const rhi::core::CommandListType type
-*
-*  @return 　　std::uint64_t
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     対象のコマンドリストを実行し, フェンスのシグナル値を返します.
+*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+*  @param[in] const bool まだフレーム中かどうか
+*  @return    gu::uint64 フェンスのシグナル値
+*************************************************************************/
 std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame)
 {
 	// set command lists
@@ -263,7 +247,14 @@ std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandL
 	return _fenceValue;
 }
 
-void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU)
+/*!**********************************************************************
+*  @brief     コマンドキューを呼び出して前までの処理が完了するまでGPUを待機します. 必要に応じてCPUも待機します.
+*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+*  @param[in] const gu::uint64 待機するフェンスの値
+*  @param[in] const bool CPUも待機するかどうか
+*  @return    void
+*************************************************************************/
+void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const gu::uint64 waitValue, const bool stopCPU)
 {
 	const auto& commandQueue = _commandQueues[type];
 
@@ -273,8 +264,8 @@ void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandLi
 
 /****************************************************************************
 *                     OnResize
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
 * 
 *  @brief     Resize swapchain
 * 
@@ -284,15 +275,12 @@ void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandLi
 * 
 *  @return 　　void
 *****************************************************************************/
-void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
+void LowLevelGraphicsEngine::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	if (!(_width != newWidth || _height != newHeight)) { return; }
 
-	Screen::SetScreenWidth((int)newWidth);
-	Screen::SetScreenHeight((int)newHeight);
-	SetFrameBuffers((int)newWidth, (int)newHeight);
-
 	_swapchain->Resize(newWidth, newHeight);
+	SetFrameBuffers((int)newWidth, (int)newHeight);
 
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue
@@ -321,8 +309,8 @@ void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 
 /****************************************************************************
 *                     ShutDown
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::ShutDown()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::ShutDown()
 *
 *  @brief     Release all render resources
 *
@@ -379,8 +367,8 @@ void LowLevelGraphicsEngine::ShutDown()
 #pragma region SetUp
 /****************************************************************************
 *                     SetUpHeap
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::SetUpHeap()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::SetUpHeap()
 * 
 *  @brief     Prepare Logical Device's Default Heap. (Each size is defined by this class static variables X_DESC_COUNT)
 * 
@@ -394,8 +382,8 @@ void LowLevelGraphicsEngine::SetUpHeap()
 	heapCount.CBVDescCount = CBV_DESC_COUNT; 
 	heapCount.SRVDescCount = SRV_DESC_COUNT;
 	heapCount.UAVDescCount = UAV_DESC_COUNT;
-	heapCount.DSVDescCount = _apiVersion == APIVersion::DirectX12 ? DSV_DESC_COUNT : 0;
-	heapCount.RTVDescCount = _apiVersion == APIVersion::DirectX12 ? RTV_DESC_COUNT : 0;
+	heapCount.DSVDescCount = _apiVersion == GraphicsAPI::DirectX12 ? DSV_DESC_COUNT : 0;
+	heapCount.RTVDescCount = _apiVersion == GraphicsAPI::DirectX12 ? RTV_DESC_COUNT : 0;
 	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
@@ -417,8 +405,8 @@ void LowLevelGraphicsEngine::SetUpFence()
 }
 /****************************************************************************
 *                     SetUpRenderResource
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::SetUpRenderResource()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::SetUpRenderResource()
 * 
 *  @brief     Prepare render pass and frame buffer
 * 
@@ -439,7 +427,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
 
 		// vulkanの場合, 初期RenderTargetはUnlnownである必要があるとのこと
-		if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
+		if (_apiVersion == GraphicsAPI::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
 
 		_renderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
 		_renderPass->SetClearValue(clearColor, clearDepthColor);
@@ -449,8 +437,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	-      set continue drawing render pass (for texture rendering)
 	---------------------------------------------------------------------*/
 	{
-		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::ResourceState::RenderTarget,
-			core::ResourceState::Present, core::AttachmentLoad::Load);
+		core::Attachment colorAttachment = core::Attachment::DrawContinue(_pixelFormat, core::ResourceState::RenderTarget, core::ResourceState::Present);
 
 		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::DepthStencil, 
 			core::ResourceState::DepthStencil,core::AttachmentLoad::Load);

@@ -66,14 +66,14 @@ RHIQuery::RHIQuery(const SharedPointer<core::RHIDevice>& device,
 	-                  Readback bufferのmap
 	---------------------------------------------------------------------*/
 	// read back heap自体は永続的にマップされることを許容しているため, 今回は一度だけマップを行う対応とする
-	_resultBuffer->CopyStart();
+	_resultBuffer->Map();
 }
 
 RHIQuery::~RHIQuery()
 {
 	if (_resultBuffer)
 	{
-		_resultBuffer->CopyEnd();
+		_resultBuffer->Unmap();
 		_resultBuffer.Reset();
 	}
 }
@@ -82,8 +82,8 @@ RHIQuery::~RHIQuery()
 #pragma region Main Function
 /****************************************************************************
 *                     AllocatorID
-*************************************************************************//**
-*  @fn        RHIQuery::DescriptorID RHIQuery::AllocateID()
+****************************************************************************/
+/* @fn        RHIQuery::DescriptorID RHIQuery::AllocateID()
 *
 *  @brief     Query用の確保されていない領域のIndexを返します.
 *             Heapが満杯になったら再確保せずに最初の状態に書き込みます. 
@@ -105,8 +105,8 @@ core::QueryResultLocation RHIQuery::Allocate()
 
 /****************************************************************************
 *                     FreeID
-*************************************************************************//**
-*  @fn        void RHIQuery::FreeID(const RHIQuery::DescriptorID offsetIndex)
+****************************************************************************/
+/* @fn        void RHIQuery::FreeID(const RHIQuery::DescriptorID offsetIndex)
 *
 *  @brief     Query用の指定されたIndexを解放します.
 *
@@ -122,8 +122,8 @@ void RHIQuery::Free(core::QueryResultLocation& location)
 
 /****************************************************************************
 *                     GetResultStrideByteSize
-*************************************************************************//**
-*  @fn        gu::uint32 RHIQuery::GetResultStrideByteSize() const
+****************************************************************************/
+/* @fn        gu::uint32 RHIQuery::GetResultStrideByteSize() const
 *
 *  @brief     結果を取得するバッファのstride sizeを返します
 *
@@ -155,8 +155,8 @@ gu::uint32 RHIQuery::GetResultStrideByteSize() const
 #pragma region Setup Function
 /****************************************************************************
 *                     PrepareQueryHeapName
-*************************************************************************//**
-*  @fn        const wchar* RHIQuery::PrepareQueryHeapName()
+****************************************************************************/
+/* @fn        const wchar* RHIQuery::PrepareQueryHeapName()
 *
 *  @brief     クエリ結果を保持するquery heapの名前を取得します
 *
@@ -181,8 +181,8 @@ const wchar* RHIQuery::PrepareQueryHeapName()
 
 /****************************************************************************
 *                     PrepareResultBufferName
-*************************************************************************//**
-*  @fn        const wchar* RHIQuery::PrepareResultBufferName()
+****************************************************************************/
+/* @fn        const wchar* RHIQuery::PrepareResultBufferName()
 *
 *  @brief     クエリ結果を取得するReadBackBufferの名前を取得します
 *

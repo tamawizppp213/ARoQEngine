@@ -23,8 +23,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-using namespace gc::basepass;
-
+using namespace engine;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -55,8 +54,8 @@ LightCulling::~LightCulling()
 #pragma region Main Function 
 /****************************************************************************
 *                        Execute
-*************************************************************************//**
-*  @fn        void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& light)
+****************************************************************************/
+/* @fn        void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& light)
 *
 *  @brief     Execute light culling
 *
@@ -98,8 +97,8 @@ void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& 
 #pragma region Set Up Function
 /****************************************************************************
 *                        PrepareBuffer
-*************************************************************************//**
-*  @fn        void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
+****************************************************************************/
+/* @fn        void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 *
 *  @brief     Prepare read and writable buffers (each light id buffer)
 *
@@ -120,8 +119,8 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 	_lightIDLists.Resize(CullingLightType::CountOf);
 	for (size_t i = 0; i < _lightIDLists.Size(); ++i)
 	{
-		auto bufferInfo          = GPUBufferMetaData::UploadBuffer(sizeof(int), desc.LightCounts[i] * tileCount);
-		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
+		auto bufferInfo  = GPUBufferMetaData::UploadBuffer(sizeof(int), static_cast<gu::uint32>(desc.LightCounts[i] * tileCount));
+		bufferInfo.Usage = BufferCreateFlags::UnorderedAccess;
 
 		const auto bufferName = L"LightCulling::LightIDLists::" + std::to_wstring(i);
 		const auto buffer = device->CreateBuffer(bufferInfo, gu::tstring(bufferName.c_str(), bufferName.size()));
@@ -134,8 +133,8 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 
 /****************************************************************************
 *                        PreparePipelineState
-*************************************************************************//**
-*  @fn        void LightCulling::PreparePipelineState()
+****************************************************************************/
+/* @fn        void LightCulling::PreparePipelineState()
 *
 *  @brief     Prepare compute pipeline state and resource layout
 *
@@ -163,7 +162,7 @@ void LightCulling::PreparePipelineState()
 			                                                    // If you needs the other light list, you should add this layout.
 		},
 		{
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0)
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearClamp)), 0)
 		}
 	);
 
@@ -171,7 +170,7 @@ void LightCulling::PreparePipelineState()
 	-             Set shader
 	---------------------------------------------------------------------*/
 	const auto cs = factory->CreateShaderState();
-	cs->Compile(ShaderType::Compute, defaultPath, L"LightCulling", 6.4f, { L"Shader\\Core" });
+	cs->Compile({ ShaderType::Compute, defaultPath, L"LightCulling", { L"Shader\\Core" } });
 
 	/*-------------------------------------------------------------------
 	-             Build compute pipeline state

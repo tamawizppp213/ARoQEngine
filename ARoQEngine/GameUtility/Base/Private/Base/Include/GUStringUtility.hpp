@@ -35,8 +35,8 @@ namespace gu::details::string
 
 	/****************************************************************************
 	*				  			   GUStringUtility
-	*************************************************************************//**
-	*  @class     GUStringUtility
+	****************************************************************************/
+	/* @class     GUStringUtility
 	*  @brief     String base function
 	*****************************************************************************/
 	class StringUtility : public NonCopyAndMove
@@ -47,26 +47,26 @@ namespace gu::details::string
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列の長さを取得します. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static uint64 Length(const Char* string);
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列のコピーを行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static void Copy(Char* destination, const uint64 destLength, const Char* source);
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列を比較します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static uint64 Compare(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, 
 			uint64 count, const bool useCaseSensitivity) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列に一致する最初のインデックスを返します. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static uint64 Find(
 			const Char* left, uint64 leftLength,
@@ -75,7 +75,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列に一致する最初のインデックスを返します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static uint64 ReverseFind(
 			const Char* left, uint64 leftLength,
@@ -84,25 +84,25 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列の部分文字列を抽出します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static void SubString(const Char* string, const uint64 stringLength, uint64 startIndex, uint64 count, const Char** outBegin, const Char** outEnd);
 
 		/*----------------------------------------------------------------------
 		*  @brief : 文字列の先頭から指定した文字数を抽出します. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static void Left(const Char* string, const uint64 count, const Char** outBegin, const Char** outEnd);
 
 		/*----------------------------------------------------------------------
 		*  @brief : 文字列の末尾から指定した文字数を抽出します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static void Right(const Char* string, const uint64 count, const Char** outBegin, const Char** outEnd);
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列に一致する最初のインデックスを返します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static bool IsFirstMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
 		{
@@ -111,25 +111,25 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列の末尾が指定した文字列と一致するかを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static bool IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity);
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字を大文字に切り替えます
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class Char>
 		static Char ToUpper(Char ch) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字を小文字に切り替えます
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class Char>
 		static Char ToLower(Char ch) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  空白行か
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static bool IsSpace(const Char ch) noexcept 
 		{
@@ -144,7 +144,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  空白行か
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char>
 		static void Trim(const Char* begin, uint64 length, const Char** outBegin, uint64* outLength)
 		{
@@ -178,7 +178,7 @@ namespace gu::details::string
 			*outBegin = begin;
 			*outLength = (uint64)(end - begin);
 		}
-#pragma region Convert number
+		#pragma region Convert number
 		template<typename Char>
 		static int8 ToInt8(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
 		{
@@ -278,10 +278,16 @@ namespace gu::details::string
 		template<typename Char>
 		static double ToDouble(const Char* string, uint64 stringLength, const Char** outEndPointer, NumberConversionResult* outResult)
 		{
-			if (outResult != nullptr) { *outResult = NumberConversionResult::Success; }
+			if (outResult != nullptr)
+			{ 
+				*outResult = NumberConversionResult::Success; 
+			}
 			if (string == nullptr)
 			{
-				if (outResult != nullptr) { *outResult = NumberConversionResult::ArgumentsError; }
+				if (outResult != nullptr) 
+				{ 
+					*outResult = NumberConversionResult::ArgumentsError; 
+				}
 				return 0.0;
 			}
 
@@ -291,7 +297,7 @@ namespace gu::details::string
 			{
 				if (outResult != nullptr)
 				{
-					*outResult != NumberConversionResult::ArgumentsError;
+					*outResult = NumberConversionResult::ArgumentsError;
 				}
 				return 0.0;
 			}
@@ -303,7 +309,7 @@ namespace gu::details::string
 			// 0 は 308 個並べられることになるが、512 文字分のサイズがあれば十分。
 			char temp[512] = {};
 			CopySimpleAsciiString(temp, 512, string, stringLength);
-			temp[stringLength] = '0';
+			temp[stringLength] = '\0';
 
 			char* end    = nullptr;
 			double value = strtod(temp, &end);
@@ -313,7 +319,7 @@ namespace gu::details::string
 				*outEndPointer = string + (end - temp);
 			}
 
-			if (value == HUGE_VAL || value == -HUGE_VAL)
+			/*if (value == HUGE_VAL || value == -HUGE_VAL)
 			{
 				if (outResult != nullptr)
 				{
@@ -321,7 +327,7 @@ namespace gu::details::string
 				}
 
 				return value;
-			}
+			}*/
 
 			return value;
 		}
@@ -333,7 +339,7 @@ namespace gu::details::string
 
 			if (outResult != nullptr &&
 				*outResult == NumberConversionResult::Success &&
-				-FLT_MAX <= value && value <= FLT_MAX)
+				-MAX_FLOAT32 <= value && value <= MAX_FLOAT32)
 			{
 				*outResult = NumberConversionResult::Overflow;
 			}
@@ -341,9 +347,10 @@ namespace gu::details::string
 			return (float)value;
 		}
 
-#pragma endregion Convert number
+		#pragma endregion Convert number
+
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
@@ -385,7 +392,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :　文字列 -> 数値に変換する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<typename Char, typename SignedType, typename UnsignedType, SignedType SignedMin = 0, SignedType SignedMax = 0, UnsignedType UnsignedMax=0>
 		static NumberConversionResult StringToNumberInternal
 		(
@@ -404,19 +411,19 @@ namespace gu::details::string
 			{
 				destinationLength--;
 				sourceLength--;
-				*destination++ = static_cast<DestinationType*>(*source++);
+				*destination++ = static_cast<DestinationType>(*source++);
 			}
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 
 #pragma region Implement
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を比較します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	uint64 StringUtility::Compare(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, uint64 count, const bool useCaseSensitivity) noexcept
 	{
@@ -482,7 +489,7 @@ namespace gu::details::string
 	}
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列の長さを取得します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	static uint64 StringUtility::Length(const Char* string)
 	{
@@ -495,7 +502,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列のコピーを行います
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	static void StringUtility::Copy(Char* destination, const uint64 destLength, const Char* source)
 	{
@@ -515,7 +522,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列に一致する最初のインデックスを返します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char>
 	uint64 StringUtility::Find(
 		const Char* left, uint64 leftLength,
@@ -574,7 +581,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列に一致する最初のインデックスを返します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char>
 	uint64 StringUtility::ReverseFind(
 		const Char* left, uint64 leftLength,
@@ -658,7 +665,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列の部分文字列を抽出します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	void StringUtility::SubString(const Char* string, const uint64 stringLength, uint64 startIndex, 
 		uint64 count, const Char** outBegin, const Char** outEnd)
@@ -685,7 +692,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief : 文字列の先頭から指定した文字数を抽出します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	void StringUtility::Left(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
 	{
@@ -699,7 +706,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief : 文字列の末尾から指定した文字数を抽出します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	void StringUtility::Right(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
 	{
@@ -713,7 +720,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列の末尾が指定した文字列と一致するかを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char>
 	bool StringUtility::IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
 	{
@@ -770,7 +777,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字を大文字に切り替えます
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char>
 	Char StringUtility::ToUpper(Char ch) noexcept 
 	{
@@ -784,7 +791,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字を小文字に切り替えます
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char>
 	Char StringUtility::ToLower(Char ch)  noexcept
 	{

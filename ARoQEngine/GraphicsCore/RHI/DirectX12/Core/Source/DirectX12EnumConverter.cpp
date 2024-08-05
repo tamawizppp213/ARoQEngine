@@ -9,8 +9,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <stdexcept>
-#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,20 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+D3D12_MESSAGE_SEVERITY EnumConverter::Convert(const rhi::core::MessageSeverity severity)
+{
+	switch (severity)
+	{
+		using enum core::MessageSeverity;
+		case Corruption: return D3D12_MESSAGE_SEVERITY_CORRUPTION;
+		case Error     : return D3D12_MESSAGE_SEVERITY_ERROR;
+		case Warning   : return D3D12_MESSAGE_SEVERITY_WARNING;
+		case Info      : return D3D12_MESSAGE_SEVERITY_INFO;
+		case Message   : return D3D12_MESSAGE_SEVERITY_MESSAGE;
+		default:
+			throw std::runtime_error("Not supported message severity type (directX12 api)");
+	}
+}
 #pragma region CommandList
 D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType type)
 {
@@ -101,73 +115,8 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 	}
 }
 
-/*-------------------------------------------------------------------
--               Sampling filter mode when the image is enlarged or shirinked.
----------------------------------------------------------------------*/
-D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
-{
-	switch (filter)
-	{
-		using enum core::FilterOption;
-
-		case MinPointMagPointMipPoint   : return D3D12_FILTER_MIN_MAG_MIP_POINT;
-		case MinPointMagPointMipLinear  : return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-		case MinPointMagLinearMipPoint  : return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-		case MinPointMagLinearMipLinear : return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
-		case MinLinearMagPointMipPoint  : return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-		case MinLinearMagPointMipLinear : return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-		case MinLinearMagLinearMipPoint : return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-		case MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		case Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
-
-		default:
-			throw std::runtime_error("not supported filter option (directX12 api)");
-	}
-}
 #pragma endregion Sampler State
-DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
-{
-	switch (pixelFormat)
-	{
-		using enum core::PixelFormat;
 
-		case R8G8B8A8_UNORM     : return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
-		case R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
-		case R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case R32G32_FLOAT       : return DXGI_FORMAT_R32G32_FLOAT;
-		case R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
-		case D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
-		case R32_FLOAT          : return DXGI_FORMAT_R32_FLOAT;
-		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
-		case BC2_UNORM          : return DXGI_FORMAT_BC2_UNORM;          
-		case BC3_UNORM          : return DXGI_FORMAT_BC3_UNORM;
-		case BC4_UNORM          : return DXGI_FORMAT_BC4_UNORM;
-		case BC5_UNORM          : return DXGI_FORMAT_BC5_UNORM;
-		case BC7_UNORM          : return DXGI_FORMAT_BC7_UNORM;
-		case BC6H_UNORM         : return DXGI_FORMAT_BC6H_UF16;
-		case Unknown            : return DXGI_FORMAT_UNKNOWN;
-
-		default:
-			throw std::runtime_error("not supported Pixel Format type (directX12 api)");
-	}
-}
-DXGI_FORMAT EnumConverter::Convert(const rhi::core::IndexType indexFormat)
-{
-	switch (indexFormat)
-	{
-		using enum core::IndexType;
-
-		case UInt32: return DXGI_FORMAT_R32_UINT;
-		case UInt16: return DXGI_FORMAT_R16_UINT;
-		
-		default:
-			throw std::runtime_error("not supported Index Format type (directX12 api)");
-	}
-}
 #pragma region BlendState
 D3D12_BLEND_OP EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 {
@@ -297,28 +246,14 @@ D3D12_INPUT_CLASSIFICATION EnumConverter::Convert(const rhi::core::InputClassifi
 			throw std::runtime_error("not supported classication type.");
 	}
 }
-DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
-{
-	using enum core::InputFormat;
 
-	switch (inputFormat)
-	{
-		case R32G32_FLOAT      : return DXGI_FORMAT_R32G32_FLOAT;
-		case R32G32B32_FLOAT   : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case R32G32B32A32_FLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case R32G32B32A32_INT  : return DXGI_FORMAT_R32G32B32A32_SINT;
-		case R32_FLOAT         : return DXGI_FORMAT_R32_FLOAT;
-		default:
-			throw std::runtime_error("not supported input format");
-	}
-}
 #pragma endregion      Input Layput
 #pragma region GPUResource
-D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage)
+D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::BufferCreateFlags usage)
 {
-	using enum core::ResourceUsage;
+	using enum core::BufferCreateFlags;
 
-	static std::vector<core::ResourceUsage> sourcePool =
+	static gu::DynamicArray<core::BufferCreateFlags> sourcePool =
 	{
 		None,
 		VertexBuffer,
@@ -328,9 +263,10 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		DepthStencil,
 		UnorderedAccess,
 		Shared,
+		DrawIndirect
 	};
 
-	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
+	static gu::DynamicArray<D3D12_RESOURCE_FLAGS> targetPool =
 	{
 		D3D12_RESOURCE_FLAG_NONE,
 		D3D12_RESOURCE_FLAG_NONE,
@@ -339,12 +275,13 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
-		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS
+		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS,
+		D3D12_RESOURCE_FLAG_NONE
 	};
 
 	auto res = D3D12_RESOURCE_FLAG_NONE;
 
-	for (size_t index = 0; index < sourcePool.size(); index++)
+	for (size_t index = 0; index < sourcePool.Size(); index++)
 	{
 		if (gu::HasAnyFlags(usage, sourcePool[index]))
 			res = res | targetPool[index];
@@ -357,15 +294,52 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 
 	return res;
 }
+
+D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::TextureCreateFlags usage)
+{
+	using enum core::TextureCreateFlags;
+
+	static gu::DynamicArray<core::TextureCreateFlags> sourcePool =
+	{
+		None,
+		RenderTargetable,
+		DepthStencilTargetable,
+		UnorderedAccess,
+	};
+
+	static gu::DynamicArray<D3D12_RESOURCE_FLAGS> targetPool =
+	{
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+	};
+
+	auto res = D3D12_RESOURCE_FLAG_NONE;
+
+	for (size_t index = 0; index < sourcePool.Size(); index++)
+	{
+		if (gu::HasAnyFlags(usage, sourcePool[index]))
+			res = res | targetPool[index];
+	}
+
+	if (!gu::HasAnyFlags(usage, ShaderResource))
+	{
+		res |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+	}
+
+	return res;
+}
+
 D3D12_RESOURCE_DIMENSION   EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	using enum core::ResourceDimension;
 
 	switch (dimension)
 	{
-		case Dimension1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-		case Dimension2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		case Dimension3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		case Texture1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		case Texture2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		case Texture3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
 		case Buffer     : return D3D12_RESOURCE_DIMENSION_BUFFER;
 		default:
 			throw std::runtime_error("not supported resource dimension (directX12 api)");
@@ -550,3 +524,39 @@ D3D12_QUERY_TYPE EnumConverter::Convert1(const rhi::core::QueryHeapType heapType
 	}
 }
 #pragma endregion Query
+#pragma region Variable Shading Rate
+D3D12_SHADING_RATE EnumConverter::Convert(const rhi::core::ShadingRate shadingRate)
+{
+	using enum core::ShadingRate;
+
+	switch(shadingRate)
+	{
+		case Rate_1x1: return D3D12_SHADING_RATE_1X1;
+		case Rate_1x2: return D3D12_SHADING_RATE_1X2;
+		case Rate_2x1: return D3D12_SHADING_RATE_2X1;
+		case Rate_2x2: return D3D12_SHADING_RATE_2X2;
+		case Rate_2x4: return D3D12_SHADING_RATE_2X4;
+		case Rate_4x2: return D3D12_SHADING_RATE_4X2;
+		case Rate_4x4: return D3D12_SHADING_RATE_4X4;
+		default:
+			throw std::runtime_error("not support shading rate (directX12 api)");
+	}
+}
+
+D3D12_SHADING_RATE_COMBINER EnumConverter::Convert(const rhi::core::ShadingRateCombiner combiner)
+{
+	using enum core::ShadingRateCombiner;
+
+	switch(combiner)
+	{
+		case PassThrough: return D3D12_SHADING_RATE_COMBINER_PASSTHROUGH;
+		case Override   : return D3D12_SHADING_RATE_COMBINER_OVERRIDE;
+		case Min        : return D3D12_SHADING_RATE_COMBINER_MIN;
+		case Max        : return D3D12_SHADING_RATE_COMBINER_MAX;
+		case Sum        : return D3D12_SHADING_RATE_COMBINER_SUM;
+		default:
+			throw std::runtime_error("not support shading rate combiner (directX12 api)");
+	}
+}
+
+#pragma endregion Variable Shading Rate

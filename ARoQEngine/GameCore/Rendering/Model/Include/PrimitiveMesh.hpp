@@ -18,12 +18,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::core
+namespace engine
 {
 	/****************************************************************************
 	*							 PrimitiveMesh
-	*************************************************************************//**
-	*  @struct    PrimitiveMesh
+	****************************************************************************/
+	/* @struct    PrimitiveMesh
 	*  @brief     PrimitiveMesh
 	*****************************************************************************/
 	struct PrimitiveMesh : public gu::Copyable
@@ -49,8 +49,8 @@ namespace gc::core
 
 	/****************************************************************************
 	*							 Primitive Geometry
-	*************************************************************************//**
-	*  @struct    GeometryGenerator
+	****************************************************************************/
+	/* @struct    GeometryGenerator
 	*  @brief     GeometryGenerator struct (box, grid, sphere, cylinder...)
 	*****************************************************************************/
 	class PrimitiveMeshGenerator : public gu::NonCopyAndMove
@@ -69,7 +69,7 @@ namespace gc::core
 		static PrimitiveMesh Torus(float majorRadius, float minorRadius, std::uint32_t numMajor, std::uint32_t numMinor, const gm::Float4& color = gm::Float4(1,1,1,1));
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -89,7 +89,7 @@ namespace gc::core
 		static void IsInvertNormal(PrimitiveMesh& meshData);
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 }

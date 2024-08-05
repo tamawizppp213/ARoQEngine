@@ -24,8 +24,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPUPipelineFactory : public core::GPUPipelineFactory
@@ -47,15 +47,17 @@ namespace rhi::vulkan
 		gu::SharedPointer<core::GPUShaderState> CreateShaderState() override;
 
 		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
-			const gu::DynamicArray<core::BlendProperty>& properties = { core::BlendProperty() }) override;
+			const gu::DynamicArray<core::BlendProperty>& properties = { core::BlendProperty() }, 
+			const bool alphaToCoverageEnable = false) override;
 
 		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(
-			const core::BlendProperty& blendProperty = core::BlendProperty()
+			const core::BlendProperty& blendProperty = core::BlendProperty(),
+			const bool alphaToCoverageEnable = false
 		) override;
 
-		virtual gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
+		virtual gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnables = false)override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -76,7 +78,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 
 	};

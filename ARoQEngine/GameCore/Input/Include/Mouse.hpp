@@ -36,8 +36,8 @@ enum MouseButton
 };
 /****************************************************************************
 *				  			Mouse
-*************************************************************************//**
-*  @class     Mouse
+****************************************************************************/
+/* @class     Mouse
 *  @brief     mouse
 *****************************************************************************/
 class Mouse
@@ -49,16 +49,16 @@ public:
 	bool Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd);
 	void Update();
 	void Finalize();
-	bool IsPress  (int mouseButton);
-	bool IsTrigger(int mouseButton);
-	bool IsRelease(int mouseButton);
+	bool IsPress  (int mouseButton) const;
+	bool IsTrigger(int mouseButton) const;
+	bool IsRelease(int mouseButton) const;
 	MousePosition& GetMousePosition();
-	gm::Float2 GetMouseVelocity();
+	gm::Float2 GetMouseVelocity() const;
 	int GetMousePosition_X();
 	int GetMousePosition_Y();
 
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 
 	/****************************************************************************
@@ -75,14 +75,14 @@ private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	bool CreateHWND();
-	bool CreateHInstance();
+	bool CreateHWND() const;
+	bool CreateHInstance() const;
 	bool CreateMouseDevice();
 	bool CreateDataFormat();
 	bool CreateCooperativeLevel();
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	LPDIRECTINPUT8       _dInput    = nullptr;
 	LPDIRECTINPUTDEVICE8 _mouse     = nullptr;

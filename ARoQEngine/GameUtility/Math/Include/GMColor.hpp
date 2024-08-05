@@ -25,8 +25,8 @@ namespace gm
 {
 	/****************************************************************************
 	*				  			Float4
-	*************************************************************************//**
-	*  @class     Float4
+	****************************************************************************/
+	/* @class     Float4
 	*  @brief     Float4 class for holding the value
 	*****************************************************************************/
     namespace color
@@ -70,11 +70,15 @@ namespace gm
         float A;
 
         BGRA() = default;
+
         BGRA(const float b, const float g, const float r, const float a)
             : R(r), G(g), B(b), A(a)
         {
 
         }
+
+        BGRA(const BGRA& ) = default;
+
     };
 
 //	struct Color
@@ -86,7 +90,7 @@ namespace gm
 //        uint32_t R10G10B10A2(void) const;
 //        uint32_t R8G8B8A8(void) const;
 //		/****************************************************************************
-//		**                Public Member Variables
+//		**                Public Property
 //		*****************************************************************************/
 //		INLINE float R() const  { return DirectX::XMVectorGetX(_value); }
 //		INLINE float G() const  { return DirectX::XMVectorGetY(_value); }
@@ -141,7 +145,7 @@ namespace gm
 //		*****************************************************************************/
 //
 //		/****************************************************************************
-//		**                Private Member Variables
+//		**                Private Property
 //		*****************************************************************************/
 //		DirectX::XMVECTORF32 _value;
 //        color::ColorTag _tag = color::ColorTag::RGBA;

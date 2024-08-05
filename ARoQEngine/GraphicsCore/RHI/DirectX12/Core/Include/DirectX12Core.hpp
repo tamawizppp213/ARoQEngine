@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #define D3D12_CORE_ENABLED              (1)
 #define D3D12_MAX_DEVICE_INTERFACE      (13)
-#define D3D12_MAX_COMMANDLIST_INTERFACE (9)
+#define D3D12_MAX_COMMANDLIST_INTERFACE (10)
 #define D3D12_MAX_DEBUG_INTERFACE       (6)
 #define D3D12_MAX_RESOURCE_INTERFACE    (2)
 #define D3D12_MAX_INFO_QUEUE_INTERFACE  (1)
@@ -34,6 +34,9 @@
 #if     USE_INTEL_EXTENSION
 #define INTC_IGDEXT_D3D12               (1)
 #endif
+
+// DirectX12のGPUデバッガであるPIXを使用するか
+#define USE_PIX 					   (1)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Alias 
@@ -140,7 +143,10 @@ using IDebug = ID3D12Debug;
 #endif
 
 // CommandList
-#if   D3D12_MAX_COMMANDLIST_INTERFACE >= 9
+#if   D3D12_MAX_COMMANDLIST_INTERFACE >= 10
+struct ID3D12GraphicsCommandList10;
+using  ICommandList = ID3D12GraphicsCommandList10;
+#elif D3D12_MAX_COMMANDLIST_INTERFACE >= 9
 struct ID3D12GraphicsCommandList9;
 using  ICommandList = ID3D12GraphicsCommandList9;
 #elif D3D12_MAX_COMMANDLIST_INTERFACE >= 8

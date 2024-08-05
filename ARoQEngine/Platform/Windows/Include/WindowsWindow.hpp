@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GeneralWindow.hpp
-///             @brief  ウィンドウを作成するクラス
-///             @author Toide Yutaro
-///             @date   2023_08_31
+///  @file   WindowsWindow.hpp
+///  @brief  ウィンドウを作成するクラス
+///  @author Toide Yutaro
+///  @date   2023_08_31
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef WINDOWS_WINDOW_HPP
@@ -31,94 +31,120 @@ namespace platform::windows
 {
 	/****************************************************************************
 	*				  			    CoreWindow
-	*************************************************************************//**
-	*  @class     CoreWindow
-	*  @brief     描画用のウィンドウを作成するクラス
+	****************************************************************************/
+	/* @brief     描画用のウィンドウを作成するクラス
 	*****************************************************************************/
 	class CoreWindow : public platform::core::CoreWindow, public IDropTarget
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : Applicationに登録しつつ, 指定したDescriptorでウィンドウを作成します. 
-		-----------------------------------------------------------------*/
+		#pragma region Public Function
+		/*!***********************************************************************
+		*  @brief      Applicationに登録しつつ, 指定したDescriptorでウィンドウを作成します.
+		*  @param[in]  const gu::SharedPointer<core::PlatformApplication>& application
+		*  @param[in]  const core::CoreWindowDesc& desc
+		*  @param[in]  const gu::SharedPointer<core::CoreWindow>& parentWindow
+		*  @return     bool
+		**************************************************************************/
 		void Create(const gu::SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow = nullptr);
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : Visibleでなかった場合にウィンドウを表示します
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      Native Windowを表示します
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool Show() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : Visibleであった場合にウィンドウを隠します
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      Native Windowを非表示にします
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool Hide() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウを最小化します
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウを最小化します
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool Minimize() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウを最大化します.
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウを最大化します
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool Maximize() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウをアクティブにして表示する
-			            最小化・最大化されている場合は元のサイズと位置に復元される.
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウをアクティブにして表示する. 最小化・最大化されている場合は元のサイズと位置に復元される.
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool ReStore() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief :  ウィンドウを破棄します
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウを破棄します
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool Destroy() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief :  ウィンドウサイズを変更します
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウサイズを変更します
+		*  @param[in]  const gu::int32 x
+		*  @param[in]  const gu::int32 y
+		*  @param[in]  const gu::int32 width
+		*  @param[in]  const gu::int32 height
+		*  @return     void
+		**************************************************************************/
 		virtual void Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height) override;
 		
-		/*---------------------------------------------------------------
-		　　　　　@brief :  既に設定されたウィンドウを最前面に表示する
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      既に設定されたウィンドウを最前面に表示する
+		*  @param[in]  const bool 強制的に最前面に表示するか
+		*  @return     void
+		**************************************************************************/
 		virtual void BringToFront(const bool forceFront = false) override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 指定したx, y座標にウィンドウを移動させます
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      指定したx, y座標にウィンドウを移動させます
+		*  @param[in]  const gu::int32 x
+		*  @param[in]  const gu::int32 y
+		*  @return     void
+		**************************************************************************/
 		virtual void Move(const gu::int32 x, const gu::int32 y) override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウを有効/無効化する. 無効化する場合入力を受け付けない.
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウを有効/無効化する. 無効化する場合入力を受け付けない.
+		*  @param[in]  const bool 有効化
+		*  @return     void
+		**************************************************************************/
 		virtual void Enable(const bool enable) override { ::EnableWindow(_hwnd, enable); }
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 透過度を変更する	
-		-----------------------------------------------------------------*/
-		void OnTransparenySupportChanged(const core::WindowTransparency transparency);
+		/*!***********************************************************************
+		*  @brief      透過度を変更する
+		*  @param[in]  const core::WindowTransparency 透過度
+		*  @return     void
+		**************************************************************************/
+		virtual void OnTransparencySupportChanged(const core::WindowTransparency transparency) override;
 		
-#pragma region IDropTarget
+		#pragma region IDropTarget
 		/*---------------------------------------------------------------
 		　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE DragEnter(
-			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE DragOver(
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : オブジェクトがコントロールの境界外にドラッグされたときに発生するイベント
@@ -129,172 +155,269 @@ namespace platform::windows
 		　　　　　@brief : オブジェクトがドロップするときに発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE Drop(
-			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
-#pragma endregion IDropTarget
+		#pragma endregion IDropTarget
 
-#pragma region IUnknown Interface
+		#pragma region IUnknown Interface
+		/*!***********************************************************************
+		*  @brief      インタフェース (Droptarget)のポインタを返す
+		*  @param[in]  REFIID riid
+		*  @param[out] ppvObject
+		*  @return     HRESULT
+		**************************************************************************/
 		virtual HRESULT STDMETHODCALLTYPE QueryInterface(
 			/* [in] */ REFIID riid,
 			/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
 
+		/*!***********************************************************************
+		*  @brief      OLEの参照カウンタを一つ上げる
+		*  @param[in]  void
+		*  @return     ULONG 参照カウンタ
+		**************************************************************************/
 		virtual ULONG STDMETHODCALLTYPE AddRef() override;
 
+		/*!***********************************************************************
+		*  @brief      OLEの参照カウンタを一つ下げる
+		*  @param[in]  void
+		*  @return     ULONG 参照カウンタ
+		**************************************************************************/
 		virtual ULONG STDMETHODCALLTYPE Release() override;
-#pragma endregion IUnknown Interface
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : Windows専用じゃない場合のWindow Handlerの受け渡しです.
-		-----------------------------------------------------------------*/
-		[[nodiscard]] __forceinline virtual void* GetWindowHandle() const noexcept override { return _hwnd; }
+		#pragma endregion IUnknown Interface
+		#pragma endregion	
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : Windowのアスペクト比を渡します.
-		-----------------------------------------------------------------*/
-		__forceinline virtual float GetAspectRatio() const override { return _aspectRatio;  }
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : Window handlerを取得します
-		-----------------------------------------------------------------*/
-		[[nodiscard]] __forceinline HWND GetHWND() const { return _hwnd; }
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : return the border size
-		-----------------------------------------------------------------*/
-		virtual gu::int32 GetWindowBorderSize() const override;
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : return the title bar size
-		-----------------------------------------------------------------*/
-		virtual gu::int32 GetWindowTitleBarSize() const override;
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : windowの現在の左上の位置を返します.
-		-----------------------------------------------------------------*/
-		virtual void GetWindowPostion(gu::int32& x, gu::int32& y) const override;
-		/*---------------------------------------------------------------
-		　　　　　@brief : return the title bar size
-		-----------------------------------------------------------------*/
-		bool GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height);
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : 指定した位置がウィンドウ中に存在するかを判定します.
-		-----------------------------------------------------------------*/
-		virtual bool ExistPointInWindow(const gu::int32 x, const gu::int32 y) const override;
-		
-		/*---------------------------------------------------------------
-		　　　　　@brief : Window handlerを設定します
-		-----------------------------------------------------------------*/
-		__forceinline void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : キャプションにテキストを追加します.
-		-----------------------------------------------------------------*/
-		__forceinline virtual void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : 現在作業中のウィンドウであるかを調べます.
-		-----------------------------------------------------------------*/
-		virtual bool IsForegroundWindow() const override;
-
-		/*---------------------------------------------------------------
-		　　　　　@brief : フルスクリーンをサポートしているかを調べます. 
-		-----------------------------------------------------------------*/
+		#pragma region Public Property
+		/*!***********************************************************************
+		*  @brief      フルスクリーンをサポートしているかを調べます.
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool IsFullscreenSupported() const override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 最大化されているかを調べます
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      現在作業中のウィンドウであるかを調べます.
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
+		virtual bool IsForegroundWindow() const override;
+
+		/*!***********************************************************************
+		*  @brief      最大化されているかを調べます
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		__forceinline virtual bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 最小化されているかを調べます (アイコン状態になっているか)
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      最小化されているかを調べます (アイコン状態になっているのか)
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		__forceinline virtual bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
-		
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウが有効化されているか
-		-----------------------------------------------------------------*/
-		virtual bool IsEnabled() override { return !!::IsWindowEnabled(_hwnd); }
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 手動でDPIを変更可能にするか
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウが有効化されているか
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
+		__forceinline virtual bool IsEnabled() override { return !!::IsWindowEnabled(_hwnd); }
+
+		/*!***********************************************************************
+		*  @brief      Window handlerを取得します
+		*  @param[in]  void
+		*  @return     HWND
+		**************************************************************************/
+		[[nodiscard]] __forceinline HWND GetHWND() const { return _hwnd; }
+
+		/*!***********************************************************************
+		*  @brief      手動でDPIを変更可能にするか
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual bool IsManualManageDPIChanges() const override { return _useManualDPIChange; }
 
+		/*!***********************************************************************
+		*  @brief      手動でDPIを変更する
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		virtual void SetManualManageDPIChanges(const bool manualManageDPIChange) override { _useManualDPIChange = manualManageDPIChange; }
-		/*---------------------------------------------------------------
-		　　　　　@brief : Return the rectangle of the winow is associated with
-		-----------------------------------------------------------------*/
-		virtual bool GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : window modeを設定する
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      ウィンドウのハンドルを取得します
+		*  @param[in]  void
+		*  @return     void*
+		**************************************************************************/
+		[[nodiscard]] __forceinline virtual void* GetWindowHandle() const noexcept override { return _hwnd; }
+
+		/*!***********************************************************************
+		*  @brief      Windowのアスペクト比を渡します.
+		*  @param[in]  void
+		*  @return     float
+		**************************************************************************/
+		__forceinline virtual float GetAspectRatio() const override { return _aspectRatio; }
+
+		/*!***********************************************************************
+		*  @brief      Windowの左上位置を取得します.
+		*  @param[out] gu::int32& x
+		*  @param[out] gu::int32& y
+		*  @return     void
+		**************************************************************************/
+		virtual void GetWindowPostion(gu::int32& x, gu::int32& y) const override;
+
+		/*!***********************************************************************
+		*  @brief      Windowのボーダーサイズを取得します.
+		*  @param[in]  void
+		*  @return     gu::int32
+		**************************************************************************/
+		virtual gu::int32 GetWindowBorderSize() const override;
+
+		/*!***********************************************************************
+		*  @brief      Windowのタイトルバーのサイズを取得します.
+		*  @param[in]  void
+		*  @return     gu::int32
+		**************************************************************************/
+		virtual gu::int32 GetWindowTitleBarSize() const override;
+
+		/*!***********************************************************************
+		*  @brief      ウィンドウが復元されたときのサイズと位置を返す
+		*  @param[out] gu::int32& x
+		*  @param[out] gu::int32& y
+		*  @param[out] gu::int32& width
+		*  @param[out] gu::int32& height
+		*  @return     bool
+		**************************************************************************/
+		bool GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height);
+
+		/*!***********************************************************************
+		*  @brief      座標の下にウィンドウが存在する場合はtrueを返す
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
+		virtual bool ExistPointInWindow(const gu::int32 x, const gu::int32 y) const override;
+		
+		/*!***********************************************************************
+		*  @brief       Window handlerを設定します
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
+		__forceinline void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
+
+		/*!***********************************************************************
+		*  @brief      フルスクリーンやウィンドウモードといったWindowの状態を設定します
+		*  @param[in]  const WindowMode ウィンドウモード
+		*  @return     void
+		**************************************************************************/
 		virtual void SetWindowMode(const core::WindowMode windowMode) override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 透過度を設定する
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      キャプションにテキストを設定する
+		*  @param[in]  const gu::tchar* const text
+		*  @return     void
+		**************************************************************************/
+		__forceinline virtual void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
+
+		/*!***********************************************************************
+		*  @brief      透過度を設定する
+		*  @param[in]  const float 透過度
+		*  @return     void
+		**************************************************************************/
 		virtual void SetOpacity(const float opacity) const;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : KeyboardFocusにこのウィンドウを設定する
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      KeyboardFocusにこのウィンドウを設定する
+		*  @param[in]  void
+		*  @return     void
+		**************************************************************************/
 		virtual void SetKeyboardFocus() override;
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 親ウィンドウが最小化されたときに呼び出される関数
-		-----------------------------------------------------------------*/
+		/*!***********************************************************************
+		*  @brief      FullScreen情報を取得する
+		*  @param[out] gu::int32& x
+		*  @param[out] gu::int32& y
+		*  @param[out] gu::int32& width
+		*  @param[out] gu::int32& height
+		*  @return     bool
+		**************************************************************************/
+		virtual bool GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const override;
+
+		/*!***********************************************************************
+		*  @brief      親ウィンドウが最小化されたときに呼び出される関数
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
 		bool OnParentWindowMinimized();
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : 親ウィンドウがRestoreされたときに呼び出される関数
-		-----------------------------------------------------------------*/
-		bool OnParentWindowRestored();
+		/*!***********************************************************************
+		*  @brief      親ウィンドウがRestoreされたときに呼び出される関数
+		*  @param[in]  void
+		*  @return     bool
+		**************************************************************************/
+		bool OnParentWindowRestored() const;
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		CoreWindow();
 
+		/*! @brief デストラクタ*/
 		~CoreWindow();
 
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : タッチフィードバックを無効化する.
-		-----------------------------------------------------------------*/
-		void DisableTouchFeedback();
+		#pragma endregion
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : ウィンドウ領域の調整
-		-----------------------------------------------------------------*/
+	protected:
+		#pragma region Protected Constructor and Destructor
+
+		#pragma endregion
+
+		#pragma region Protected Function
+
+		/*!***********************************************************************
+		*  @brief      タッチフィードバックを無効化する.
+		*  @param[in]  void
+		*  @return     void
+		**************************************************************************/
+		void DisableTouchFeedback() const;
+		
+		/*!***********************************************************************
+		*  @brief      ウィンドウ領域の調整
+		*  @param[in]  const gu::int32 幅
+		*  @param[in]  const gu::int32 高さ
+		*  @return     void
+		**************************************************************************/
 		void AdjustWindowRegion(const gu::int32 width, const gu::int32 height);
 
+		#pragma endregion
+
+		#pragma region Protected Property
+
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
-		/* @brief : Window handle*/
+		/* @brief Window handle*/
 		HWND _hwnd = NULL;
 
+		/*! @brief WindowのClient領域のアスペクト比*/
 		float _aspectRatio = 0.0f;
 
+		/*! @brief ウィンドウがまだ最初のShow() を呼び出していないか*/
 		bool _isFirstTimeVisible = true;
+
+		/*! @brief 初回の最小化*/
 		bool _initiallyMinimized = false;
+
+		/*! @brief 初回の最大*/
 		bool _initiallyMaximized = false;
+
+		/*! @brief 96DPI以上のDPI設定を有効化するか*/
+		bool _enableHighDPIMode = false;
 
 		// @brief : ディスプレイの拡大率です. 
 		float _dpiScaleFactor = 1.0f;
-
-		bool _enableHighDPIMode = false;
 
 		// @brief : ディスプレイの仮想的な幅と高さを設定します. 
 		// 実際にリサイズしてGPUバッファのパフォーマンスに影響を与えるのではなく, 
@@ -312,20 +435,30 @@ namespace platform::windows
 		// @brief : 親ウィンドウが最小化される前の配置情報
 		WINDOWPLACEMENT _previousParentMinimizedWindowPlacement = WINDOWPLACEMENT();
 
+		// @brief : 参照カウント
+		gu::int32 _oleReferenceCount = 0;
+
 		// @brief : DPIを手動で変更するか
 		bool _useManualDPIChange = false;
 
-		// @brief : 参照カウント
-		gu::int32 _oleReferenceCount = 0;
+		#pragma endregion
 	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : Regionオブジェクトの作成]
-			 const bool useBorderWhenMaximizedは最大化しているときにも境界部分を使うか.
-		-----------------------------------------------------------------*/
+		#pragma region Private Constructor and Destructor
+
+		#pragma endregion
+
+		#pragma region Private Function
+		/*!***********************************************************************
+		*  @brief      Regionオブジェクトの作成
+		*  @param[in]  const bool useBorderWhenMaximizedは最大化しているときにも境界部分を使うか.
+		*  @return     void
+		**************************************************************************/
 		HRGN CreateWindowRegionObject(const bool useBorderWhenMaximized) const;
+		#pragma endregion
+
+		#pragma region Private Property
+
+		#pragma endregion
 	};
 }
 #endif _WIN32

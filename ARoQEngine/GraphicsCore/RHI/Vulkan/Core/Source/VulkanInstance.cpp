@@ -11,9 +11,8 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanInstance.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanAdapter.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
-#include <iostream>
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include <sstream>
-#include <string>
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -21,6 +20,7 @@
 #pragma warning(disable: 26812 4100)
 using namespace rhi;
 using namespace rhi::vulkan;
+using namespace gu;
 #pragma comment(lib, "vulkan-1.lib")
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -30,8 +30,8 @@ namespace
 #pragma region Create and Destroy Debug Messenger
 	/****************************************************************************
 	*				  			CreateDebugUtilsMessengerEXT
-	*************************************************************************//**
-	*  @class     DestroyDebugUtilsMessengerEXT
+	****************************************************************************/
+	/* @class     DestroyDebugUtilsMessengerEXT
 	*  @brief     Define a callback to capture the messages
 	*****************************************************************************/
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
@@ -49,8 +49,8 @@ namespace
 
 	/****************************************************************************
 	*				  			DestroyDebugUtilsMessengerEXT
-	*************************************************************************//**
-	*  @class     DestroyDebugUtilsMessengerEXT
+	****************************************************************************/
+	/* @class     DestroyDebugUtilsMessengerEXT
 	*  @brief     Call free debug messenger
 	*****************************************************************************/
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
@@ -65,8 +65,8 @@ namespace
 #pragma region Debug Report Function
 	/****************************************************************************
 	*                     SkipErrorMessage
-	*************************************************************************//**
-	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	****************************************************************************/
+	/* @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Return isSkip (true : skip, false: not skip)
 	*  @param[in] void
 	*  @return 　　bool
@@ -103,8 +103,8 @@ namespace
 
 	/****************************************************************************
 	*                     DebugReportCallback
-	*************************************************************************//**
-	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	****************************************************************************/
+	/* @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Report debug error message. (処理は止めない. 報告のみ)
 	*****************************************************************************/
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -134,47 +134,41 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) 
-	:core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
+RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugInfo) 
+	:core::RHIInstance(debugInfo)
 {
 	/*-------------------------------------------------------------------
 	-          Check validation support (in case enable CPU or GPU debugger)
 	---------------------------------------------------------------------*/
-#ifdef _DEBUG
-	if (enableCPUDebugger || enableGPUDebugger)
+	#ifdef _DEBUG
+	if (_debugInfo.EnableCPUDebugger || _debugInfo.EnableGPUDebugger)
 	{
 		if (!CheckValidationLayerSupport())
 		{
 			throw std::runtime_error("validation layers requested, but not available");
 		}
 	}
-#endif
+	#endif
+	
+	/*-------------------------------------------------------------------
+	-   現在のVulkan APIのバージョンを取得し, エンジンの使用可能なバージョンになっているかを確認
+	---------------------------------------------------------------------*/
+	FindNewestVulkanAPIVersion();
+
+	if (!CheckVulkanSupportInEngine()) { Confirmf(false, "Unsupported API version\n"); return; }
 
 	/*-------------------------------------------------------------------
 	-          Acquire Extension Infomation (for debugging layer)
 	---------------------------------------------------------------------*/
-	gu::DynamicArray<std::string> foundExtensions = AcquireExtensionList();       // 単純なconst char* 値渡しでは出来なかった. 
-	gu::DynamicArray<const char*> convertFoundExtensions(foundExtensions.Size()); // VKInstance create informationで使用するためにデータ成型
+	// const char*について, 単純な値渡しが出来なかったため.
+	const auto foundExtensions = AcquireExtensionList();
+
+	// VKInstance create informationで使用するためにデータ成型
+	gu::DynamicArray<const char*> convertFoundExtensions(foundExtensions.Size());
 	for (int i = 0; i < foundExtensions.Size(); ++i)
 	{
-		convertFoundExtensions[i] = foundExtensions[i].c_str();
+		convertFoundExtensions[i] = foundExtensions[i].CString();
 	}
-	
-	/*-------------------------------------------------------------------
-	-               Acquire current api version 
-	---------------------------------------------------------------------*/
-	// find the instance version
-	std::uint32_t instanceVersion = VK_API_VERSION_1_0;
-	auto EnumrateInstanceVersion  = PFN_vkEnumerateInstanceVersion(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
-	if (EnumrateInstanceVersion)
-	{
-		EnumrateInstanceVersion(&instanceVersion);
-	}
-
-	// extract newest version info
-	_majorVersion = VK_VERSION_MAJOR(instanceVersion);
-	_minorVersion = VK_VERSION_MINOR(instanceVersion);
-	_patchVersion = VK_VERSION_PATCH(instanceVersion);
 
 	/*-------------------------------------------------------------------
 	-               Set Application Infomation
@@ -209,7 +203,7 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	/*-------------------------------------------------------------------
 	-       Layer : mesurement for the validation and performance
 	---------------------------------------------------------------------*/
-	if (enableCPUDebugger || enableGPUDebugger)
+	if (debugInfo.EnableCPUDebugger || debugInfo.EnableGPUDebugger)
 	{
 		createInfo.enabledLayerCount   = static_cast<std::uint32_t>(_instanceLayers.Size());                 // enable layer count
 		createInfo.ppEnabledLayerNames = _instanceLayers.Data();
@@ -222,20 +216,20 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	VkResult vkResult = vkCreateInstance(&createInfo, nullptr, &_instance);
 	if (vkResult != VkResult::VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to create vulkan instance.");
+		Confirmf(false, "failed to create vulkan instance.\n");
 	}
 
 	/*-------------------------------------------------------------------
 	-               Set up debugging layer
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
-	if (!(enableCPUDebugger || enableGPUDebugger)) { return; }
+	if (!(debugInfo.EnableCPUDebugger || debugInfo.EnableGPUDebugger)) { return; }
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 	PopulateDebugMessengerCreateInfo(debugCreateInfo);
 	if (::CreateDebugUtilsMessengerEXT(_instance, &debugCreateInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to set up debug messenger!");
+		Confirmf(false, "failed to set up debug messenger!");
 	}
 #endif
 }
@@ -246,21 +240,26 @@ RHIInstance::~RHIInstance()
 	printf("Destroy RHI Instance : (Vulkan)\n");
 #endif
 	if (_debugMessenger){DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);}
-	if (_instance)     { vkDestroyInstance(_instance, nullptr); }
-	_instanceLayers.Clear(); _instanceLayers.ShrinkToFit();
+	
+	if (_instance) 
+	{
+		vkDestroyInstance(_instance, nullptr); 
+	}
+
+	_instanceLayers.Clear();
+	_instanceLayers.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
 #pragma region Adapter Function
 /****************************************************************************
 *                     EnumrateAdapters
-*************************************************************************//**
-*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
-*  @brief     Return all availablle adapter lists
+****************************************************************************/
+/* @brief     Return all availablle adapter lists
 *  @param[in] void
 *  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> 
 *****************************************************************************/
-gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters() const
 {
 	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
@@ -278,74 +277,116 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 	}
 	return adapterLists;
 }
-/****************************************************************************
-*                     SearchHighPerformanceAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
-*  @brief     Return discrete GPU adapter. not found : first adapter
+
+/*!**********************************************************************
+*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
+*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.
 *  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
-*****************************************************************************/
+*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+*************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
-	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
+	const VkPhysicalDeviceType types[] =
+	{
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_CPU
+	};
+
+	for (auto type : types)
+	{
+		const auto adapter = SearchAdapter(type);
+		if(adapter)
+		{
+			return adapter;
+		}
+	}
+
+	return nullptr;
 }
 
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
-*  @brief     Return integrated GPU adapter. not found : first adapter
+****************************************************************************/
+/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
+*             (Low) iGPU, dGPU xGPU (High)
+*
 *  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
+*
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
-	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU);
+	const VkPhysicalDeviceType types[] =
+	{
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_CPU
+	};
+
+	for (auto type : types)
+	{
+		const auto adapter = SearchAdapter(type);
+		if (adapter)
+		{
+			return adapter;
+		}
+	}
+
+	return nullptr;
 }
 
 /****************************************************************************
 *                     SearchAdapter
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
-*  @brief     Return proper GPU adapte. not found : first found adapter 
-*  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
+****************************************************************************/
+/* @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+*
+*  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
+*
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 {
-	const auto& devices = EnumratePhysicalDevices();
-	if (devices.Size() == 0) { return nullptr; }
+	/*-------------------------------------------------------------------
+	-         物理デバイスを一通り取得する.
+	---------------------------------------------------------------------*/
+	const auto& physicalDevices = EnumratePhysicalDevices();
+	if (physicalDevices.Size() == 0)
+	{
+		_RPT0(_CRT_WARN, "SearchAdapter could not find a compatible Vulkan device or driver\n");
+		_RPT0(_CRT_WARN, "Make sure your video card supports Vulkan and try updating your video driver to a more recent version (proceed with any pending reboots)\n");
+		return nullptr; 
+	}
 
 	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
-	gu::SharedPointer<core::RHIDisplayAdapter> adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[0]);
-	for (int i = 1; i < devices.Size(); ++i)
+	for (int i = 0; i < physicalDevices.Size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-               Get properties
 		---------------------------------------------------------------------*/
 		VkPhysicalDeviceProperties properties = {};
-		vkGetPhysicalDeviceProperties(devices[i], &properties);
+		vkGetPhysicalDeviceProperties(physicalDevices[i], &properties);
 		/*-------------------------------------------------------------------
-		-               Discrete GPU check
+		-               Target device type check
 		---------------------------------------------------------------------*/
 		if (properties.deviceType == deviceType)
 		{
-			adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[i]); break;
+			return gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), physicalDevices[i]);
 		}
 	}
 
-	return adapter;
+	return nullptr;
 }
+
 /****************************************************************************
 *                     LogAdapters
-*************************************************************************//**
-*  @fn        void RHIInstance::LogAdapters()
-*  @brief     Show all available adapter information using Output debug string
+****************************************************************************/
+/* @brief     Show all available adapter information using Output debug string
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void RHIInstance::LogAdapters()
+void RHIInstance::LogAdapters() const
 {
 	auto adapterList = EnumrateAdapters();
 	for (auto& adapter : adapterList)
@@ -356,63 +397,13 @@ void RHIInstance::LogAdapters()
 
 #pragma endregion Adapter Function
 #pragma region Set Up Function
-/****************************************************************************
-*                     AcquireExtensionProperties
-*************************************************************************//**
-*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
-*  @brief     Return all enable vk extension name list. 
-*  @param[in] void
-*  @return 　　gu::DynamicArray<const char*>
-*****************************************************************************/
-gu::DynamicArray<std::string> RHIInstance::AcquireExtensionList()
-{
-	gu::DynamicArray<std::string> foundExtensions = {};
-	gu::DynamicArray<VkExtensionProperties> properties;
-	{
-		UINT32 count = 0;
-		vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);           // acqure property count
-		properties.Resize(count);                                                   // set buffer region 
-		vkEnumerateInstanceExtensionProperties(nullptr, &count, properties.Data()); // acquire property Data
 
-		for (const auto& prop : properties)
-		{
-#ifdef _DEBUG
-			std::wstring name = unicode::ToWString(prop.extensionName) + L"\n";
-			OutputDebugStringW(name.c_str());
-#endif
-			foundExtensions.Push(std::string(prop.extensionName));
-		}
-	}
-	return foundExtensions;
-}
-
-/****************************************************************************
-*                     EnumratePhysicalDevices
-*************************************************************************//**
-*  @fn        gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
-*  @brief     Return physical device vector list
-*  @param[in] void
-*  @return 　　gu::DynamicArray<VkPhysicalDevice>
-*****************************************************************************/
-gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
-{
-	UINT32 deviceCount = 0;
-	vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
-
-	/*error check*/
-	if (deviceCount == 0) { throw std::runtime_error("failed to find GPUs with Vulkan support."); }
-
-	gu::DynamicArray<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.Data());
-	
-	return devices;
-}
 #pragma endregion  Set Up  Function
 #pragma region Debug Function
 /****************************************************************************
 *                     CheckValidationLayerSupport
-*************************************************************************//**
-*  @fn        bool RHIDevice::CheckValidationLayerSupport()
+****************************************************************************/
+/* @fn        bool RHIDevice::CheckValidationLayerSupport()
 *  @brief     Validation layer support check
 *  @param[in] void
 *  @return 　　bool
@@ -470,8 +461,8 @@ gu::DynamicArray<VkLayerProperties> RHIInstance::GetInstanceLayers() const
 
 /****************************************************************************
 *                     FillFilteredNameArray
-*************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+****************************************************************************/
+/* @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 			  const gu::DynamicArray<VkLayerProperties>& properties,
 		      const gu::DynamicArray<Entry>& requestedLayers)
 
@@ -483,7 +474,7 @@ gu::DynamicArray<VkLayerProperties> RHIInstance::GetInstanceLayers() const
 * 
 *  @return 　　VkResult
 *****************************************************************************/
-VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<gu::string>& used,
 	const gu::DynamicArray<VkLayerProperties>& properties,
 	const gu::DynamicArray<Entry>& requestedLayers)
 {
@@ -494,7 +485,7 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 		bool layerFound = false;
 		for (const auto& property : properties)
 		{
-			if (strcmp(layer.Name.c_str(), property.layerName) == 0)
+			if (strcmp(layer.Name.CString(), property.layerName) == 0)
 			{
 				layerFound = true;
 				break;
@@ -516,8 +507,8 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 
 /****************************************************************************
 *                     FillFilteredNameArray
-*************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+****************************************************************************/
+/* @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 			  const gu::DynamicArray<VkLayerProperties>& properties,
 			  const gu::DynamicArray<Entry>& requestedLayers)
 
@@ -530,7 +521,7 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 *
 *  @return 　　VkResult
 *****************************************************************************/
-VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<gu::string>& used,
 	const gu::DynamicArray<VkExtensionProperties>& properties,
 	const gu::DynamicArray<Entry>& requested,
 	gu::DynamicArray<void*>& featureStructs)
@@ -541,7 +532,7 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 		for (const auto& property : properties)
 		{
 			// 対象の名前とスペックが一致するかを調べる.
-			if (strcmp(itr.Name.c_str(), property.extensionName) == 0 &&
+			if (strcmp(itr.Name.CString(), property.extensionName) == 0 &&
 				itr.Version == 0 || itr.Version == property.specVersion)
 			{
 				found = true;
@@ -569,8 +560,8 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 
 /****************************************************************************
 *                     PopulateDebugMessengerCreateInfo
-*************************************************************************//**
-*  @fn        void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+****************************************************************************/
+/* @fn        void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 *  @brief     Set up callback debug report 
 *  @param[out] VkDebugReportCallbackCreateInfoEXT& createInfo
 *  @return 　　void
@@ -590,3 +581,135 @@ void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateIn
 	createInfo.pfnUserCallback = DebugCallback;
 }
 #pragma endregion   Debug   Function
+
+#pragma region Private Function
+/****************************************************************************
+*                     FindNewestVulkanAPIVersion
+****************************************************************************/
+/* @brief     最新のVulkan APIのバージョンを設定します.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHIInstance::FindNewestVulkanAPIVersion()
+{
+	/*-------------------------------------------------------------------
+	-        現在のVulkan APIのバージョンを取得する
+	---------------------------------------------------------------------*/
+	// インスタンス作成前に, インスタンスレベルのバージョンを探しておく
+	uint32 instanceVersion = VK_API_VERSION_1_0;
+
+	auto EnumrateInstanceVersion  = PFN_vkEnumerateInstanceVersion(vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion"));
+	if (EnumrateInstanceVersion)
+	{
+		const auto instanceVersionResult = EnumrateInstanceVersion(&instanceVersion);
+		
+		if (instanceVersionResult != VK_SUCCESS)
+		{
+			Confirmf(false, "Failed to EnumrateInstanceVersion\n");
+		}
+	}
+
+	// 最新のVulkan APIのバージョンを取得する.
+	_majorVersion = VK_VERSION_MAJOR(instanceVersion);
+	_minorVersion = VK_VERSION_MINOR(instanceVersion);
+	_patchVersion = VK_VERSION_PATCH(instanceVersion);
+}
+
+/****************************************************************************
+*                     Engineの状態にあった拡張機能を調べます
+****************************************************************************/
+/* @brief     Engineの状態にあった拡張機能を調べます
+*
+*  @param[in] void
+*
+*  @return    bool サポートされているか
+*****************************************************************************/
+bool RHIInstance::CheckVulkanSupportInEngine() const
+{
+	/*-------------------------------------------------------------------
+	-          Acquire Extension Infomation (for debugging layer)
+	---------------------------------------------------------------------*/
+	const auto foundExtensions = AcquireExtensionList();
+
+	/*-------------------------------------------------------------------
+	-   Vulkan1.0のバージョンであるなら, VK_KHR_get_physical_device_properties2が必要
+	---------------------------------------------------------------------*/
+	if (!MeetRequiredVersion(1, 1, 0))
+	{
+		for (uint64 i = 0; i < foundExtensions.Size(); ++i)
+		{
+			if (foundExtensions[i] == VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	return true;
+}
+/****************************************************************************
+*                     AcquireExtensionProperties
+****************************************************************************/
+/* @fn        gu::DynamicArray<gu::string> AcquireExtensionList() const;
+* 
+*  @brief     VkInstanceがサポートしている拡張機能リストをstring配列で返します
+* 
+*  @param[in] void
+* 
+*  @return 　　gu::DynamicArray<gu::string>
+*****************************************************************************/
+gu::DynamicArray<gu::string> RHIInstance::AcquireExtensionList() const
+{
+	gu::DynamicArray<VkExtensionProperties> properties;
+
+	/*-------------------------------------------------------------------
+	-              Acquire the extension properties
+	---------------------------------------------------------------------*/
+	uint32 count = 0;
+	vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);           // acqure property count
+	properties.Resize(count);                                                   // set buffer region 
+	vkEnumerateInstanceExtensionProperties(nullptr, &count, properties.Data()); // acquire property Data
+
+	/*-------------------------------------------------------------------
+	-               Discrete GPU check
+	---------------------------------------------------------------------*/
+	gu::DynamicArray<gu::string> foundExtensions(count);
+
+	for (uint64 i = 0; i < count; ++i)
+	{
+		gu::string name = gu::string(properties[i].extensionName);
+		foundExtensions[i] = (name);
+	}
+
+	return foundExtensions;
+}
+
+/****************************************************************************
+*                     EnumratePhysicalDevices
+****************************************************************************/
+/* @fn        gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices() const
+* 
+*  @brief     物理デバイスのポインタを全てリスト化して渡します.
+* 
+*  @param[in] void
+* 
+*  @return 　　gu::DynamicArray<VkPhysicalDevice>
+*****************************************************************************/
+gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices() const
+{
+	uint32 deviceCount = 0;
+	vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+
+	/*error check*/
+	if (deviceCount == 0) { Confirmf(false, "failed to find GPUs with Vulkan support."); }
+
+	gu::DynamicArray<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.Data());
+
+	return devices;
+}
+#pragma endregion Private Function

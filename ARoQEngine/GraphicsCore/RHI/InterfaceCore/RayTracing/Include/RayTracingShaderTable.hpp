@@ -30,8 +30,8 @@ namespace rhi::core
 	class GPUShaderState;
 	/****************************************************************************
 	*				  			    Class
-	*************************************************************************//**
-	*  @class     Class
+	****************************************************************************/
+	/* @class     Class
 	*  @brief     temp
 	*****************************************************************************/
 	class RayTracingShaderTable : public gu::NonCopyable
@@ -45,7 +45,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 
@@ -74,7 +74,7 @@ namespace rhi::core
 		std::uint32_t RoundUp(const std::uint64_t size, const std::uint32_t alignment);
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

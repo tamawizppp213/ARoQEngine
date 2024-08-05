@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPURasterizerState.hpp
-///             @brief  DirectX12GPURasterizerState.hpp
-///             @author Toide Yutaro
-///             @date   2022_06_29
+///  @file   VulkanGPUDepthStencilState.hpp
+///  @brief  ピクセルに対して深度テストやステンシルテストを行うための設定項目を記述するクラスです.
+///  @author Toide Yutaro
+///  @date   2024_07_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_RASTERIZER_STATE_HPP
-#define DIRECTX12_GPU_RASTERIZER_STATE_HPP
+#ifndef VULKAN_GPU_DEPTH_STENICIL_STATE_HPP
+#define VULKAN_GPU_DEPTH_STENICIL_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -25,19 +25,18 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUDepthStencilState : public rhi::core::GPUDepthStencilState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+#pragma region Public Function
+#pragma endregion
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkPipelineDepthStencilStateCreateInfo& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
 
@@ -58,7 +57,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipelineDepthStencilStateCreateInfo _depthStencilDesc = {};
 	};

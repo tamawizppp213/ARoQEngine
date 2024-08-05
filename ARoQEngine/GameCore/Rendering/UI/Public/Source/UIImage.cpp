@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::ui;
+using namespace engine;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -49,8 +49,8 @@ Image::Image(
 
 /****************************************************************************
 *                       CreateInScreenSpace
-*************************************************************************//**
-*  @fn        void Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+****************************************************************************/
+/* @fn        void Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 *
 *  @brief     Create Screen space rectangle
 *
@@ -69,8 +69,8 @@ void Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, 
 
 /****************************************************************************
 *                       CreateInNDCSpace
-*************************************************************************//**
-*  @fn        void Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+****************************************************************************/
+/* @fn        void Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 *
 *  @brief     Create NDC space rectangle
 *
@@ -88,8 +88,8 @@ void Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, con
 
 /****************************************************************************
 *                       CreateRect
-*************************************************************************//**
-*  @fn        void Sprite::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color)
+****************************************************************************/
+/* @fn        void Sprite::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color)
 * 
 *  @brief     Create Rectangle
 * 

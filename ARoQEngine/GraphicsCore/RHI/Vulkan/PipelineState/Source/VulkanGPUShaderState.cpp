@@ -37,23 +37,23 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const gu::DynamicArray<gu::tstring>& includeDirectories, [[maybe_unused]]const gu::DynamicArray<gu::tstring>& defines)
+void GPUShaderState::Compile(const core::ShaderCompilerOption& option)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
 #endif
-	_shaderType = type; _version = version;
+	_shaderType = option.Type; _version = option.Version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...
-	gu::tstring target = GetShaderTypeName(type) + L"_" + Format(_version);
+	gu::tstring target = GetShaderTypeName(option.Type) + L"_" + Format(_version);
 
-	VkCompile(fileName, entryPoint, target, includeDirectories);
+	VkCompile(option.FileName, option.EntryPoint, target, option.IncludeDirectories);
 
 }
 /****************************************************************************
 *                       Compile Shader
-*************************************************************************//**
-*  @fn        BlobComPtr CompileShader( const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target)
+****************************************************************************/
+/* @fn        BlobComPtr CompileShader( const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target)
 *  @brief     Compile shader
 *  @param[in] test
 *  @return @@void
@@ -196,15 +196,15 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 	_stage.pName = _name.CString();
 	
 
-	_blobData.BufferPointer= byteCode->GetBufferPointer();
-	_blobData.BufferSize   = byteCode->GetBufferSize();
+	_blobData.Pointer= byteCode->GetBufferPointer();
+	_blobData.ByteSize = byteCode->GetBufferSize();
 	
 }
 
 /****************************************************************************
 *							LoadBinary
-*************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
+****************************************************************************/
+/* @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 *  @brief     Load Binary Data (Offline Compile)
 *  @param[in] core::ShaderType type
 *  @param[in] gu::tstring& fileName : filePath
@@ -235,6 +235,6 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& 
 	fin.read((char*)blob->GetBufferPointer(), size);
 	fin.close();
 
-	_blobData.BufferPointer = blob->GetBufferPointer();
-	_blobData.BufferSize = size;
+	_blobData.Pointer = blob->GetBufferPointer();
+	_blobData.ByteSize = size;
 }

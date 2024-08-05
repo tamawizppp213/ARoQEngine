@@ -25,8 +25,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUInputAssemblyState : public rhi::core::GPUInputAssemblyState
@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkPipelineInputAssemblyStateCreateInfo& GetInputAssembly() const { return _inputAssembly; }
 		
@@ -59,7 +59,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : Set the vertex attribute information contained in each vertex stream.*/
 		gu::DynamicArray<VkVertexInputAttributeDescription> _vertexAttributes = {};

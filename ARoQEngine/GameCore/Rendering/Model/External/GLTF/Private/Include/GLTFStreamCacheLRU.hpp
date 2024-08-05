@@ -27,8 +27,8 @@ namespace gltf
 	{
 		/****************************************************************************
 		*				  			StreamCacheLRU
-		*************************************************************************//**
-		*  @class     StreamCacheLRU
+		****************************************************************************/
+		/* @class     StreamCacheLRU
 		*  @brief     Least Recently Used eviction
 		*****************************************************************************/
 		template<typename TStream>
@@ -60,7 +60,7 @@ namespace gltf
 			}
 			size_t Size() const { return _cache.Size(); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 
 			const size_t CacheMaxSize;
@@ -94,7 +94,7 @@ namespace gltf
 				return _cacheList.begin();
 			}
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			StreamCache<typename StreamCacheLRUList::iterator> _cache;
 			StreamCacheLRUList _cacheList;

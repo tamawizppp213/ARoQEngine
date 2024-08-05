@@ -37,8 +37,8 @@ namespace sample
 	};
 	/****************************************************************************
 	*				  			SampleEmpty
-	*************************************************************************//**
-	*  @class     SampleEmpty
+	****************************************************************************/
+	/* @class     SampleEmpty
 	*  @brief     Empty sample
 	*****************************************************************************/
 	class SampleAudio : public Scene
@@ -55,7 +55,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -76,7 +76,7 @@ namespace sample
 		void ShowVolumeLog();
 		void Act(const float adjustValue);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		AudioMode _mode = AudioMode::None;
 		AudioSourcePtr _audioSource = nullptr;

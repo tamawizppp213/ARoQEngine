@@ -37,7 +37,7 @@ namespace gm
 		template<         > __forceinline static Vector4f  CubicInterpolate(Vector4f const& startPoint, Vector4f const& controlPoint1, Vector4f const& controlPoint2, Vector4f const& endPoint, float t);
 		template<         > __forceinline static Vector4f  CubicTangent    (Vector4f const& startPoint, Vector4f const& controlPoint1, Vector4f const& controlPoint2, Vector4f const& endPoint, float t);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -49,7 +49,7 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 	

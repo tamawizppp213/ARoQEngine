@@ -29,8 +29,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHICommandAllocator
-	*************************************************************************//**
-	*  @class     RHICommandAllocator
+	****************************************************************************/
+	/* @class     RHICommandAllocator
 	*  @brief     Execute GPU Command list
 	*****************************************************************************/
 	class RHICommandAllocator : public rhi::core::RHICommandAllocator
@@ -44,7 +44,7 @@ namespace rhi::vulkan
 		void Trim(const VkCommandPoolTrimFlags flags);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkCommandPool GetCommandAllocator() const noexcept { return _commandPool; }
 
@@ -69,7 +69,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkCommandPool _commandPool = nullptr;
 	};

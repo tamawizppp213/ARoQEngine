@@ -27,8 +27,8 @@ namespace gltf
 	{
 		/****************************************************************************
 		*				  			GLTFOptional
-		*************************************************************************//**
-		*  @class     GLTFOptional
+		****************************************************************************/
+		/* @class     GLTFOptional
 		*  @brief     Optiona
 		*****************************************************************************/
 		template<typename T>
@@ -43,7 +43,7 @@ namespace gltf
 			void Swap(Optional& other) { Swap(*this, other); }
 			static void Swap(Optional& lhs, Optional& rhs);
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			T& Get();
 			const T& Get() const;
@@ -93,7 +93,7 @@ namespace gltf
 			const void* GetStorage() const { return _storage; }
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			alignas(alignof(T))unsigned char _storage[sizeof(T)] = {0};
 			bool _isConstructed;

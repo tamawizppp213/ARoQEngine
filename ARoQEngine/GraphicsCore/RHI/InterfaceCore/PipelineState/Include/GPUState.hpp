@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
-///             @author Toide Yutaro
-///             @date   2022_06_28
+///  @file   GPUState.hpp
+///  @brief  Shader pipelineで使用する各設定項目の基底クラスです. 
+///  @author Toide Yutaro
+///  @date   2024_04_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GPU_STATE_HPP
@@ -25,43 +25,42 @@ namespace rhi::core
 	class RHIDevice;
 	/****************************************************************************
 	*				  			GPUState
-	*************************************************************************//**
-	*  @class     GPUState
-	*  @brief     GPUState
+	****************************************************************************/
+	/* @brief     Shader pipelineで使用する各設定項目の基底クラスです. 
 	*****************************************************************************/
 	class GPUState : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Property
+		#pragma endregion 
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion 
 
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+
+		/*! @brief  デフォルトコンストラクタ*/
 		GPUState() = default;
 
+		/*! @brief デフォルトデストラクタ*/
 		virtual ~GPUState() = default;
 
+		/*! @brief 論理デバイスを使って初期化します. */
 		explicit GPUState(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
+		
+		#pragma region Protected Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Property
+		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice>  _device = nullptr;
+		#pragma endregion	
 	};
 
 }

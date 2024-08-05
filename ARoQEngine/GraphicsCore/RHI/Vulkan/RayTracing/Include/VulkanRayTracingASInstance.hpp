@@ -25,8 +25,8 @@ namespace rhi::vulkan
 	class BLASBuffer;
 	/****************************************************************************
 	*				  			TemplateStruct
-	*************************************************************************//**
-	*  @struct     TemplateStruct
+	****************************************************************************/
+	/* @struct     TemplateStruct
 	*  @brief     temp
 	*****************************************************************************/
 	class ASInstance : public rhi::core::ASInstance
@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkAccelerationStructureInstanceKHR& GetDesc() const { return _instanceDesc; }
 		gu::SharedPointer<vulkan::BLASBuffer> GetVkBLASBuffer() const noexcept { return gu::StaticPointerCast<vulkan::BLASBuffer>(_blasBuffer); }
@@ -59,7 +59,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkAccelerationStructureInstanceKHR _instanceDesc = {};
 	};

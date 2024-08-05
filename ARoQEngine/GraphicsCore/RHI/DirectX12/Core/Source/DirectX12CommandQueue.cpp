@@ -10,16 +10,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/DirectX12CommandQueue.hpp"
-#include "../Include/DirectX12CommandList.hpp"
-#include "../Include/DirectX12EnumConverter.hpp"
-#include "../Include/DirectX12Fence.hpp"
-#include "../Include/DirectX12Device.hpp"
-#include "../Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,19 +37,22 @@ RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& 
 	Check(device);
 	Check(type != core::CommandListType::Unknown);
 
-	const auto dxDevice = static_cast<RHIDevice*>(device.Get())->GetDevice();
-
-	D3D12_COMMAND_LIST_TYPE dxCommandListType = EnumConverter::Convert(_commandListType);
+	const auto dxDevice   = static_cast<RHIDevice*>(device.Get())->GetDevice();
+	const auto dxAdapter  = gu::StaticPointerCast<RHIDisplayAdapter>(device->GetDisplayAdapter());
+	const auto dxInstance = static_cast<RHIInstance*>(dxAdapter->GetInstance());
 
 	/*-------------------------------------------------------------------
 	-                   Set up command queue info
 	---------------------------------------------------------------------*/
+	const auto dxCommandListType        = EnumConverter::Convert(_commandListType);
+	const auto fullSupportDebuggingMode = dxInstance->GetGPUCrashDebuggingMode() == GPUCrashDebuggingMode::All;
 	const D3D12_COMMAND_QUEUE_DESC cmdQDesc =
 	{
 		.Type     = dxCommandListType,                    // Enable to execute all command 
 		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (今後変えるかも)
-		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeoutは常に有効にしておく.
-		.NodeMask = 0                                     // Single GPU
+		                                                  // デバッグしているタイミングでは, GPUのタイムアウトをoffにすることでデバッグを途中で切らない.
+		.Flags    = fullSupportDebuggingMode ? D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT : D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeoutは常に有効にしておく.
+		.NodeMask = device->GetGPUMask().Value()          //　GPUマスクを使ってマルチGPUにも対応できるように変更
 	};
 
 	/*-------------------------------------------------------------------
@@ -67,11 +71,10 @@ RHICommandQueue::~RHICommandQueue()
 #pragma region Execute Function
 /****************************************************************************
 *							Wait
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
-* 
-*  @brief     Used to wait for another Command queue to complete execution. (in GPU)
-*             FenceのWaitはCPU側も処理が止まりますが, CommandQueueのWaitは, 指定したValue以上の値になるまで, GPU内のみで処理を止めることになります. 
+****************************************************************************/
+/*  @brief    他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ@n
+*             Fenceが持つWaitはCPU側も処理が止まってしまいますが, @n
+*             CommandQueueのWaitは指定したValue以上の値になるまでGPU内でのみ処理を止めます.
 * 
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t value
@@ -86,10 +89,8 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, gu::u
 
 /****************************************************************************
 *							Signal
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
-* 
-*  @brief     Update value when the Command Queue execution completes.
+****************************************************************************/
+/* @brief     Update value when the Command Queue execution completes.
 *             GPU内で処理が完結します.　
 * 
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
@@ -106,12 +107,10 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu:
 
 /****************************************************************************
 *							Execute
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+****************************************************************************/
+/* @brief     コマンドリストに貯めた内容を実行する. 通常はset graphics, compute, transfer commandlist
 * 
-*  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
-* 
-*  @param[in] const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
+*  @param[in] GPUのコマンドを貯めたコマンドリスト配列
 * 
 *  @return 　　void
 *****************************************************************************/
@@ -138,10 +137,8 @@ void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core
 
 /****************************************************************************
 *							GetTimestampFrequency
-*************************************************************************//**
-*  @fn        gu::uint64 RHICommandQueue::GetTimestampFrequency()
-*
-*  @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+****************************************************************************/
+/* @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
 *
 *  @param[in] void
 *
@@ -157,10 +154,9 @@ gu::uint64 RHICommandQueue::GetTimestampFrequency()
 
 /****************************************************************************
 *							GetCalibrationTimestamp
-*************************************************************************//**
-*  @fn        core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
-*
-*  @brief     GPUとCPUの計測時間を取得します
+****************************************************************************/
+/* @brief      GPUとCPUの計測時刻をMicroSeconds単位で取得します@n
+* 　　　　　　測定したい区間でそれぞれTimestampの結果を保存し, その差分を引けば計測時間を測定可能です
 *
 *  @param[in] void
 *

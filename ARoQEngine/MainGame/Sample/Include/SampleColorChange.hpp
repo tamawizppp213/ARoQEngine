@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
@@ -27,6 +27,7 @@ namespace gc
 	class Mosaic;
 	class Vignette;
 	class WhiteBalance;
+	class SceneDownSample;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,19 +38,20 @@ namespace sample
 
 	/****************************************************************************
 	*				  			SampleSky
-	*************************************************************************//**
-	*  @class     SampleSky
+	****************************************************************************/
+	/* @class     SampleSky
 	*  @brief     Skybox sample
 	*****************************************************************************/
 	class SampleColorChange : public Scene
 	{
-		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr  = gu::SharedPointer<gc::Camera>;
-		using ColorChangePtr  = gu::SharedPointer<gc::ColorChange>;
-		using GaussianBlurPtr = gu::SharedPointer<gc::GaussianBlur>;
-		using MosaicPtr = gu::SharedPointer<gc::Mosaic>;
-		using VignettePtr = gu::SharedPointer<gc::Vignette>;
-		using WhiteBalancePtr = gu::SharedPointer<gc::WhiteBalance>;
+		using SkyDomePtr = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<engine::Camera>;
+		using ColorChangePtr  = gu::SharedPointer<engine::ColorChange>;
+		using GaussianBlurPtr = gu::SharedPointer<engine::GaussianBlur>;
+		using MosaicPtr       = gu::SharedPointer<engine::Mosaic>;
+		using VignettePtr     = gu::SharedPointer<engine::Vignette>;
+		using WhiteBalancePtr = gu::SharedPointer<engine::WhiteBalance>;
+		using DownSamplePtr   = gu::SharedPointer<engine::SceneDownSample>;
 		
 	public:
 		/****************************************************************************
@@ -60,7 +62,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -77,7 +79,7 @@ namespace sample
 		void OnMouseInput() override;
 		void OnGamePadInput() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SkyDomePtr _skybox = nullptr;
 

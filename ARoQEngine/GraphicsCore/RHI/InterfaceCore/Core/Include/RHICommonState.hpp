@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHICommonState.hpp
-///             @brief  CommonState
-///             @author Toide Yutaro
-///             @date   2022_06_12
+///  @file   RHICommonState.hpp
+///  @brief  Render Hardware Interfaceにおいて, 様々なフラグを管理している
+///  @author Toide Yutaro
+///  @date   2024_04_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_COMMON_STATE_HPP
@@ -13,6 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUEnumClassFlags.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector3i.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIPixelFormat.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,116 +24,155 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
-#pragma region API
+	#pragma region API
 	/****************************************************************************
-	*				  			APIVersion
-	*************************************************************************//**
-	*  @enum      APIVersion
-	* 
-	*  @brief     Graphics api version (Add as needed.)
+	*				  			GraphicsAPI
+	****************************************************************************/
+	/*  @brief Graphics APIの種類を指定します. 増やす場合はこちらに追加してください
 	*****************************************************************************/
-	enum class APIVersion : gu::uint8
+	enum class GraphicsAPI : gu::uint8
 	{
-		Unknown    = 0,
-		DirectX12  = 1,
-		Vulkan     = 2
+		Unknown    = 0, //!< グラフィクスAPIを指定していない 
+		DirectX12  = 1, //!< DirectX12
+		Vulkan     = 2  //!< Vulkan
 	};
-#pragma endregion           API
-#pragma region CommandList
+
+	/****************************************************************************
+	*				     MessageSeverity
+	****************************************************************************/
+	/*  @brief メッセージの深刻度を設定します
+	*****************************************************************************/
+	enum class MessageSeverity : gu::uint8
+	{
+		Corruption, //!< 致命的なエラー
+		Error,      //!< 標準エラー
+		Warning,    //!< 警告
+		Info,       //!< Information
+		Message     //!< メッセージ
+	};
+
+	/****************************************************************************
+	*				     RHIDebugCreateInfo
+	****************************************************************************/
+	/*  @brief Graphics APIの選択, CPU, GPUデバッガの有無を指定します
+	*****************************************************************************/
+	struct RHIDebugCreateInfo
+	{
+		/*! @brief CPUのデバッガ (Releaseモード以外で使用可能)*/
+		bool EnableCPUDebugger   = true;
+
+		/*! @brief GPUのデバッガ (Releaseモード以外で使用可能)*/
+		bool EnableGPUDebugger   = false;
+
+		/*! @brief GPU用のブレークポイントを設定できるようにするか*/
+		bool EnableGPUDebugBreak = false;
+
+		/*! @brief GPU用のブレークポイントを設定する場合にどこまでの深刻度を設定するか*/
+		MessageSeverity GPUDebugBreakOnSeverity = MessageSeverity::Error;
+
+		RHIDebugCreateInfo() = default;
+
+		RHIDebugCreateInfo(const bool enableCPUDebugger, const bool enableGPUDebugger, const bool enableGPUDebugBreak, const MessageSeverity severity = MessageSeverity::Error)
+			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugger(enableGPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak), GPUDebugBreakOnSeverity(severity)
+		{};
+	};
+
+	/****************************************************************************
+	*				     DisplayAdapterVendorType
+	****************************************************************************/
+	/*  @brief 物理デバイスで使用するアダプタのベンダーIDを取得します. 
+	*****************************************************************************/
+	enum class DisplayAdapterVendorType : gu::uint32
+	{
+		None      = 0,         //!< Not assigned
+		Amd       = 0x1002,    //!<　AMD
+		Nvidia    = 0x10DE,    //!< NVIDIA
+		Arm       = 0x13B5,    //!< Arm
+		Intel     = 0x8086,    //!< Intel
+		Apple     = 0x106B,    //!< Apple
+		Microsoft = 0x1414,    //!< Microsoft
+		Unknown   = 0xffffffff //!< Other vender
+	};
+
+	#pragma endregion 
+
+	#pragma region CommandList
 	/****************************************************************************
 	*				  			CommandListType
-	*************************************************************************//**
-	*  @enum      CommandListType
-	*  @brief     Command list (graphics, compute, or copy)
+	****************************************************************************/
+	/* @enum      CommandListType
+	*  @brief     GPU命令を出すためのコマンドリストの種類
 	*****************************************************************************/
-	enum class CommandListType
+	enum class CommandListType : gu::uint8
 	{
-		Unknown,    // For Initialize
-		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
-		Compute,    // Compute command list. This type is used to async compute command
-		Copy,       // Copy command list
-		CountOfType
+		Unknown,    //!< 初期化の際に使用します
+		Graphics,   //!< 描画用のコマンドリスト (directX12では, このコマンドリストでCompute, Copy両方の役割も担うことが出来ます.)
+		Compute,    //!< コンピュートシェーダーを使用するコマンドリスト (非同期コンピュートに使用)
+		Copy,       //!< GPUリソースのコピーに使用します.
+		CountOfType //!< CommandListの種類数
 	};
-#pragma endregion   CommandList
-#pragma region Index
-	/****************************************************************************
-	*				  			IndexType
-	*************************************************************************//**
-	*  @enum      IndexType
-	*  @brief     UINT 32 or 16. This value shows byte count.
-	*****************************************************************************/
-	enum class IndexType
-	{
-		UInt32 = 4,
-		UInt16 = 2,
-	};
-	/****************************************************************************
-	*				  			InputFormat
-	*************************************************************************//**
-	*  @enum      InputFormat
-	*  @brief     Input layout format.  
-	*****************************************************************************/
-	enum class InputFormat
-	{
-		Unknown,
-		R32_FLOAT,          // 4  byte format
-		R32G32_FLOAT,       // 8  byte format
-		R32G32B32_FLOAT,    // 12 byte format
-		R32G32B32A32_FLOAT, // 16 byte format
-		R32G32B32A32_INT,   // 16 byte format
-	};
-	class InputFormatSizeOf
-	{
-	public :
-		InputFormatSizeOf() = delete;
-		static size_t Get(const core::InputFormat inputFormat)
-		{
-			switch (inputFormat)
-			{
-				case InputFormat::R32G32_FLOAT      : return 8;
-				case InputFormat::R32G32B32_FLOAT   : return 12;
-				case InputFormat::R32G32B32A32_INT  :
-				case InputFormat::R32G32B32A32_FLOAT: return 16;
-				case InputFormat::R32_FLOAT         : return 4;
-				default: return 0;
-			}
-		}
-	};
-#pragma endregion         Index
+	#pragma endregion 
+
 	#pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 
-	*************************************************************************//**
-	*  @class     Viewport 
-	*  @brief     Rect Viewport 
+	****************************************************************************/
+	/*! @brief   描画領域を設定する構造体です.
 	*****************************************************************************/
 	struct Viewport
 	{
-		float TopLeftX  = 0.0f; 
+		/*! @brief Viewport左上隅を指定する位置をピクセル単位に基づいて指定します*/
+		float TopLeftX  = 0.0f;
+
+		/*! @brief Viewport左上隅を指定する位置をピクセル単位に基づいて指定します*/
 		float TopLeftY  = 0.0f;
+
+		/*! @brief Viewportの幅をピクセル単位に基づいて指定します*/
 		float Width     = 0.0f;
+
+		/*! @brief Viewportの高さをピクセル単位に基づいて指定します*/
 		float Height    = 0.0f;
+
+		/*! @brief 最小の深度を0.0f～1.0fの間で指定します.*/
 		float MinDepth  = 0.0f;
+
+		/*! @brief 最大の深度を0.0f～1.0fの間で指定します. */
 		float MaxDepth  = 1.0f;
+
+		/*! @brief デフォルトコンストラクタ*/
 		Viewport() = default;
+
+		/*! @brief Viewportを規定する情報を一通り登録するコンストラクタです*/
 		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
 		{
 			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
 		}
 	};
+
 	/****************************************************************************
 	*				  			ScissorRect
-	*************************************************************************//**
-	*  @class     ScissorRect
-	*  @brief     Scissor Rectangle
+	****************************************************************************/
+	/* @brief   Viewportの中で実際に描画される範囲を指定するシザー矩形
+	*  @note    http://angra.blog31.fc2.com/blog-entry-52.html (シザー矩形の表示される領域説明. ただし, 座標系は異なるため注意)
 	*****************************************************************************/
 	struct ScissorRect
 	{
+		/*! @brief ビューポートの左端の位置を0として, そこからの描画開始位置をピクセル単位で指定します.*/
 		long Left   = 0; // Left window position
+
+		/*! @brief ビューポートの上端の位置を0として, そこからの描画開始位置をピクセル単位で指定します.*/
 		long Top    = 0; // top window position
-		long Right  = 0; // right window position
-		long Bottom = 0; // bottom window position
+
+		/*! @brief ビューポートの左端の位置を0として, そこからの描画幅をピクセル単位で指定します.*/
+		long Right  = 0;
+
+		/*! @brief ビューポートの上端の位置を0として, そこｋらの描画高さをピクセル単位で指定します*/
+		long Bottom = 0; 
+
+		/*! @brief デフォルトコンストラクタ*/
 		ScissorRect() = default;
+
+		/*! @brief 描画領域を直接指定するコンストラクタ*/
 		ScissorRect(long left, long top, long right, long bottom)
 		{
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
@@ -140,47 +181,87 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			WindowInfo
-	*************************************************************************//**
-	*  @struct    WindowInfo
-	*  @brief     Window size and window handle pointer
+	****************************************************************************/
+	/*  @brief   ビューポートとは異なり, 純粋なウィンドウのサイズやWindowハンドルを取得するクラスです
 	*****************************************************************************/
 	struct WindowInfo
 	{
-		size_t Width     = 0;       // window width
-		size_t Height    = 0;       // window height
-		void*  Handle    = nullptr; // window handle pointer 
-		void*  HInstance = nullptr; // window instance for Windows API
+		/*! @brief ウィンドウの幅をピクセル単位で指定します*/
+		gu::uint32 Width     = 0; 
 
+		/*! @brief ウィンドウの高さをピクセル単位で指定します*/
+		gu::uint32 Height    = 0;
+
+		/*! @brief ウィンドウ領域のハンドル*/
+		void*  Handle    = nullptr;
+
+		/*! @brief ウィンドウのインスタンスハンドルです (WindowsAPIのみ使用します.)*/
+		void*  HInstance = nullptr;
+
+		/*! @brief デフォルトコンストラクタ*/
 		WindowInfo()  = default;
 
-		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
+		/*! @brief 直接ウィンドウ情報を指定します*/
+		WindowInfo(gu::uint32 width, gu::uint32 height, void* handle, void* hInstance = nullptr)
 		{
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
 
 	};
 
-#pragma endregion    Window Surface
-#pragma region Pixel
+	#pragma endregion
 
-	enum class ShadingRate
+	#pragma region Pixel
+	/****************************************************************************
+	*				  			AxisShadingRate
+	****************************************************************************/
+	/*  @brief  ShadingRateのタイル辺
+	*****************************************************************************/
+	enum class AxisShadingRate : gu::uint8
 	{
-		K_1x1,
-		K_1x2,
-		K_2x1,
-		K_2x2,
-		K_2x4,
-		K_4x2,
-		K_4x4
+		Rate_1x = 0x0,
+		Rate_2x = 0x1,
+		Rate_4x = 0x2
+	};
+
+	/****************************************************************************
+	*				  			ShadingRate
+	****************************************************************************/
+	/*  @brief  ピクセルシェーダーの起動を1ピクセルごとではなく, 複数ピクセルを合わせて1回のシェーダー起動で処理する@n
+	*           その際の描画ピクセルの単位を指定します. 
+	*   @note   https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
+	*****************************************************************************/
+	enum class ShadingRate : gu::uint8
+	{
+		Rate_1x1 = ((gu::uint8)AxisShadingRate::Rate_1x << 2) + (gu::uint8)AxisShadingRate::Rate_1x, //!< 1x1ピクセル
+		Rate_1x2 = ((gu::uint8)AxisShadingRate::Rate_1x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 1x2ピクセル
+		Rate_2x1 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_1x, //!< 2x1ピクセル
+		Rate_2x2 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 2x2ピクセル
+		Rate_2x4 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_4x, //!< 2x4ピクセル
+		Rate_4x2 = ((gu::uint8)AxisShadingRate::Rate_4x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 4x2ピクセル
+		Rate_4x4 = ((gu::uint8)AxisShadingRate::Rate_4x << 2) + (gu::uint8)AxisShadingRate::Rate_4x  //!< 4x4ピクセル
+	};
+
+	/****************************************************************************
+	*				  			ShadingRateCombiner
+	****************************************************************************/
+	/*  @brief  Global Shading RateとPrimitive毎のShading Rateが結合された後のimageに適用する方法
+	*****************************************************************************/
+	enum class ShadingRateCombiner : gu::uint8
+	{
+		PassThrough, //!< C.xy = A.xy
+		Override,	 //!< C.xy = B.xy
+		Min,         //!< C.xy = min(A.xy, B.xy)
+		Max,         //!< C.xy = max(A.xy, B.xy)
+		Sum          //!< C.xy = A.xy + B.xy
 	};
 
 	/****************************************************************************
 	*				  			DisplayOutputFormat
-	*************************************************************************//**
-	*  @enum      DisplayOutputFormat
-	*  @brief     Color format
+	****************************************************************************/
+	/* @brief     Color format
 	*****************************************************************************/
-	enum class DisplayOutputFormat
+	enum class DisplayOutputFormat : gu::uint8
 	{
 		SDR_SRGB,
 		SDR_Rec709,
@@ -194,27 +275,25 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			DisplayColorGamut
-	*************************************************************************//**
-	*  @enum      DisplayColorGamut
-	*  @brief     Color range
-	*             https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938
-	* 　　　　　 　　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces
+	****************************************************************************/
+	/* @brief     色域 @n
+	*  @note      https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938 @n 
+	* 　　　　　 　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces @n
 	*             https://qiita.com/UWATechnology/items/2a40dbc66bf48041d405
 	*****************************************************************************/
-	enum class DisplayColorGamut
+	enum class DisplayColorGamut : gu::uint8
 	{
-		SRGB_D65,    // srgb color format    + white point D65 (Windows標準色域)
-		DCIP3_D65,   // dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
-		Rec2020_D65, // rec2020 color format + white point D65 (HDR用に使われる色域)
-		ACES_D60,    // aces    color format + white point D60 (ダイナミックレンジが広い)  
-		ACEScg_D60   // aces cg color format 
+		SRGB_D65,    //!< srgb color format    + white point D65 (Windows標準色域)
+		DCIP3_D65,   //!< dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
+		Rec2020_D65, //!< rec2020 color format + white point D65 (HDR用に使われる色域)
+		ACES_D60,    //!< aces    color format + white point D60 (ダイナミックレンジが広い)  
+		ACEScg_D60   //!< aces cg color format 
 	};
 
 	/****************************************************************************
 	*				  			HDRDisplayInfo
-	*************************************************************************//**
-	*  @enum      HDRDisplayInfo
-	*  @brief     HDR display settings (RHIDeviceにて設定を行います)
+	****************************************************************************/
+	/* @brief     HDR display settings (RHIDeviceにて設定を行います)
 	*             https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 	*****************************************************************************/
 	struct HDRDisplayInfo
@@ -231,169 +310,79 @@ namespace rhi::core
 		ScissorRect Rect = {};
 	};
 
-
-	/****************************************************************************
-	*				  			PixelFormat
-	*************************************************************************//**
-	*  @class     PixelFormat
-	*  @brief     Render pixel format 
-	*****************************************************************************/
-	enum class PixelFormat
-	{
-		Unknown,  
-
-		// RGBA format
-		R32G32B32A32_FLOAT,
-		R16G16B16A16_FLOAT, 
-		R8G8B8A8_UNORM,
-		B8G8R8A8_UNORM,
-
-		// RGB format
-		R32G32B32_FLOAT,
-		R16G16B16_FLOAT,
-
-		// RG format
-		R32G32_FLOAT,
-
-		// Single format
-		D32_FLOAT,
-		R32_FLOAT,
-		R32_SINT,
-		R32_UINT,
-		R16_FLOAT,
-		R16_SINT,
-		R16_UINT,
-		R8_SINT,
-		R8_UINT,
-
-		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
-		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
-		BC1_UNORM,   // 8byte : RGB, RGBA画像
-		BC2_UNORM,   // 16byte:RGBA(16諧調アルファ)
-		BC3_UNORM,   // 16byte:RGBA(多階調アルファ)
-		BC4_UNORM,   // 8byte :1成分のデータ (ハイトマップ等)
-		BC5_UNORM,   // 16byte:2成分のデータ (法線マップ等)
-		BC7_UNORM,   // 16byte:HDRのRGB画像
-		BC6H_UNORM,  // 16byte:RGB画像, RGBA画像 (多階調アルファ)
-
-		R10G10B10A2_UNORM,
-		D24_UNORM_S8_UINT,
-		B8G8R8A8_UNORM_SRGB,
-		CountOfPixelFormat
-	};
-
-	/****************************************************************************
-	*				  			PixelFormatSizeOf
-	*************************************************************************//**
-	*  @class     PixelFormatSizeOf
-	*  @brief     Get pixel size. Call the static function "Get"
-	*****************************************************************************/
-	class PixelFormatSizeOf
-	{
-	public:
-		PixelFormatSizeOf() = delete;
-		static size_t Get(const core::PixelFormat pixelFormat)
-		{
-			switch (pixelFormat)
-			{
-			case PixelFormat::R16G16B16A16_FLOAT:
-				return 8;
-			case PixelFormat::R8G8B8A8_UNORM:
-			case PixelFormat::B8G8R8A8_UNORM:
-			case PixelFormat::BC1_UNORM:
-			case PixelFormat::D32_FLOAT:
-				return 4;
-			case PixelFormat::R32G32B32A32_FLOAT:
-				return 16;
-			case PixelFormat::R32G32B32_FLOAT:
-				return 12;
-			case PixelFormat::D24_UNORM_S8_UINT:
-			case PixelFormat::R10G10B10A2_UNORM:
-				return 4;
-			default:
-				return 0;
-			}
-		}
-		static bool IsDepthOnly(const PixelFormat pixelFormat)
-		{
-			switch (pixelFormat)
-			{
-				case PixelFormat::D32_FLOAT: 
-				{
-					return true;
-				}
-				default: 
-				{
-					return false;
-				}
-			}
-		}
-	};
 	/****************************************************************************
 	*				  			ClearValue
-	*************************************************************************//**
-	*  @class     ClearValue
-	*  @brief     Clear value 
-	*             Pixel用とDepth, Stencil用は必ず分けてClearValueを作成してください. 
+	****************************************************************************/
+	/*  @brief     画面クリア時に初期化で塗りつぶされる色
 	*****************************************************************************/
 	struct ClearValue
 	{
+		/*! @brief 色の種類をRGBAで指定します. */
 		enum ColorType { Red, Green, Blue, Alpha };
-		gu::float32        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		gu::float32        Depth    = 1.0f;
-		gu::uint8 Stencil  = 0;
 
-		ClearValue() = default;
-		ClearValue(float red, float green, float blue, float alpha)
+		/*! @brief DepthStencilの構造体*/
+		struct DepthStencilValue
 		{
-			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
+			gu::float32 Depth;
+			gu::uint32  Stencil;
+		};
+
+		/*!@brief : クリアカラーの種別 (RGBAかデプス/ステンシル)*/
+		union ClearType
+		{
+			gu::float32       Color[4];
+			DepthStencilValue DSV;
+		} Type ;
+
+		/*! @brief デフォルトコンストラクタ*/
+		ClearValue() 
+		{
+			Type.Color[0] = 1.0f;
+			Type.Color[1] = 1.0f;
+			Type.Color[2] = 1.0f;
+			Type.Color[3] = 1.0f;
+		}
+
+		/*! @brief RGBAで指定するクリアカラーの色*/
+		ClearValue(const float red, const float green, const float blue, const float alpha)
+		{
+			Type.Color[0] = red; Type.Color[1] = green; Type.Color[2] = blue; Type.Color[3] = alpha;
 		};
 		
-		explicit ClearValue(float depth, gu::uint8 stencil = 0)
+		/*! @brief 深度値とステンシル値で色を初期化します*/
+		explicit ClearValue(const float depth, const gu::uint32 stencil = 0)
 		{
-			Depth = depth; Stencil = stencil; 
+			Type.DSV.Depth = depth; Type.DSV.Stencil = stencil; 
 		}
 	};
-#pragma endregion         Pixel
+	#pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
 	*				  			ShaderVisibleFlag
-	*************************************************************************//**
-	*  @enum      ShaderVisibleFlag
+	****************************************************************************/
+	/* @enum      ShaderVisibleFlag
 	*  @brief     Visible shader stage type
 	*****************************************************************************/
 	enum class ShaderVisibleFlag : gu::int16
 	{
 		// directX12に準拠しています D3D12_ROOT_SIGNATURE_FLAGS
-		Vertex        = 0x0002, // vertex   shader stage only
-		Hull          = 0x0004, // hull     shader stage only
-		Domain        = 0x0008, // domain   shader stage only
-		Geometry      = 0x0010, // geometry shader stage only
-		Pixel         = 0x0020, // pixel    shader stage only
-		Amplification = 0x0100, // amplification shader stage only,
-		Mesh          = 0x0200, // mesh shader stage only
-		All = Vertex | Pixel | Hull | Domain | Geometry | Amplification | Mesh, // all shader stage visible
+		Vertex        = 0x0002, //!< vertex   shader stage only
+		Hull          = 0x0004, //!< hull     shader stage only
+		Domain        = 0x0008, //!< domain   shader stage only
+		Geometry      = 0x0010, //!< geometry shader stage only
+		Pixel         = 0x0020, //!< pixel    shader stage only
+		Amplification = 0x0100, //!< amplification shader stage only,
+		Mesh          = 0x0200, //!< mesh shader stage only
+		All = Vertex | Pixel | Hull | Domain | Geometry | Amplification | Mesh, //!< all shader stage visible
 		CountOfPipeline = 7
 	};
 
-	__forceinline ShaderVisibleFlag operator | (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
-	{
-		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
-	}
-	__forceinline ShaderVisibleFlag operator & (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
-	{
-		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) & static_cast<gu::uint8>(right));
-	}
-
-	__forceinline bool EnumHas(const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
-	{
-		return (left & right) == right;
-	}
+	ENUM_CLASS_FLAGS(ShaderVisibleFlag);
 
 	/****************************************************************************
 	*				  			ShaderType
-	*************************************************************************//**
-	*  @enum      ShaderType
+	****************************************************************************/
+	/* @enum      ShaderType
 	*  @brief     Shader type
 	*****************************************************************************/
 	enum class ShaderType
@@ -413,48 +402,60 @@ namespace rhi::core
 		Miss              // ray tracing miss shader
 	};
 	
-	struct BlobData
+	/****************************************************************************
+	*				  		BlobData
+	****************************************************************************/
+	/* @brief   シェーダーのコードを格納する構造体です.
+	*****************************************************************************/
+	struct ShaderCode
 	{
-		void*  BufferPointer = nullptr;
-		size_t BufferSize = 0;
-		BlobData() = default;
-		~BlobData() = default;
-		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
+		/*! @brief シェーダーバイトコードの先頭ポインタ*/
+		void* Pointer = nullptr;
+
+		/*! @brief シェーダーバイトコードのバイトサイズ [Byte]*/
+		gu::uint64 ByteSize = 0;
+
+		/*! @brief デフォルトコンストラクタ*/
+		ShaderCode() = default;
+
+		/*! @brief デストラクタ*/
+		~ShaderCode() = default;
+
+		/*! @brief 正規の初期化*/
+		ShaderCode(void* bufferPointer, const gu::uint64 bufferSize) : Pointer(bufferPointer), ByteSize(bufferSize) {};
 	};
 #pragma endregion        Shader Type
-#pragma region Sampler State
+	#pragma region Sampler State
 	/****************************************************************************
 	*				  			SamplerAddressMode
-	*************************************************************************//**
-	*  @class     SamplerAddressMode
-	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
+	****************************************************************************/
+	/* @brief   テクスチャアドレッシングモードを指定します.  
+	*  @note    reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
 	*****************************************************************************/
 	enum class SamplerAddressMode : gu::uint8
 	{
-		Wrap    = 1, // repeat texture pattern
-		Mirror  = 2, // mirror and repeat texture pattern
-		Clamp   = 3, // cut over 1.0 and below 0.0
-		Border  = 4, // set border color 
+		Wrap    = 1, //!< 0 ～ 1までを一枚のテクスチャとして, 繰り返し描画します. 
+		Mirror  = 2, //!< 0 ～ 1までを一枚のテクスチャとして, 繰り返し描画します. ただし, 偶数回目は反転して描画します.
+		Clamp   = 3, //!< 0 ～ 1までを一枚のテクスチャとして, 超えた分は端の色で描画します.
+		Border  = 4, //!< 0 ～ 1までを一枚のテクスチャとして, 超えた分はボーダーカラーで描画します.
 	};
 
 	/****************************************************************************
 	*				  			BorderColor
-	*************************************************************************//**
-	*  @class     BorderColor
-	*  @brief     Specifies the border color for a sampler
+	****************************************************************************/
+	/* @brief サンプリングのテクスチャの端を超えた分の色を指定します.
 	*****************************************************************************/
 	enum class BorderColor : gu::uint8
 	{
-		TransparentBlack, // Indicates black, with the alpha component as fully transparent
-		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(完全不透明)
-		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
+		TransparentBlack, //!< アルファ成分が完全に透明な黒を示す
+		OpaqueBlack,      //!< アルファ成分が完全に不透明な黒を示す
+		OpaqueWhite       //!< アルファ成分を完全に不透明として白を示す
 	};
 
 	/****************************************************************************
 	*				  			FilterMask
-	*************************************************************************//**
-	*  @class     FilterMask
-	*  @brief     Sample mask
+	****************************************************************************/
+	/* @brief  テクスチャフィルタの種類を指定します.　(ToDo : FilterOptionの変更に伴って値が間違ってます)
 	*****************************************************************************/
 	enum class FilterMask : gu::uint8
 	{
@@ -464,67 +465,107 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
+	*				  			CompareOperator
+	****************************************************************************/
+	/* @brief 書き込み先の参照ピクセルと書き込みたいテストピクセルを比較するための演算子を指定します.
+	*****************************************************************************/
+	enum class CompareOperator : gu::uint8
+	{
+		Never,          //!< Always false
+		Less,           //!< reference < test
+		Equal,          //!< reference = test
+		LessEqual,      //!< reference <= test
+		Greater,        //!< reference > test
+		NotEqual,       //!< reference not equal test
+		GreaterEqual,   //!< reference >= test
+		Always          //!< Always true
+	};
+
+	/****************************************************************************
 	*				  			FilterOption
-	*************************************************************************//**
-	*  @class     FilterOption
+	****************************************************************************/
+	/* @class     FilterOption
 	*  @brief     Sampling filter option. linear -> linear sampling, point -> point sampling
 	*****************************************************************************/
 	enum class FilterOption : gu::uint8
 	{
-		MinPointMagPointMipPoint    = 0,
-		MinPointMagPointMipLinear   = 1,
-		MinPointMagLinearMipPoint   = 2,
-		MinPointMagLinearMipLinear  = 3,
-		MinLinearMagPointMipPoint   = 4,
-		MinLinearMagPointMipLinear  = 5,
-		MinLinearMagLinearMipPoint  = 6,
-		MinLinearMagLinearMipLinear = 7,
-		Anisotropy = 8
+		Nearest            = 0, //!< ピクセルの中心位置に最も近いテクセルの色を選択します.
+		BiLinear           = 1, //!< ピクセルの中心位置に最も近い4つのテクセルの色を加重平均して選択します.
+		TriLinear          = 2, //!< 最も近いミップレベル2つに対してBiLinearフィルタを適用し, その結果を加重平均して選択します.　ミップマップの境目でのアーティファクトを押さえます
+		AnisotropicNearest = 3, //!< カメラの視野角とテクセルの歪みに応じてサンプリングします. 最近傍補間
+		AnisotropicLinear  = 4, //!< カメラの視野角とテクセルの歪みに応じてサンプリングします. 線形補間
 	};
 
 	/****************************************************************************
 	*				  			Default Sampler Type
-	*************************************************************************//**
-	*  @enum      DefaultSamplerType
+	****************************************************************************/
+	/* @enum      DefaultSamplerType
 	*  @brief     Default Sampler state (Point, Linear or Anisotropic + Wrap or Clamp)
 	*****************************************************************************/
 	enum DefaultSamplerType
 	{
-		SamplerPointWrap,         // Point  + Wrap
-		SamplerPointClamp,        // Point  + Clamp
-		SamplerLinearWrap,        // Linear + Wrap
-		SamplerLinearClamp,       // Linear + Clamp
-		SamplerLinearBorder,      /// Linear + Border
-		SamplerAnisotropicWrap,   // Anisotropic + Wrap
-		SamplerAnisotropicClamp   // Anisotropic + Clamp
+		NearestWrap,              // Point  + Wrap
+		NearestClamp,             // Point  + Clamp
+		LinearWrap,               // BiLinear + Wrap
+		LinearClamp,              // BiLinear + Clamp
+		LinearBorder,             // BiLinear + Border
+		TriLinearWrap,            // TriLinear + Wrap
+		TriLinearClamp,           // TriLinear + Clamp
+		AnisotropicNearestWrap,   // Anisotropic + Wrap
+		AnisotropicNearestClamp,  // Anisotropic + Clamp
+		AnisotropicLinearWrap,    // Anisotropic + Wrap
+		AnisotropicLinearClamp    // Anisotropic + Clamp
 	};
 
 	/****************************************************************************
 	*				  			SamplerInfo
-	*************************************************************************//**
-	*  @class     SamplerInfo
-	*  @brief     Custum sampler state. (Normally you should use default sampler type, and call GetDefaultSampler)
+	****************************************************************************/
+	/* @brief  サンプラー情報, 基本的にはDefaultSamplerTypeを指定して初期化することが多いです.
 	*****************************************************************************/
 	struct SamplerInfo
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint; // Specify sampling method for image enlargement/shirinkage*
-		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;               // Texture addressing mode in the U direction
-		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;               // Texture addressing mode in the V direction
-		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
-		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
-		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
-		gu::float32         MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
-		gu::float32         MinLOD        = 0.0f;                                   // Min LOD size
-		gu::float32         MaxLOD        = MAX_FLOAT32;                            // Max LOD size: FLT_MAX 上限を指定しない.
+		/*! @brief テクスチャサンプリングの方法を指定します*/
+		FilterOption Filter = FilterOption::Nearest;
+		
+		/*! @brief U方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;
+		
+		/*! @brief V方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;
+		
+		/*! @brief W方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;
+
+		/*! @brief テクスチャの端を超えた分の色を指定します*/
+		BorderColor Border = BorderColor::TransparentBlack;
+
+		/*! @brief テクスチャサンプリングを行う際の比較演算子を指定します*/
+		CompareOperator Compare = CompareOperator::Never;
+
+		/*! @brief 最大となるAnisotropyのクランプ値 (0～16)*/
+		gu::uint8  MaxAnisotropy = 1;
+
+		/*! @brief ミップマップのLODのバイアス値を指定します. Defined LOD = normalLOD + bias*/
+		gu::float32 MipLODBias = 0.0f;
+
+		/*! @brief テクスチャの最小LODサイズを指定します*/
+		gu::float32 MinLOD = 0.0f;
+
+		/*! @brief テクスチャの最大LODサイズを指定します*/
+		gu::float32 MaxLOD = MAX_FLOAT32;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+
+		/*! @brief デフォルトコンストラクタ*/
 		SamplerInfo() = default;
+
+		/*! @brief フィルタの種類を指定して初期化します*/
 		explicit SamplerInfo(
 			const FilterOption filter,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
@@ -546,12 +587,12 @@ namespace rhi::core
 		}
 
 		explicit SamplerInfo(
-			const gu::uint32 maxAnisotropy,
+			const gu::uint8 maxAnisotropy,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
 			const BorderColor border = BorderColor::TransparentBlack) :
-			Filter(FilterOption::Anisotropy),
+			Filter(FilterOption::AnisotropicNearest),
 			AddressModeU(addressU),
 			AddressModeV(addressV),
 			AddressModeW(addressW),
@@ -564,202 +605,227 @@ namespace rhi::core
 	};
 
 #pragma endregion Sampler State
-#pragma region Blend State
+	#pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
-	*************************************************************************//**
-	*  @class     BlendFactor
-	*  @brief     Color blend factor (directX12 based)
-	*             Source : Color to be rendered from now on
-	*             Dest   : Color of rendering destination
+	****************************************************************************/
+	/*  @brief    レンダーターゲットにおいて, 書き込む前と後の色のブレンド方法を設定します @n
+	*             Source : これからレンダーターゲットに書き込みたい色です (ピクセルシェーダーからの色) @n
+	*             Dest   : 現時点でレンダーターゲットに書き込まれている色です
 	*****************************************************************************/
 	enum class BlendFactor : gu::uint8
 	{
-		Zero = 1,             // * 0
-		One,                  // * 1
-		Source_Color,         // * Rs, *Gs, *Bs, *As
-		Inverse_Source_Color, // * (1 - Rs), *(1 - Gs), *(1 - Bs), *(1 - As)
-		Source_Alpha,         // * As
-		Inverse_Source_Alpha, // * (1 - As)
-		Dest_Alpha,           // * Ad
-		Inverse_Dest_Alpha,   // * (1 - Ad)
-		Dest_Color,           // * Rd, *Gd, *Bd, *Ad
-		Inverse_Dest_Color,   // * (1 - Rd), *(1 - Gd), *(1 - Bd), *(1 - Ad)
-		Source_Alpha_Saturate,// * mih(1 - Ad, As)
+		Zero                  = 1, //!< ブレンド係数 * (0, 0, 0, 0)
+		One                   = 2, //!< ブレンド係数 * (1, 1, 1, 1)
+		Source_Color          = 3, //!< ブレンド係数 * (Rs, Gs, Bs, As)です.                 色はピクセルシェーダからの色です
+		Inverse_Source_Color  = 4, //!< ブレンド係数 * (1 - Rs, 1 - Gs, 1 - Bs, 1 - As)です. 色はピクセルシェーダからの色です.
+		Source_Alpha          = 5, //!< ブレンド係数 * (As, As, As, As)です.                 アルファ値はピクセルシェーダからのものです
+		Inverse_Source_Alpha  = 6, //!< ブレンド係数 * (1 - As, 1 - As, 1 - As, 1 - As)です. アルファ値はピクセルシェーダからのものです
+		Dest_Alpha            = 7, //!< ブレンド係数 * (Ad, Ad, Ad, Ad)です.                 アルファ値はレンダーターゲットからのものです.
+		Inverse_Dest_Alpha    = 8, //!< ブレンド係数 * (1 - Ad, 1 - Ad, 1 - Ad, 1 - Ad)です. アルファ値はレンダーターゲットからのものです.
+		Dest_Color            = 9, //!< ブレンド係数 * (Rd, Gd, Bd, Ad)です.                 色はレンダーターゲットからの色です.
+		Inverse_Dest_Color    = 10,//!< ブレンド係数 * (1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad)です. 色はレンダーターゲットからの色です.
+		Source_Alpha_Saturate = 11,//!< ブレンド係数 * (f, f, f, 1)です. f = min(1 - Ad, As)で, AdはDestAlpha, AsはSourceAlphaです.
 	};
 
 	/****************************************************************************
 	*				  			BlendOperator
-	*************************************************************************//**
-	*  @class     BlendOperator
-	*  @brief     Color blend calculate opration (directX12 based)
+	****************************************************************************/
+	/*  @brief   書き込み先のレンダーターゲットと書き込み元のピクセルシェーダの色やアルファ値をブレンドする際の演算方法を指定します.
 	*****************************************************************************/
 	enum class BlendOperator : gu::uint8
 	{
-		Add              = 1, // Default color blend operator : destination + source
-		Subtract         = 2, // source - destination
-		Reverse_Subtract = 3, // destination - source
-		Min              = 4, // min(destination, source)
-		Max              = 5  // max(destination, source)
+		Add              = 1, //!< destination + source, もしくは renderTarget + pixelShader (基本となる演算子です)
+		Subtract         = 2, //!< source - destination, もしくは pixelShader - renderTarget
+		Reverse_Subtract = 3, //!< destination - source, もしくは renderTarget - pixelShader
+		Min              = 4, //!< min(destination, source), もしくは min(renderTarget, pixelShader)
+		Max              = 5  //!< max(destination, source), もしくは max(renderTarget, pixelShader)
 	};
 
 	/****************************************************************************
 	*				  			ColorMask
-	*************************************************************************//**
-	*  @class     ColorMask 
-	*  @brief     Color mask bit flag
+	****************************************************************************/
+	/*  @brief  Enumで指定したビットフラグのチャンネルのみ, 描画時に新たにレンダーターゲットに書き込むことが出来ます. 
 	*****************************************************************************/
 	enum class ColorMask : gu::uint8
 	{
-		None  = 0,   // All Disable 
-		Red   = 0x1, // Red WriteEnable
-		Green = 0x2, // Green WriteEnable
-		Blue  = 0x4, // Blue WriteEnable
-		Alpha = 0x8, // Alpha WriteEnable
-		RGB   = Red | Green | Blue,
-		RG    = Red | Green,
-		BA    = Blue | Green,
-		All   = Red | Green | Blue | Alpha // AllEnable
+		None  = 0,                         //!< 全ての成分が新たにレンダーターゲットに書き込むことが出来ません 
+		Red   = 0x1,                       //!< 赤色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Green = 0x2,                       //!< 緑色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Blue  = 0x4,                       //!< 青色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Alpha = 0x8,                       //!< α値のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		RGB   = Red | Green | Blue,        //!< RGBのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		RG    = Red | Green,               //!< RGのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		BA    = Blue | Green,              //!< BAのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		All   = Red | Green | Blue | Alpha //!< RGBA全てのチャンネルがレンダーターゲットに書き込むことが出来ます
 	};
 
-	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
-	{
-		return static_cast<ColorMask>( static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
-	}
+	ENUM_CLASS_FLAGS(ColorMask);
 
 	/****************************************************************************
 	*				  			BlendProperty
-	*************************************************************************//**
-	*  @class     BlendProperty
-	*  @brief     Property
-	*             Source      : これからレンダリングする色 (ピクセルシェーダー)
+	****************************************************************************/
+	/*  @brief    描画時の設定です \n
+	*             Source      : これからレンダリングする色 (ピクセルシェーダー) @n
 	*             Destination : レンダリング先 (レンダーターゲット)
 	*****************************************************************************/
 	struct BlendProperty
 	{
-		BlendOperator ColorOperator    = BlendOperator::Add;   // RGB Color Blend Type 
-		BlendOperator AlphaOperator    = BlendOperator::Add;   // Alpha Blend Type
-		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // Multiply to Render Target alpha(a) element blend mode
-		BlendFactor   DestinationRGB   = BlendFactor::Zero;    // Multiply to Render Target color(rgb) element blend mode
-		BlendFactor   SourceAlpha      = BlendFactor::One;     // Multiply to Pixel Shader alpha element(a) blend mode
-		BlendFactor   SourceRGB        = BlendFactor::One;     // Multiply to Pixel Shader color element(rgb) blend mode
-		ColorMask     ColorMask        = ColorMask::All;       // color mask
-		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する. ピクセルシェーダーから出力されたあrぷふぁを取得し, Multi sanling aliasingを適用する
+		/*! @brief RGB値に対して, RenderTargetとPixelShaderの色を混合する際の演算方法を決定します (デフォルトは加算)*/
+		BlendOperator ColorOperator = BlendOperator::Add;
 
-		bool Enable = false; // レンダーターゲットの独立したブレンドを使用するかを設定する
+		/*! @brief α値に対して, RenderTargetとPixelShaderの値を混合する際の演算方法を決定します. (デフォルトは加算)*/
+		BlendOperator AlphaOperator = BlendOperator::Add;   // Alpha Blend Type
 
+		/*! @brief 現時点でレンダーターゲットに書き込まれているRGB値に対する乗算係数*/
+		BlendFactor DestinationRGB = BlendFactor::Zero;
+
+		/*! @brief 現時点でレンダーターゲットに書き込まれているα値に対する乗算係数*/
+		BlendFactor DestinationAlpha = BlendFactor::Zero;
+
+		/*! @brief ピクセルシェーダーに送られたRGB値に対する乗算係数*/
+		BlendFactor SourceRGB = BlendFactor::One;
+
+		/*! @brief ピクセルシェーダーに送られたα値に対する乗算係数*/
+		BlendFactor SourceAlpha = BlendFactor::One;
+
+		/*! @brief Enumで指定したビットフラグのチャンネルのみ, 描画時に新たにレンダーターゲットに書き込むことが出来ます*/
+		ColorMask ColorMask = ColorMask::All; 
+
+		/*! @brief ブレンディングを有効化するか*/
+		bool EnableBlend = false;
+
+		/*! @brief デフォルトコンストラクタ*/
 		BlendProperty() = default;
 
-		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
-			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
+		/*! @brief 基本設定を使った初期化*/
+		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, 
+			BlendFactor destAlpha, BlendFactor dest,
+			BlendFactor srcAlpha , BlendFactor src,
+			core::ColorMask colorMask = ColorMask::All, const bool enableBlend = false) :
 			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), DestinationRGB(dest), SourceAlpha(srcAlpha),
-			SourceRGB(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
+			SourceRGB(src), ColorMask(colorMask), EnableBlend(enableBlend) { };
 		
-		/*----------------------------------------------------------------------
-		*  @brief : NoColorWrite (Display the render target as it is)
-		/*----------------------------------------------------------------------*/
-		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　RenderTargetに既に描画されているものをそのまま出力します. 
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty NoColorWrite(const bool enableBlend = true);
 
-		/*----------------------------------------------------------------------
-		*  @brief : OverWrite (Displays the source as it is.)
-		/*----------------------------------------------------------------------*/
-		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　ピクセルシェーダで出力されているものをそのまま出力します
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty OverWrite (const bool enableBlend = true);
 
-		/*----------------------------------------------------------------------
-		*  @brief : Alpha blending : destination * (1 - source.Alpha) + source * 1
-		/*----------------------------------------------------------------------*/
-		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　アルファブレンドを実行します destination * (1 - source.Alpha) + source * 1
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty AlphaBlend(const bool enableBlend = true);
 	};
 
 #pragma endregion       Blend   State
-#pragma region Rasterizer State
+	#pragma region Rasterizer State
 	/****************************************************************************
 	*				  			MultiSample
-	*************************************************************************//**
-	*  @class     MultiSample
-	*  @brief     Basically use count1 , in use MSAA, we use count4 
+	****************************************************************************/
+	/*  @brief  サンプリングの数を指定します. 基本的にはCount1を使用し, MSAAなどを使用するときはCount4を主に使用します.
 	*****************************************************************************/
 	enum class MultiSample : gu::uint8
 	{
-		Count1 = 1,       // 1
-		Count2 = 2,       // 2
-		Count4 = 4,       // 4
-		Count8 = 8,       // 8
-		Count16 = 16,     // 16
-		Count32 = 32,     // 32
-		Count64 = 64      // 64
-	};
-
-	class MultiSampleSizeOf
-	{
-	public: 
-		MultiSampleSizeOf() = default;
-		static size_t Get(const MultiSample sample) { return static_cast<size_t>(sample); }
+		Count1 = 1,       //!<  1  pixel
+		Count2 = 2,       //!<  2  pixel
+		Count4 = 4,       //!<  4  pixel
+		Count8 = 8,       //!<  8  pixel
+		Count16 = 16,     //!<  16 pixel
+		Count32 = 32,     //!<  32 pixel 
+		Count64 = 64      //!<  64 pixel
 	};
 
 	/****************************************************************************
 	*				  			CullingMode
-	*************************************************************************//**
-	*  @enum      CullingMode
-	*  @brief     Sets the triangle facing the specified direction 
-	              not to be drawn in the left hand coordinate
+	****************************************************************************/
+	/*  @brief    指定された面(表面, 裏面)に対する三角形ポリゴンを描画しないように設定します. @n
+	*             指定した面を描画しないようにするため, 描画負荷の軽減に寄与します.
 	*****************************************************************************/
 	enum class CullingMode : gu::uint8
 	{
-		None,  // all face render
-		Front, // front culling
-		Back   // back  culling
+		None,  //!< 表面・裏面両方とも描画します. 
+		Front, //!< 裏面のみ描画し, 表面は描画しません.
+		Back   //!< 表面のみ描画し, 裏面は描画しません. 
 	};
 
 	/****************************************************************************
 	*				  			FrontFace
-	*************************************************************************//**
-	*  @class     FrontFace
-	*  @brief     Determine if all sides are counterclockwise
+	****************************************************************************/
+	/*  @brief   前面が反時計回りか時計回りかを決定します.
 	*****************************************************************************/
 	enum class FrontFace : gu::uint8
 	{
-		CounterClockwise, // for right hand coordinate
-		Clockwise,        // for left  hand coordinate
+		CounterClockwise, //!< 前面を反時計回りに設定します. 主に右手系に対して使用します.
+		Clockwise,        //!< 前面を時計回りに設定します.  主に左手系に対して使用します. 
 	};
 
 	/****************************************************************************
 	*				  			FillMode
-	*************************************************************************//**
-	*  @class     FillMode
-	*  @brief     Polygon fill mode
+	****************************************************************************/
+	/*  @brief  描画の際に, ポリゴンの三角形内部をどのように満たすかを設定します.
 	*****************************************************************************/
 	enum class FillMode
 	{
-		WireFrame, // wire frame polygon 
-		Solid,     // fill polygon face
-		Point,     // point cloud. (only vulkan API)
+		WireFrame, //!< 頂点間をワイヤーフレームで満たし, 内部は満たしません.
+		Solid,     //!< ポリゴン内部も描画します. 
+		Point,     //!< 点群として描画するため, 内部は満たしません.  (only vulkan API)
 	};
 
 	/****************************************************************************
 	*				  			RasterizerProperty
-	*************************************************************************//**
-	*  @class     RasterizerProperty
-	*  @brief     RasterizerProperty
+	****************************************************************************/
+	/*  @brief     シェーダパイプラインにおける, ラスタライザステートに関する設定項目です.
 	*****************************************************************************/
 	struct RasterizerProperty
 	{
-		FrontFace   FaceType              = FrontFace::Clockwise; //  Determine if all sides are counterclockwise
-		CullingMode CullingType           = CullingMode::None;    // Sets the triangle facing the specified direction not to be drawn in the left hand coordinate
-		FillMode    FillType              = FillMode::Solid;      // Polygon fill mode
-		bool        UseDepthClamp         = true;                 // use clipping base on the depth length.
-		bool        UseMultiSample        = true;
-		bool        UseAntiAliasLine      = false;                // DirectX12 only use
-		bool        UseConservativeRaster = false;                // Perform rasterization if it hangs on a pixel for even a second.
+		/*! @brief 描画の際に, ポリゴンの三角形内部をどのように満たすかを設定します. */
+		FillMode FillType = FillMode::Solid;
 
-		// How to calculate : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
-		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
-		float  DepthBias           = 0.0f;  // Depth value added to a given pixel.
-		float  SlopeScaleDepthBias = 0.0f;  // Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
-		float  ClampMaxDepthBias   = 0.0f;  // Clamp MaxDepth
+		/*! @brief  前面が反時計回りか時計回りかを決定します. 基本は左手系のためClockWiseを指定します. */
+		FrontFace FaceType = FrontFace::Clockwise;
 
+		/*! @brief 指定された面(表面, 裏面)に対する三角形ポリゴンを描画しないように設定します*/
+		CullingMode CullingType = CullingMode::None;
+
+		/*! @brief 深度の大きさに応じてClamp処理(ピクセルの描画を行わない)を実行するかを決定します. */
+		bool UseDepthClamp = true;
+
+		/*! @brief マルチサンプリングによる描画を行うかを設定します. */
+		bool UseMultiSample = true;
+
+		/*! @brief DirectX12のみで設定可能です. 線のアンチエイリアスを有効にするかを設定します. @n
+		           有効化出来る組み合わせは以下を参照してください https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ns-d3d12-d3d12_rasterizer_desc*/
+		bool UseAntiAliasLine = false;
+
+		/*! @brief 少しでもピクセルの描画範囲に入ったらラスタライズを実行するようにします.*/
+		bool UseConservativeRaster = false;
+
+		// 計算方法 : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
+		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope [unorm];
+		// Bias = (float)DepthBias * 2 **(exponent(max z in primitive) - r) + SlopeScaledDepthBias * MaxDepthSlope; [float]
+		// rは浮動小数点表現の仮数ビットの数 (float32の場合は23を示します.)
+		
+		/*! @brief 与えられたピクセルに加えられるDepth値*/
+		float DepthBias = 0.0f; 
+
+		/*! @brief MaxDepthSlopeに対する補正項*/
+		float  SlopeScaleDepthBias = 0.0f;
+
+		/*! @brief 最終的なBiasに対してClampされるBias値*/
+		float  ClampMaxDepthBias = 0.0f;
+
+		/*! @brief デフォルトコンストラクタ*/
 		RasterizerProperty() = default;
 
+		/*! @brief 基本設定*/
 		RasterizerProperty
 		(
 			const FrontFace   frontFace,
@@ -778,9 +844,9 @@ namespace rhi::core
 		{
 		};
 
-		/*----------------------------------------------------------------------
-		*  @brief : fill polygon face rasterize mode
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  3Dの三角形ポリゴン内部を埋める基本設定です.
+		*************************************************************************/
 		static RasterizerProperty Solid
 		(
 			const bool        useMultiSample      = false, 
@@ -791,9 +857,9 @@ namespace rhi::core
 			const float       clampMaxDepthBias   = 0.0f
 		);
 		
-		/*----------------------------------------------------------------------
-		*  @brief : wire frame polygon rasterize mode
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  3Dの三角形ポリゴン内部を埋めず, 線だけを表示する基本設定です. 
+		*************************************************************************/
 		static RasterizerProperty WireFrame
 		(
 			const bool        useMultiSample      = false, 
@@ -804,198 +870,265 @@ namespace rhi::core
 			const float       clampMaxDepthBias   = 0.0f
 		);
 	};
-#pragma endregion   Rasterizer State
+	#pragma endregion   Rasterizer State
 #pragma region DepthStencilState
-	/****************************************************************************
-	*				  			CompareOperator
-	*************************************************************************//**
-	*  @enum      CompareOperator
-	*  @brief     Compare operator
-	*****************************************************************************/
-	enum class CompareOperator : gu::uint8
-	{
-		Never,          // Always false
-		Less,           // reference < test
-		Equal,          // reference = test
-		LessEqual,      // reference <= test
-		Greater,        // reference > test
-		NotEqual,       // reference not equal test
-		GreaterEqual,   // reference >= test
-		Always          // Always true
-	};
 
 	/****************************************************************************
 	*				  			StencilOperator
-	*************************************************************************//**
-	*  @class     StencilOperator
-	*  @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
+	****************************************************************************/
+	/* @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
 	*             良い感じの説明: https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	enum class StencilOperator : gu::uint8
 	{
-		Keep,                 // keep the current value
-		Zero,                 // set the value to 0
-		Replace,              // sets the value to reference value.
-		IncrementAndClamp,    // increments the current value and clamps to the maximum representable unsigned value
-		DecrementAndClamp,    // decrement the current value and clamps to 0
-		Invert,               // bitwise-inverts the current value
-		IncrementAndWrap,     // increment the current value and wrap to 0 when the maximum value would have been exceeded
-		DecrementAndWrap      // decrements the current value and wrap to the maximum possible value when the value wourld bo below 0
+		Keep,                 //!< keep the current value
+		Zero,                 //!< set the value to 0
+		Replace,              //!< sets the value to reference value.
+		IncrementAndClamp,    //!< increments the current value and clamps to the maximum representable unsigned value
+		DecrementAndClamp,    //!< decrement the current value and clamps to 0
+		Invert,               //!< bitwise-inverts the current value
+		IncrementAndWrap,     //!< increment the current value and wrap to 0 when the maximum value would have been exceeded
+		DecrementAndWrap      //!< decrements the current value and wrap to the maximum possible value when the value wourld bo below 0
 	};
 
 	/****************************************************************************
 	*				  			StencilOperatorInfo
-	*************************************************************************//**
-	*  @class     StencilOperatorInfo
-	*  @brief     StencilOperatorInfo https://www.asawicki.info/news_1654_stencil_test_explained_using_code
+	****************************************************************************/
+	/* @brief   ステンシルテストの演算 https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	struct StencilOperatorInfo
 	{
-		CompareOperator CompareOperator   = CompareOperator::Always; // Stencil test
-		StencilOperator FailOperator      = StencilOperator::Keep;   // Failed stencil action
-		StencilOperator PassOperator      = StencilOperator::Keep;   // Succeed stencil action
-		StencilOperator DepthFailOperator = StencilOperator::Keep;   // Failed depth test action
+		CompareOperator CompareOperator   = CompareOperator::Always; //!< Stencil test
+		StencilOperator FailOperator      = StencilOperator::Keep;   //!< Failed stencil action
+		StencilOperator PassOperator      = StencilOperator::Keep;   //!< Succeed stencil action
+		StencilOperator DepthFailOperator = StencilOperator::Keep;   //!< Failed depth test action
 		gu::uint32   Reference         = 0;
 		StencilOperatorInfo() = default;
 	};
 
 	/****************************************************************************
 	*				  			DepthStencilProperty
-	*************************************************************************//**
-	*  @class     DepthStencilProperty
+	****************************************************************************/
+	/* @class     DepthStencilProperty
 	*  @brief     When the depthStencilState class is used, you use the structure. 
 	*****************************************************************************/
 	struct DepthStencilProperty
 	{
-		bool                UseDepthTest       = true;                       // Use depth test
-		bool                DepthWriteEnable   = true;                       // Enable to write depth
-		bool                StenciWriteEnable  = false;                      // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
-		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
-		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
-		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
-		CompareOperator     DepthOperator      = CompareOperator::LessEqual; // Depth test operator
-		StencilOperatorInfo Front              = StencilOperatorInfo();      // Use depth test and stencil test results for pixels with surface normals facing the camera
-		StencilOperatorInfo Back               = StencilOperatorInfo();      // Use depth test and stencil test results for pixels where the surface normal is away from the camera
+		/*! @brief デプスバッファへの書き込み演算方法*/
+		CompareOperator DepthOperator = CompareOperator::LessEqual;
+
+		/*! @brief デプスバッファへの書き込みを許容するかどうか*/
+		bool DepthWriteEnable = true; 
+
+		/*! @brief ステンシルバッファへの書き込みを許容するかどうか (ステンシルテスト : 描画マスクみたいなもの)*/
+		bool StencilWriteEnable = false;
+
+		/*! @brief DepthBoundTest (最大最小デプス範囲内で描画)　https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/*/
+		bool UseDepthBoundsTest = false;
+		
+		/*! @brief DepthBoundsTestの最小デプス*/
+		float MinDepthBounds = 0.0f;
+
+		/*! @brief DepthBoundsTestの最大デプス*/
+		float MaxDepthBounds = 0.0f;
+
+		/*! @brief サーフェス法線がカメラ方向を向いているピクセルのデプステストとステンシルテストの結果を使用する。*/
+		StencilOperatorInfo Front = StencilOperatorInfo();
+
+		/*! @brief 表面の法線がカメラから離れているピクセルには、デプステストとステンシルテストの結果を使用する。*/
+		StencilOperatorInfo Back = StencilOperatorInfo();
 	};
 
 #pragma endregion  DepthStencilState
-#pragma region InputAssemblyState
+	#pragma region InputAssemblyState
+	/****************************************************************************
+	*				  			PrimitiveTopology
+	****************************************************************************/
+	/* @brief   隣接する各頂点同士の接続方法を指定します
+	*  @note    Triangle ListとStripの描画の違い : https://sorceryforce.net/ja/tips/xna-primitive3d-sequencing-triangle
+	*****************************************************************************/
 	enum class PrimitiveTopology : gu::uint8
 	{
-		Undefined     = 0,
-		PointList     = 1,
-		LineList      = 2,
-		LineStrip     = 3,
-		TriangleList  = 4,
-		TriangleStrip = 5,
-		CountOfPrimitiveTopology
-	};
-
-	enum class InputClassification : gu::uint8
-	{
-		PerVertex   = 0,
-		PerInstance = 1,
-	};
-
-	#pragma endregion InputAssemblyState
-#pragma region GPUResource
-	enum class RootSignatureType : gu::uint8
-	{
-		Rasterize,
-		RayTracingGlobal,
-		RayTracingLocal
-	};
-
-	enum class ResourceDimension : gu::uint8
-	{
-		Buffer,
-		Dimension1D,
-		Dimension2D,
-		Dimension3D
-	};
-
-	enum class ResourceType : gu::uint8
-	{
-		Unknown                           = 0,
-		Buffer                            = 1,
-		Texture1D                         = 2,
-		Texture1DArray                    = 3,
-		Texture2D                         = 4,
-		Texture2DArray                    = 5,
-		Texture2DMultiSample              = 6,
-		Texture2DArrayMultiSample         = 7,
-		Texture3D                         = 8,
-		TextureCube                       = 9,
-		TextureCubeArray                  = 10,
-		RaytracingAccelerationStructure   = 11
+		Undefined     = 0,       //!< 未定義です
+		PointList     = 1,       //!< 点群データです. 隣接する頂点同士を接続することは行いません. 
+		LineList      = 2,       //!< 隣接する頂点同士を線で結びます. この時, 頂点の再利用は行いません.
+		LineStrip     = 3,       //!< 隣接する頂点同士を線で結びます. この時, 頂点の再利用は行うようにします.
+		TriangleList  = 4,       //!< 隣接する頂点を三角形で結びます. 3Dメッシュを作成する時のモードです. この時頂点の再利用は行いません. 
+		TriangleStrip = 5,       //!< 隣接する頂点を三角形で結びます. 3Dメッシュを作成するときのモードです. この時頂点の再利用を行うため頂点数を減らせますが, 1点を共有するポリゴンの描画は出来ません. http://neareal.net/index.php?ComputerGraphics%2FXNA%2FVertex%2FSimpleVertex_3
+		CountOfPrimitiveTopology //!< 種類数/
 	};
 
 	/****************************************************************************
-	*				  			ResourceLayout
-	*************************************************************************//**
-	*  @class     ResourceState
-	*  @brief     How to use resource
+	*				  			InputClassification
+	****************************************************************************/
+	/* @brief   入力レイアウトが頂点ごとに設定されるものか, インスタンスごとに設定されるものかを指定します
 	*****************************************************************************/
-	enum class ResourceState : gu::uint32
+	enum class InputClassification : gu::uint8
 	{
-		Common,
+		PerVertex   = 0, //!< 頂点ごとに指定のInputLayoutElementの要素を適用します
+		PerInstance = 1, //!< 描画インスタンスごとに指定のInputLayoutElementの要素を適用します.
+	};
+
+	#pragma endregion InputAssemblyState
+
+	#pragma region GPUResource
+	/****************************************************************************
+	*				  			RootSignatureType
+	****************************************************************************/
+	/* @brief  リソースレイアウトの種類
+	*****************************************************************************/
+	enum class RootSignatureType : gu::uint8
+	{
+		Rasterize,        //!< ラスタライズパイプライン用のリソースレイアウトです
+		RayTracingGlobal, //!< 全てのレイトレーシング用シェーダステージに共通のリソースレイアウトです
+		RayTracingLocal   //!< 一部のレイトレーシング用シェーダステージ専用のレイアウトです
+	};
+
+	/****************************************************************************
+	*				  			ResourceDimension
+	****************************************************************************/
+	/* @brief   GPUリソースの形式を指定します. バッファなのかn次元テクスチャなのか
+	*****************************************************************************/
+	enum class ResourceDimension : gu::uint8
+	{
+		Buffer,    //!< バッファとして使用します
+		Texture1D, //!< 1次元テクスチャ
+		Texture2D, //!< 2次元テクスチャ
+		Texture3D  //!< 3次元テクスチャ
+	};
+
+	/****************************************************************************
+	*				  		ResourceType
+	****************************************************************************/
+	/* @brief   ResourceDimensionの詳細を記述します. 
+	*****************************************************************************/
+	enum class ResourceType : gu::uint8
+	{
+		Unknown                           = 0,  //!< 未知のGPUリソースの種類です
+		Buffer                            = 1,  //!< バッファとして使用します
+		Texture1D                         = 2,  //!< 1次元のテクスチャとして使用します
+		Texture1DArray                    = 3,  //!< 1次元のテクスチャ配列として使用します
+		Texture2D                         = 4,  //!< 2次元のテクスチャとして使用します
+		Texture2DArray                    = 5,  //!< 2次元のテクスチャ配列として使用します
+		Texture2DMultiSample              = 6,  //!< 2次元のテクスチャ(マルチサンプリングを使用)を使用します
+		Texture2DArrayMultiSample         = 7,  //!< 2次元のテクスチャ配列(マルチサンプリングを使用)を使用します
+		Texture3D                         = 8,  //!< 3次元のボリュームテクスチャとして使用します
+		TextureCube                       = 9,  //!< キューブマップテクスチャを使用します
+		TextureCubeArray                  = 10, //!< キューブマップテクスチャ配列として使用します
+		RaytracingAccelerationStructure   = 11  //!< レイトレーシングの加速構造として使用します.
+	};
+
+	/****************************************************************************
+	*				  			ResourceState
+	****************************************************************************/
+	/*  @brief GPUリソースの状態を定義します. @n
+	*   リソース状態を変更する際は, PushTransitionBarrierとFlushResourceBarrier(コマンドリスト)を使用してください.  
+	*****************************************************************************/
+	enum class ResourceState : gu::uint8
+	{
+		/// 異なるコマンドリストタイプ(Graphics, Compute, Copy)をまたぐリソースをアクセスするために使用します
+		Common,  
+
+		/// Uploadヒープに対して必要とされるリソースです
 		GeneralRead,
+
+		/// 3Dパイプラインによって頂点バッファ, または定数バッファとしてアクセスされる場合に使用します
 		VertexAndConstantBuffer,
+
+		/// 3Dパイプラインによってインデックスバッファとしてアクセスされる場合に使用します
 		IndexBuffer,
+
+		/// テクスチャの読み書きをするためのUnorderedAccessビューに対して使用できるステートです
 		UnorderedAccess,
+
+		/// レンダーターゲットとして使用されるリソースで, 書き込み専用のステートです
 		RenderTarget,
+
+		/// 深度ステンシルビューへの書き込みが可能なときに使用するステートです
 		DepthStencil,
+
+		/// コピー操作で出力として使用されるリソースで, 書き込み専用のステートです
 		CopyDestination,
+
+		/// コピー操作で入力として使用されるリソースで, 読み込み専用のステートです
 		CopySource,
+
+		/// Commonと同義ではありますが, スワップチェインを使う際に使用することを想定しています. 
 		Present,
+
+		/// インダイレクト引数として使用されるリソースで, 読み込み専用のステートです
 		Indirected,
+
+		/// RayTracingのAcceleration Structureで使用するステートです
 		RayTracingAccelerationStructure,
+
+		/// Variable Rate Shadingを使った画像リソースであることを示します. 
 		ShadingRateSource,
-		CountOfResourceLayout
+
+		/// Pixelシェーダで使用されるリソースで, 読み込み専用のステートです.
+		PixelShader,
+
+		/// Pixelシェーダ以外で使用されるリソースで, 読み込み専用のステートです
+		NonPixelShader,
+
+		/// ストリーム出力で使用されるリソースで, 書き込み専用のステートです
+		StreamOut,
+
+		/// Resolve操作で出力として使用されるリソースです. 
+		ResolveDestination,
+
+		/// Resolve操作の入力として使用されるリソースです
+		ResolveSource,
+
+		/// ResourceStateの個数
+		CountOf
 	};
 
 	/****************************************************************************
 	*				  			MemoryHeap
-	*************************************************************************//**
-	*  @class     MemoryHeap
-	*  @brief     memory type
+	****************************************************************************/
+	/* @brief  GPUのメモリを格納するヒープ領域の種類を決定します. 
 	*****************************************************************************/
 	enum class MemoryHeap : gu::uint8
 	{
-		Default, // Memory area visible only from GPU  
-		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
-		Readback,// 
-		Custom   // for directX12
+		Default, //!< GPU側でのみ見ることが出来るメモリ領域です. この場合, Mapでの読み書きは行えませんが, GPU内の処理で完結する作業は高速です
+		Upload,  //!< CPUからGPUにメモリを転送するのに使用します. Mapを使ってCPUが一度書き込み, GPUで一度読み取るデータに最適
+		Readback,//!< CPUからの読み取りを行う時に使用する, (GPUが書き込みを行い, それをCPUが読み取るデータに最適)
+		Custom   //!< DirectX12用にカスタマイズするヒープ領域
 	};
 
-	enum class DescriptorHeapType
+	/****************************************************************************
+	*				  			DescriptorHeapType
+	****************************************************************************/
+	/* @brief 　リソースを読み取る際のビューについて, ディスクリプタを貯めておくヒープ領域を指定する
+	*****************************************************************************/
+	enum class DescriptorHeapType : gu::uint8
 	{
-		CBV,         // const buffer view
-		SRV,         // shader resource view
-		UAV,         // unordered access view
-		SAMPLER,     // dynamic sampler state
+		CBV,         //!< Constant Buffer View (ユーザーが設定するGPUパラメータなどを設定します. )
+		SRV,         //!< Shader Resource View (テクスチャなどを読み取るときに使用します)
+		UAV,         //!< Unordered Access View (テクスチャの読み書きが入るときに使用します)  
+		SAMPLER,     //!< Dynamic Sampler State (テクスチャのサンプリングする方法を定義するときに使用します (普段はStatic Samplerを使用するため, あまり使用しません))
 
-		// directX12 api only heap type
-		RTV,         // render target (only directX12)
-		DSV,         // depth stencil (only directX12)
+		RTV,         //!< Render Target View (Swapchainに描画するときに使用します. (DirectX12だけで使用することが可能です))
+		DSV,         //!< Depth Stencil View (深度テクスチャを読み書きする際に使用します.  (DirectX12だけで使用することが可能です)
 	};
 
 	struct DefaultHeapCount
 	{
-		gu::uint32 CBVDescCount = 0;
-		gu::uint32 SRVDescCount = 0;
-		gu::uint32 UAVDescCount = 0;
-		gu::uint32 SamplerDescCount = 0;
-		gu::uint32 RTVDescCount = 0;
-		gu::uint32 DSVDescCount = 0;
+		gu::uint32 CBVDescCount = 0;     //!< Constant Buffer Viewのディスクリプタヒープの個数
+		gu::uint32 SRVDescCount = 0;     //!< Shader Resource View のディスクリプタヒープの個数
+		gu::uint32 UAVDescCount = 0;     //!< Unordered Access Viewのディスクリプタヒープの個数
+		gu::uint32 SamplerDescCount = 0; //!< Dynamic Sampler Stateのディスクリプタヒープの個数
+		gu::uint32 RTVDescCount = 0;     //!< Render Target Viewのディスクリプタヒープの個数
+		gu::uint32 DSVDescCount = 0;     //!< Depth Stencil Viewのディスクリプタヒープの個数
 	};
+
 	/****************************************************************************
 	*				  			ResourceViewType
-	*************************************************************************//**
-	*  @enum      ResourceViewType
-	*  @brief     How to read gpu resource buffer
+	****************************************************************************/
+	/* @brief     How to read gpu resource buffer
 	*****************************************************************************/
-	enum class ResourceViewType : gu::uint32
+	enum class ResourceViewType : gu::uint8
 	{
 		Unknown,
 		ConstantBuffer       , // 256 alighment buffer
@@ -1012,243 +1145,613 @@ namespace rhi::core
 		DepthStencil         , // depth and stencil 
 	};
 
-	/****************************************************************************
-	*				  			ResourceUsage
-	*************************************************************************//**
-	*  @enum      ResourceUsage
-	*  @brief     resource 
-	*****************************************************************************/
-	enum class ResourceUsage : gu::uint32
-	{
-		None = 0,
-
-		// バッファへの書き込みは一度だけ行われる
-		Static                = 0x000001,
-
-		// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
-		Dynamic               = 0x000002,
-
-		// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
-		Volatile              = 0x000004,
-
-		//　Unorder access viewを作成する
-		UnorderedAccess       = 0x000008,
-
-		// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
-		ByteAddress           = 0x000010,
-
-		// コピー元として使用するGPUバッファ
-		SourceCopy            = 0x000020,
-
-		// Stream出力ターゲットとして使用するGPUバッファ
-		StreamOutput          = 0x000040,
-
-		// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
-		DrawIndirect          = 0x000080,
-
-		// シェーダ・リソースとしてバインドできるバッファを作成します。 
-		// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
-		ShaderResource        = 0x000100,
-
-		// CPUに直接アクセス可能なバッファ
-		CPUAccessible         = 0x000200,
-
-		// バッファは高速VRAMに置く
-		FastVRAM              = 0x000400,
-
-		// 外部のRHIやプロセスと共有できるバッファを作成する
-		Shared                = 0x000800,
-
-		// RayTracing用のAcceleration structureを作成する
-		AccelerationStructure = 0x001000,
-
-		// 頂点バッファとして使用する
-		VertexBuffer          = 0x002000,
-
-		// インデックスバッファとして使用する
-		IndexBuffer           = 0x004000,
-
-		// 構造化バッファ
-		StructuredBuffer      = 0x008000,
-
-		// 定数バッファ
-		ConstantBuffer        = 0x010000,
-
-		// レンダーターゲット
-		RenderTarget          = 0x020000, // allow render target
-
-		// デプスステンシル
-		DepthStencil          = 0x040000, // allow depth stencil
-
-		// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
-		MultiGPUAllocate      = 0x080000,
-
-		// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
-		// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
-		Scratch = 0x100000,
-
-		AnyDynamic = (Dynamic | Volatile),
-	};
-
-	ENUM_CLASS_FLAGS(ResourceUsage);
-	/*inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
-	{
-		return static_cast<ResourceUsage>(static_cast<gu::uint32>(left) | static_cast<gu::uint32>(right));
-	}
-
-	inline ResourceUsage operator & (const ResourceUsage& left, const ResourceUsage& right)
-	{
-		return static_cast<ResourceUsage>( static_cast<gu::uint32>(left) & static_cast<gu::uint32>(right));
-	}
-
-	inline bool EnumHas(const ResourceUsage& left, const ResourceUsage& right)
-	{
-		if ((left & right) == right) return true;
-		return false;
-	}*/
-
 	enum class BindlessResourceType
 	{
 		Unsupported = 0,
 		OnlyRayTracing = 1,
 		AllShaderTypes = 2,
 	};
-#pragma region GPUBuffer
+
+	#pragma region GPUBuffer
 	/****************************************************************************
-	*				  			BufferType
-	*************************************************************************//**
-	*  @enum      BufferType
-	*  @brief     buffer type 
+	*				  			BufferCreateFlags
+	****************************************************************************/
+	/*  @brief  バッファの使用方法について定義しています
 	*****************************************************************************/
-	enum class BufferType
+	enum class BufferCreateFlags : gu::uint32
 	{
-		Vertex,   // Vertex buffers
-		Index,    // Index buffer 
-		Constant, // 256 byte alignment buffer
-		Upload,   // CPU readonly buffer
-		Default,  // GPU readonly buffer
+		None = 0,
+
+		/// バッファへの書き込みは一度だけ行われる
+		Static                = 1 << 0,
+
+		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		Dynamic               = 1 << 1,
+
+		/// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
+		Volatile              = 1 << 2,
+
+		///　Unorder access viewを作成する
+		UnorderedAccess       = 1 << 3,
+
+		/// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
+		ByteAddress           = 1 << 4,
+
+		/// コピー元として使用するGPUバッファ
+		SourceCopy            = 1 << 5,
+
+		/// Stream出力ターゲットとして使用するGPUバッファ
+		StreamOutput          = 1 << 6,
+
+		/// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
+		DrawIndirect          = 1 << 7,
+
+		/// シェーダ・リソースとしてバインドできるバッファを作成します。 
+		/// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
+		ShaderResource        = 1 << 8,
+
+		/// CPUに直接アクセス可能なバッファ
+		CPUAccessible         = 1 << 9,
+
+		/// バッファは高速VRAMに置く
+		FastVRAM              = 1 << 10,
+
+		/// 外部のRHIやプロセスと共有できるバッファを作成する
+		Shared                = 1 << 11,
+
+		/// RayTracing用のAcceleration structureを作成する
+		AccelerationStructure = 1 << 12,
+
+		/// 頂点バッファとして使用する
+		VertexBuffer          = 1 << 13,
+
+		/// インデックスバッファとして使用する
+		IndexBuffer           = 1 << 14,
+
+		/// 構造化バッファ
+		StructuredBuffer      = 1 << 15,
+
+		/// 定数バッファ
+		ConstantBuffer        = 1 << 16,
+
+		/// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
+		MultiGPUAllocate      = 1 << 17,
+
+		/// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
+		/// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
+		Scratch               = 1 << 18,
+
+		/// レンダーターゲット
+		RenderTarget          = 1 << 19, // allow render target
+
+		/// デプスステンシル
+		DepthStencil          = 1 << 20, // allow depth stencil
+
+		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		AnyDynamic = (Dynamic | Volatile),
 	};
+
+	ENUM_CLASS_FLAGS(BufferCreateFlags);
 
 	/****************************************************************************
 	*				  			GPUBufferInfo
-	*************************************************************************//**
-	*  @class     GPUBufferInfo
-	*  @brief     GPUBufferInfo
+	****************************************************************************/
+	/*  @brief     GPUバッファを作成するために必要な情報をまとめた構造体です
 	*****************************************************************************/
 	struct GPUBufferMetaData
 	{
 	public:
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		size_t         Stride        = 0;                           // element byte size
-		size_t         Count         = 0;                           // element array count 
-		size_t         ByteSize      = 0;
-		ResourceType   ResourceType  = ResourceType::Unknown;       // GPU resource type
-		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
-		ResourceState  State         = ResourceState::GeneralRead; // resource layout
-		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
-		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
-		PixelFormat    Format        = PixelFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
-		void*          InitData      = nullptr; // Init Data
+		#pragma region Public Property
+		/*! @brief 1要素に必要なバイトサイズ*/
+		gu::uint32 Stride = 0;
+		
+		/*! @brief 要素の個数*/
+		gu::uint32 Count  = 0;
 
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		bool IsCPUAccessible() const
+		/*! @brief GPUリソースの使用方法*/
+		BufferCreateFlags Usage = BufferCreateFlags::None;
+
+		/*! @brief ピクセルのフォーマット.基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある */
+		PixelFormat Format = PixelFormat::Unknown;
+
+		/*! @brief GPUバッファを作成するときの最初のCPUメモリの領域 */
+		void* InitData = nullptr;
+
+		/*! @brief GPUリソースの種類*/
+		ResourceType ResourceType = ResourceType::Unknown;
+
+		/*! @brief 現在のリソースのバリア状態*/
+		ResourceState State = ResourceState::GeneralRead;
+		
+		/*! @brief GPUのメモリを格納するヒープ領域の種類を決定します. */
+		MemoryHeap HeapType = MemoryHeap::Default;
+		
+		#pragma endregion 
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief  　　CPUにアクセス可能なGPUBufferリソースかを判定します
+		*  @return    bool : trueでCPUアクセス可能
+		*************************************************************************/
+		__forceinline bool IsCPUAccessible() const
 		{
 			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
 			|| (HeapType == MemoryHeap::Custom);
 		}
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief  　　GPUBufferの全体に占めるバイト数を取得します
+		*  @return    gu::uint64 バッファのサイズ
+		*************************************************************************/
+		__forceinline gu::uint64 GetTotalByte() const { return static_cast<gu::uint64>(Stride * Count); }
+		#pragma endregion 
+
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		GPUBufferMetaData() = default;
 
-		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType, void* initData = nullptr);
-		/****************************************************************************
-		**                Static Function
-		*****************************************************************************/
-		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
-		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
-		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
-		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
-		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
-		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
+		/*! @brief 直接Buffer情報から生成するコンストラクタ*/
+		GPUBufferMetaData(gu::uint32 stride, gu::uint32 count, core::BufferCreateFlags usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
+		#pragma endregion 
+
+		#pragma region Static Function
+		/*!**********************************************************************
+		*  @brief  CPUからGPUにメモリを転送するのに使用します. Mapを使ってCPUが一度書き込み, GPUで一度読み取るデータに最適
+		*************************************************************************/
+		static GPUBufferMetaData UploadBuffer  (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  GPU側でのみ見ることが出来るメモリ領域です. この場合, Mapでの読み書きは行えませんが, GPU内の処理で完結する作業は高速です
+		*************************************************************************/
+		static GPUBufferMetaData DefaultBuffer (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  定数用のバッファです. これは256 byteのアラインメントが発生します
+		*************************************************************************/
+		static GPUBufferMetaData ConstantBuffer(const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
+		
+		/*!**********************************************************************
+		*  @brief  頂点データ用のバッファです
+		*************************************************************************/
+		static GPUBufferMetaData VertexBuffer  (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  インデックスデータ用のバッファです
+		*************************************************************************/
+		static GPUBufferMetaData IndexBuffer   (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
+		#pragma endregion 
 	private:
-		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
+		gu::uint64 CalcConstantBufferByteSize(const gu::uint64 byteSize) { return (byteSize + 255) & ~255; }
 	};
-#pragma endregion         GPUBuffer
-#pragma region GPUTexture
-	
+	#pragma endregion
+
+	#pragma region GPUTexture
 	
 	/****************************************************************************
+	*				  			TextureCreateFlags
+	****************************************************************************/
+	/*  @brief  テクスチャの使用方法について定義しています
+	*****************************************************************************/
+	enum class TextureCreateFlags : gu::uint64
+	{
+		None = 0,
+
+		/// レンダーターゲットとして使用可能なテクスチャです
+		RenderTargetable       = 1ull << 0,
+
+		/// マルチサンプルなテクスチャと通常テクスチャをブレンドする際にResolveを行うテクスチャです
+		ResolveTargetable      = 1ull << 1,
+
+		/// Depth Stencilとして使用可能なテクスチャです
+		DepthStencilTargetable    = 1ull << 2,
+
+		/// Shader resourceとして使用可能なテクスチャです
+		ShaderResource            = 1ull << 3,
+
+		/// sRGBのGamma空間として符号化されているテクスチャです.  
+		SRGB                      = 1ull << 4,
+
+		/// CPUによって記述可能なテクスチャデータです
+		CPUWritable               = 1ull << 5,
+
+		/// タイリングされていないテクスチャとして使用
+		NoTiling                  = 1ull << 6,
+
+		/// 動画用のデコーダとして使用します
+		VideoDecode               = 1ull << 7,
+
+		/// テクスチャが書き込まれる可能性があるときに使用します
+		Dynamic                   = 1ull << 8,
+
+		/// レンダーパスのアタッチメントとして使用されます
+		InputAttachmentRead       = 1ull << 9,
+
+		///視線の中心に高い解像度をおくテクスチャのエンコーディングを使用する際に使用
+		Foveation                 = 1ull << 10,
+
+		/// Volume Textureのタイリング用
+		Tiling3D                  = 1ull << 11,
+
+		/// GPUやCPUのバックエンドを持たず, TileBasedDifferred Renderingのタイルメモリ上のみに存在します. 
+		Memoryless                = 1ull << 12,
+
+		/// ShaderResourceViewを作成しないようにします
+		DisableSRVCreation        = 1ull << 13,
+
+		/// Unordered access viewを使用可能です
+		UnorderedAccess           = 1ull << 14,
+
+		/// スワップチェインでバックバッファとして使用可能です
+		Presentable               = 1ull << 15,
+
+		/// CPUのReadBackリソースとして使用可能です.
+		CPUReadback               = 1ull << 16,
+
+		/// FastVRAMを使用する
+		FastVRAM                  = 1ull << 17,
+
+		/// 仮想メモリに割り当てられるテクスチャ
+		Virtual                   = 1ull << 18,
+
+		/// レンダーターゲットは高速なClearを使用しない
+		NoFastClear               = 1ull << 19,
+
+		/// DepthStencilのResolve用のテクスチャです
+		DepthStencilResolveTarget = 1ull << 20,
+
+		/// このテクスチャがストリーミング可能な2Dテクスチャであり、テクスチャストリーミングプールのバジェットにカウントされるべきであることを示すために使用されるフラグ
+		Streamable                = 1ull << 21,
+
+		/// Atomic操作が使用可能 (64bit)
+		Atomic64Compatible        = 1ull << 22,
+
+		/// Atomic操作が使用可能
+		AtomicCompatible          = 1ull << 23,
+
+		/// 外部アクセスが使用可能
+		External                  = 1ull << 24,
+
+		/// 予約リソース
+		ReservedResource          = 1ull << 25
+	};
+
+	ENUM_CLASS_FLAGS(TextureCreateFlags);
+
+	/****************************************************************************
 	*				  			GPUTextureMetaData
-	*************************************************************************//**
-	*  @class     GPUTextureMetaData
-	*  @brief     GPU total infomation
+	****************************************************************************/
+	/*  @brief   テクスチャの作成情報を一通り管理している構造体
 	*****************************************************************************/
 	struct GPUTextureMetaData
 	{
 	public:
-	
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		size_t            Width            = 1;                              // texture width
-		size_t            Height           = 1;                              // texture height
-		size_t            DepthOrArraySize = 1;                              // texture depth or array size
-		size_t            ByteSize         = 0;                              // total byte size
-		size_t            MipLevels        = 1;                              // mipmap levels
-		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
-		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
-		ResourceDimension Dimension        = ResourceDimension::Dimension1D; // texture resource dimension
-		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
-		ResourceUsage     ResourceUsage    = ResourceUsage::None;            // how to use resource 
-		ClearValue        ClearColor       = ClearValue();                   // clear color 
-		ResourceState     State            = ResourceState::GeneralRead;    // resource layout
-		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		bool IsCPUAccessible() const
-		{
-			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
-				|| (HeapType == MemoryHeap::Custom);
-		}
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUTextureMetaData() = default;
-		
-		/****************************************************************************
-		**                Static Function
-		*****************************************************************************/
-		static GPUTextureMetaData Texture1D                (const size_t width, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture1DArray           (const size_t width, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2D                (const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DArray           (const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture3D                (const size_t width, const size_t height, const size_t depth, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DMultiSample     (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DArrayMultiSample(const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData CubeMap                  (const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData CubeMapArray             (const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData RenderTarget             (const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
-		static GPUTextureMetaData RenderTargetMultiSample  (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
-		static GPUTextureMetaData DepthStencil             (const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
-		static GPUTextureMetaData DepthStencilMultiSample  (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
+		#pragma region Public Property
+		/*! @brief 画面クリア時の初期化で塗りつぶされる色 (RenderTarget, DepthStencilなどに使用します.)*/
+		ClearValue ClearColor = ClearValue();
+
+		/*! @brief GPUリソースの使用方法を定義します.*/
+		TextureCreateFlags Usage = TextureCreateFlags::None;
+
+		/*! @brief テクスチャの幅です. (pixel単位で指定します)*/
+		gu::uint32 Width = 1;
+
+		/*! @brief テクスチャの高さです. (pixel単位で指定します)*/
+		gu::uint32 Height = 1;
+
+		/*! @brief 2Dテクスチャの配列であればArraySizeが適用され, 3Dテクスチャの場合はDepthが適用されます. */
+		gu::uint16 DepthOrArraySize = 1;
+
+		/*! @brief ミップマップの個数 (2を指定すると, ミップマップの値が0と1のものを使用するという意味です)*/
+		gu::uint8  MipMapLevels = 1;
+
+		/*! @brief GPUリソースの状態を定義します. (状態変更はコマンドリストのPushTransitionBarrierとFlushResourceBarriersを使用)*/
+		ResourceState State = ResourceState::GeneralRead; 
+
+		/*! @brief 1ピクセルの型定義*/
+		PixelFormat PixelFormat = PixelFormat::Unknown;
+
+		/*! @brief サンプリングの個数を定義します*/
+		MultiSample Sample = MultiSample::Count1;
+
+		/*! @brief GPUリソースの次元定義 (バッファなのかn次元テクスチャなのか)*/
+		ResourceDimension Dimension = ResourceDimension::Texture2D;
+
+		/*! @brief ResourceDimensionの詳細です*/
+		ResourceType ResourceType = ResourceType::Unknown;
+
+		/*! @brief GPUのメモリを格納するヒープ領域の種類を決定します. */
+		MemoryHeap HeapType = MemoryHeap::Default;
+		#pragma endregion
+
+		#pragma region Static Function
+		/*!**********************************************************************
+		*  @brief  　 1次元のテクスチャの基本設定を返します.  
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture1D 
+		(
+			const gu::uint32 width, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 1次元のテクスチャ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint16               テクスチャの配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture1DArray 
+		(
+			const gu::uint32 width, 
+			const gu::uint16 length, 
+			const core::PixelFormat format,
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2D
+		(
+			const gu::uint32 width,
+			const gu::uint32 height, 
+			const core::PixelFormat format,
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャの配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DArray
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 3次元のテクスチャの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャの奥行 [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture3D
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 depth, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ(マルチサンプリングの指定あり)の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ配列(マルチサンプリングの指定あり)の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャ配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DArrayMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 キューブマップの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData CubeMap
+		(
+			const gu::uint32 width,
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 キューブマップ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャ配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData CubeMapArray
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 レンダーターゲットの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData RenderTarget
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const core::ClearValue& clearValue = core::ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 レンダーターゲットの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData RenderTargetMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const core::ClearValue& clearValue = ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 デプスステンシルの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData DepthStencil 
+		(
+			const gu::uint32 width,
+			const gu::uint32 height,
+			const core::PixelFormat format,
+			const core::ClearValue& clearValue = core::ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 デプスステンシルの(マルチサンプルの指定あり)基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData DepthStencilMultiSample 
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const core::ClearValue& clearValue = ClearValue()
+		);
+
+		#pragma endregion 
 
 	private:
-		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
+		inline gu::uint64 CalculateByteSize() const { 
+			return  (gu::uint64)Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatInfo::GetConst(PixelFormat).BlockBytes * static_cast<gu::uint64>(Sample); 
+		}
 	};
 
-#pragma endregion        GPUTexture
-#pragma region RayTracing
+	/****************************************************************************
+	*				  			GPUTextureCopyInfo
+	****************************************************************************/
+	/*  @brief   テクスチャをGPU上でコピーする際に使用する構造体
+	*****************************************************************************/
+	struct GPUTextureCopyInfo
+	{
+		/*! @brief コピーしたいテクスチャのバイトサイズ. その際, 0を指定すると全体をコピーするという意味になります.*/
+		gm::Vector3i<gu::uint32> TexelSize = gm::Vector3i<gu::uint32>::Zero();
+
+		/*! @brief コピー先の読み取り開始テクセル位置. 基本は0に設定されます*/
+		gm::Vector3i<gu::uint32> DestinationInitTexelPosition = gm::Vector3i<gu::uint32>::Zero();
+
+		/*! @brief コピー元の読み取り開始テクセル位置. 基本は0に設定されます*/
+		gm::Vector3i<gu::uint32> SourceInitTexelPosition = gm::Vector3i<gu::uint32>::Zero();
+ 
+		/*! @brief コピー先のMipmapの初期値*/
+		gu::uint32 DestinationInitMipMap = 0;
+
+		/*! @brief コピー元のMipmapの初期値*/
+		gu::uint32 SourceInitMipMap      = 0;
+
+		/*! @brief コピー先の, テクスチャ配列上のテクスチャ種類の初期値 */
+		gu::uint16 DestinationInitArraySlice = 0;
+
+		/*! @brief コピー元の, テクスチャ配列上のテクスチャ種類の初期値 */
+		gu::uint16 SourceInitArraySlice = 0;
+
+		/*! @brief テクスチャ配列の場合におけるテクスチャの種類*/
+		gu::uint16 ArraySliceCount = 1;
+
+		/*! @brief ミップマップの個数*/
+		gu::uint8  MipMapCount = 1;
+	};
+	#pragma endregion 
+
+	#pragma region RayTracing
 	/****************************************************************************
 	*				  			RayTracingGeometryFlags
-	*************************************************************************//**
-	*  @enum      RayTracingGeometryFlags
+	****************************************************************************/
+	/* @enum      RayTracingGeometryFlags
 	*  @brief     Specifies flags for raytracing geometry
 	*****************************************************************************/
 	enum class RayTracingGeometryFlags
@@ -1259,8 +1762,8 @@ namespace rhi::core
 	};
 	/****************************************************************************
 	*				  		 RayTracingInstanceFlags
-	*************************************************************************//**
-	*  @enum      RayTracingInstanceFlags
+	****************************************************************************/
+	/* @enum      RayTracingInstanceFlags
 	*  @brief     Flags for a raytracing acceleration structure instance
 	*****************************************************************************/
 	enum class RayTracingInstanceFlags
@@ -1273,8 +1776,8 @@ namespace rhi::core
 	};
 	/****************************************************************************
 	*				  		 BuildAccelerationStructureFlags
-	*************************************************************************//**
-	*  @enum      BuildAccelerationStructureFlags
+	****************************************************************************/
+	/* @enum      BuildAccelerationStructureFlags
 	*  @brief     How to build acceleration structure
 	*****************************************************************************/
 	enum class BuildAccelerationStructureFlags
@@ -1289,8 +1792,8 @@ namespace rhi::core
 	};
 	/****************************************************************************
 	*				  	RayTracingASPrebuildInfo
-	*************************************************************************//**
-	*  @struct    RayTracingASPrebuildInfo
+	****************************************************************************/
+	/* @struct    RayTracingASPrebuildInfo
 	*  @brief     Acceleration Structure memory data size
 	*****************************************************************************/
 	struct RayTracingASPrebuildInfo
@@ -1300,25 +1803,37 @@ namespace rhi::core
 		gu::uint64 UpdateScratchDataSize    = 0;
 	};
 	
-#pragma endregion RayTracing
-#pragma endregion GPUResource
-#pragma region Render Pass
+	#pragma endregion 
+
+	#pragma endregion GPUResource
+	#pragma region Render Pass
+	/****************************************************************************
+	*				  			AttachmentLoad
+	****************************************************************************/
+	/* @brief  RenderPassの開始時に, 既存のデータを特定の値で消去するかどうかを設定できます.
+	*****************************************************************************/
 	enum class AttachmentLoad : gu::uint8
 	{
-		Clear,    // at the beginning of a render path, erase already existing data with a specific value
-		Load,     
-		DontCare
+		Clear,   //!< すでにあるデータを特定の値で消去します. 
+		Load,    //!< すでにあるデータを読み込みます.
+		DontCare //!< ドライバやハードウェアに任せるようにします
 	};
-	enum class AttachmentStore
+
+	/****************************************************************************
+	*				  			AttachmentStore
+	****************************************************************************/
+	/* @brief  RenderPassの終了時に, データをメモリに保存するかどうかを設定できます.
+	*****************************************************************************/
+	enum class AttachmentStore : gu::uint8
 	{
-		Store,
-		DontCare
+		Store,   //!< メモリを保存します. 
+		DontCare //!< ドライバやハードウェアに任せるようにします
 	};
+
 	/****************************************************************************
 	*				  			Attachment
-	*************************************************************************//**
-	*  @struct    Attachment
-	*  @brief     attachment
+	****************************************************************************/
+	/* @brief  Frame Bufferに書き込む際に, 一度バッファの中をクリアするかといった設定が行えます. 
 	*****************************************************************************/
 	struct Attachment
 	{
@@ -1326,6 +1841,17 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
+		static Attachment DrawContinue( const PixelFormat format,
+			const ResourceState initialState  = ResourceState::RenderTarget,
+			const ResourceState finalState    = ResourceState::RenderTarget,
+			const AttachmentLoad load         = AttachmentLoad::Load,
+			const AttachmentStore store       = AttachmentStore::Store,
+			const MultiSample sample          = MultiSample::Count1
+		)
+		{
+			return Attachment(format, initialState, finalState, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, sample);
+		}
+
 		static Attachment RenderTarget( const PixelFormat format,
 			const ResourceState  initialState  = ResourceState::RenderTarget,
 			const ResourceState  finalState    = ResourceState::Present,
@@ -1374,12 +1900,12 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
+		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
+		ResourceState   FinalLayout   = ResourceState::Present;       // final desired resource layout
 		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
 		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
-		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
-		ResourceState  FinalLayout    = ResourceState::Present;       // final desired resource layout
 		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
 		AttachmentStore StoreOp       = AttachmentStore::Store;       // at the end of a render pass, save data on memory
 		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;     // stencil; 
@@ -1401,12 +1927,12 @@ namespace rhi::core
 
 		
 	};
-#pragma endregion       Render Pass
-#pragma region Query
+	#pragma endregion       Render Pass
+	#pragma region Query
 	/****************************************************************************
 	*				  			QueryType
-	*************************************************************************//**
-	*  @enum      QueryType
+	****************************************************************************/
+	/* @enum      QueryType
 	*  @brief     GPU情報の計測のために使用するHeapの設定
 	*****************************************************************************/
 	enum class QueryHeapType : gu::uint8
@@ -1420,8 +1946,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			GPUTimingCalibrationTimestamp
-	*************************************************************************//**
-	*  @enum      GPUTimingCalibrationTimestamp
+	****************************************************************************/
+	/* @enum      GPUTimingCalibrationTimestamp
 	*  @brief     GPUとCPUの時間計測
 	*****************************************************************************/
 	struct GPUTimingCalibrationTimestamp

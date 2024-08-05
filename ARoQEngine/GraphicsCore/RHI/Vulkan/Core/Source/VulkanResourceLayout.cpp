@@ -12,7 +12,8 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUSampler.hpp"
-#include <stdexcept>
+#include <stdexcept> 
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,8 +52,8 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 #pragma region SetUp Function
 /****************************************************************************
 *                     SetUp
-*************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
+****************************************************************************/
+/* @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
 *  @brief     Set up pipeline layout
 *  @param[in] const gu::DynamicArray<core::ResourceLayoutElement>& elements
 *  @param[in] const gu::DynamicArray<core::SamplerLayoutElement>& samplers
@@ -68,8 +69,8 @@ void RHIResourceLayout::SetUp()
 	-                 Find the max register space
 	---------------------------------------------------------------------*/
 	size_t maxRegisterSpace = 0;
-	for (const auto& element : _desc.Elements) { maxRegisterSpace = std::max(maxRegisterSpace, element.RegisterSpace + 1); }
-	for (const auto& sampler : _desc.Samplers) { maxRegisterSpace = std::max(maxRegisterSpace, sampler.RegisterSpace + 1); }
+	for (const auto& element : _desc.Elements) { maxRegisterSpace = std::max(maxRegisterSpace, (gu::uint64)element.RegisterSpace + 1); }
+	for (const auto& sampler : _desc.Samplers) { maxRegisterSpace = std::max(maxRegisterSpace, (gu::uint64)sampler.RegisterSpace + 1); }
 
 	gu::DynamicArray<gu::DynamicArray<VkDescriptorSetLayoutBinding>> bindings(maxRegisterSpace);
 	/*-------------------------------------------------------------------

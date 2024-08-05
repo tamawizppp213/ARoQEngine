@@ -34,15 +34,15 @@ namespace gm
 
 	/****************************************************************************
 	*				  			   GMVector3
-	*************************************************************************//**
-	*  @class     GMVector3
+	****************************************************************************/
+	/* @class     GMVector3
 	*  @brief     SIMD演算用のVector3クラスです. アラインメントを行っているため, データを保持する場合はFloat3を使用してください
 	*****************************************************************************/
 	struct Float3
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		float x;
 		float y;
@@ -84,15 +84,15 @@ namespace gm
 
 	/****************************************************************************
 	*				  			   GMVector3
-	*************************************************************************//**
-	*  @class     GMVector3
+	****************************************************************************/
+	/* @class     GMVector3
 	*  @brief     SIMD演算用のVector3クラスです. アラインメントを行っているため, データを保持する場合はFloat3を使用してください
 	*****************************************************************************/
 	struct Vector3f
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 #pragma region Default Vector
 		// @brief : (0, 0, 0, 0)
@@ -119,20 +119,20 @@ namespace gm
 #pragma region Getter
 		/*----------------------------------------------------------------------
 		*  @brief : FPUレジスタに格納されたX(, Y, Z, W)等の要素を取り出す
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline gu::float32 GetX() const { return SIMD_NAME_SPACE::Vector128Utility::GetX(_vector); }
 		__forceinline gu::float32 GetY() const { return SIMD_NAME_SPACE::Vector128Utility::GetY(_vector); }
 		__forceinline gu::float32 GetZ() const { return SIMD_NAME_SPACE::Vector128Utility::GetZ(_vector); }
 		
 		/*----------------------------------------------------------------------
 		*  @brief : Simd vector
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline VECTOR128 GetSimdVector() const { return _vector; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief : Float3に変換する
-		/*----------------------------------------------------------------------*/
-		__forceinline Float3 ToFloat3()
+		*----------------------------------------------------------------------*/
+		__forceinline Float3 ToFloat3() const noexcept
 		{
 			Float3 value = {};
 			SIMD_NAME_SPACE::Vector128Utility::StoreFloat3((float*)&value, _vector);
@@ -144,7 +144,7 @@ namespace gm
 #pragma region Setter
 		/*----------------------------------------------------------------------
 		*  @brief : Floatを使ってVectorのX(, Y, Z, W)要素に値を代入する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void SetX(const float x) { _vector = SIMD_NAME_SPACE::Vector128Utility::SetX(_vector, x); }
 		__forceinline void SetY(const float y) { _vector = SIMD_NAME_SPACE::Vector128Utility::SetY(_vector, y); }
 		__forceinline void SetZ(const float z) { _vector = SIMD_NAME_SPACE::Vector128Utility::SetZ(_vector, z); }
@@ -213,8 +213,8 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
-		/*----------------------------------------------------------------------*/
-		__forceinline bool InBounds(const Vector3f& bounds) noexcept { return SIMD_NAME_SPACE::Vector128Utility::InBoundsVector3(_vector, bounds._vector); }
+		*----------------------------------------------------------------------*/
+		__forceinline bool InBounds(const Vector3f& bounds) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::InBoundsVector3(_vector, bounds._vector); }
 
 		__forceinline operator VECTOR128() const { return _vector; }
 
@@ -223,44 +223,44 @@ namespace gm
 #pragma region Math
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の逆数を算出します. (1.0f / vector)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Reciprocal() const { return SIMD_NAME_SPACE::Vector128Utility::Reciprocal(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 各要素にマイナスを取ったものを返す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Negate() const { return SIMD_NAME_SPACE::Vector128Utility::Negate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline float Length() const { return SIMD_NAME_SPACE::Vector128Utility::LengthVector3(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルムの二乗を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline float LengthSquared() const { return SIMD_NAME_SPACE::Vector128Utility::LengthSquaredVector3(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline float Dot(const Vector3f& right) const { return SIMD_NAME_SPACE::Vector128Utility::DotVector3(_vector, right._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 外積を算出 second, thirdに垂直なベクトルを返す
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Cross(const Vector3f& second) const { return SIMD_NAME_SPACE::Vector128Utility::CrossVector3(_vector, second._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Normalize() const { return SIMD_NAME_SPACE::Vector128Utility::NormalizeVector3(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief     反射ベクトルを算出
 		*  @param[in] const Vector128&f : input  (入射ベクトル)
 		*  @param[in] const Vector128&f : normal (反射を行う法線ベクトル)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Reflect(const Vector3f& normal) const { return SIMD_NAME_SPACE::Vector128Utility::ReflectVector3(_vector, normal._vector); }
 
 		/*----------------------------------------------------------------------
@@ -268,128 +268,128 @@ namespace gm
 		*  @param[in] const Vector3f& : input  (入射ベクトル)
 		*  @param[in] const Vector3f& : normal (反射を行う法線ベクトル)
 		*  @param[in] const float    : refractionIndex (屈折率)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Refract(const Vector3f& normal, const float     refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector128Utility::RefractVector3(_vector, normal._vector, refractionIndex); }
 		__forceinline Vector3f Refract(const Vector3f& normal, const Vector3f& refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector128Utility::RefractVector3V(_vector, normal._vector, refractionIndex._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 非常に大きい値か
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool IsInfinite() const { return SIMD_NAME_SPACE::Vector128Utility::IsInfiniteVector3(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  ゼロかどうか
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool IsZero() const { return ZERO == _vector; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Sqrt() const { return SIMD_NAME_SPACE::Vector128Utility::Sqrt(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の逆数を取り, それに根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f ReciprocalSqrt() const { return SIMD_NAME_SPACE::Vector128Utility::ReciprocalSqrt(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsin, cos, tanを返します [rad]
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Sin() const { return SIMD_NAME_SPACE::Vector128Utility::Sin(_vector); }
 		__forceinline Vector3f Cos() const { return SIMD_NAME_SPACE::Vector128Utility::Cos(_vector); }
 		__forceinline Vector3f Tan() const { return SIMD_NAME_SPACE::Vector128Utility::Tan(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のarcsin, arccos, arctanを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f ArcSin() const { return SIMD_NAME_SPACE::Vector128Utility::ArcSin(_vector); }
 		__forceinline Vector3f ArcCos() const { return SIMD_NAME_SPACE::Vector128Utility::ArcCos(_vector); }
 		__forceinline Vector3f ArcTan() const { return SIMD_NAME_SPACE::Vector128Utility::ArcTan(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsinH, cosH, tanHを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f SinH() const { return SIMD_NAME_SPACE::Vector128Utility::SinH(_vector); }
 		__forceinline Vector3f CosH() const { return SIMD_NAME_SPACE::Vector128Utility::CosH(_vector); }
 		__forceinline Vector3f TanH() const { return SIMD_NAME_SPACE::Vector128Utility::TanH(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
-		/*----------------------------------------------------------------------*/
-		__forceinline void SinCos(Vector3f& sin, Vector3f& cos) noexcept
+		*----------------------------------------------------------------------*/
+		__forceinline void SinCos(Vector3f& sin, Vector3f& cos) const noexcept
 		{
 			SIMD_NAME_SPACE::Vector128Utility::SinCos(_vector, &sin._vector, &cos._vector);
 		}
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の2^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Exp2() const { return SIMD_NAME_SPACE::Vector128Utility::Exp2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の10^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Exp10() const { return SIMD_NAME_SPACE::Vector128Utility::Exp10(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のe^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f ExpE() const { return SIMD_NAME_SPACE::Vector128Utility::ExpE(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog2{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Log2() const { return SIMD_NAME_SPACE::Vector128Utility::Log2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog10{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Log10() const { return SIMD_NAME_SPACE::Vector128Utility::Log10(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のloge{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f LogE() const { return SIMD_NAME_SPACE::Vector128Utility::LogE(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のPowを返します
 		*           base^{power}
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Pow(const Vector3f& power) const { return SIMD_NAME_SPACE::Vector128Utility::Pow(_vector, power._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 最も近い整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Round() const { return SIMD_NAME_SPACE::Vector128Utility::Round(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Truncate() const { return SIMD_NAME_SPACE::Vector128Utility::Truncate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 負の方向に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Floor() const { return SIMD_NAME_SPACE::Vector128Utility::Floor(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Ceiling() const { return SIMD_NAME_SPACE::Vector128Utility::Ceiling(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内で数値を設定する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Clamp(const Vector3f& min, const Vector3f& max) const { return SIMD_NAME_SPACE::Vector128Utility::Clamp(_vector, min._vector, max._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 1以上には行かないようにする
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Saturate() const { return SIMD_NAME_SPACE::Vector128Utility::Saturate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector3f Abs() const { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
 
 #pragma endregion Math
@@ -417,14 +417,14 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VECTOR128 _vector;
 	};
 
 	/*----------------------------------------------------------------------
 	*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline float Dot(const Vector3f& left, const Vector3f& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::DotVector3(left, right);
@@ -432,7 +432,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 外積を算出 first, second, thirdに垂直なベクトルを返す
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Cross(const Vector3f& first, const Vector3f& second) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::CrossVector3(first, second);
@@ -440,7 +440,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 入力ベクトルの単位ベクトルを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Normalize(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::NormalizeVector3(vector);
@@ -450,7 +450,7 @@ namespace gm
 	*  @brief     反射ベクトルを算出
 	*  @param[in] const Vector3f& : input  (入射ベクトル)
 	*  @param[in] const Vector3f& : normal (反射を行う法線ベクトル)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Reflect(const Vector3f& input, const Vector3f& normal) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::ReflectVector3(input, normal);
@@ -461,7 +461,7 @@ namespace gm
 	*  @param[in] const Vector3f& : input  (入射ベクトル)
 	*  @param[in] const Vector3f& : normal (反射を行う法線ベクトル)
 	*  @param[in] const float    : refractionIndex (屈折率)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Refract(const Vector3f& input, const Vector3f& normal, const float refractionIndex) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::RefractVector3(input, normal, refractionIndex);
@@ -474,7 +474,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 非常に大きい値か
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline bool IsInfinite(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::IsInfiniteVector3(vector);
@@ -482,7 +482,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素に根号を取ったものを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Sqrt(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Sqrt(vector);
@@ -490,7 +490,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の逆数を取り, それに根号を取ったものを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f ReciprocalSqrt(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::ReciprocalSqrt(vector);
@@ -498,7 +498,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のsin, cos, tanを返します [rad]
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Sin(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Sin(vector);
@@ -516,7 +516,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のarcsin, arccos, arctanを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f ArcSin(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::ArcSin(vector);
@@ -534,7 +534,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のsinH, cosH, tanHを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f SinH(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::SinH(vector);
@@ -552,7 +552,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の2^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Exp2(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Exp2(vector);
@@ -560,7 +560,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の10^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Exp10(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Exp10(vector);
@@ -568,7 +568,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のe^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f ExpE(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::ExpE(vector);
@@ -576,7 +576,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のlog2{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Log2(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Log2(vector);
@@ -584,7 +584,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のlog10{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Log10(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Log10(vector);
@@ -592,7 +592,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のloge{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f LogE(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::LogE(vector);
@@ -601,7 +601,7 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のPowを返します
 	*           base^{power}
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Pow(const Vector3f& base, const Vector3f& power) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Pow(base, power);
@@ -612,7 +612,7 @@ namespace gm
 	*  @param[in]  t = 0の時の値
 	   @param[in]  t = 1の時の値
 	   @param[in]  t : 線形補間の割合
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Lerp(const Vector3f& start, const Vector3f& end, const float t) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Lerp(start, end, t);
@@ -631,7 +631,7 @@ namespace gm
 	   @param[in]  終点の位置
 	   @param[in]  終点におけるスプラインの接線を表すベクトル
 	   @param[in]  t : エルミート補間の割合
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Hermite(const Vector3f& startPosition, const Vector3f& startTangent, const Vector3f& endPosition, const Vector3f& endTangent, const float t) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Hermite(startPosition, startTangent, endPosition, endTangent, t);
@@ -644,7 +644,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief      CatMull-Romスプライン補間の結果を返します。4つの制御点を全て通るスプライン補間
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f CatMullRom(const Vector3f& position0, const Vector3f& position1, const Vector3f& position2, const Vector3f& position3, const float t) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::CatMullRom(position0, position1, position2, position3, t);
@@ -661,7 +661,7 @@ namespace gm
 				   (f==0 && g>=0 && 1-f-g>=0) の場合、ポイントは Position0>Position2 行目にあります>。
 				   (f>=0 && g==0 && 1-f-g>=0) の場合、ポイントは Position0>Position1> 行目にあります。
 				   (f>=0 && g>=0 && 1-f-g==0) の場合、ポイントは Position1>Position2 行目にあります>。
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f BaryCentric(const Vector3f& position0, const Vector3f& position1, const Vector3f& position2, const float f, const float g) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::BaryCentric(position0, position1, position2, f, g);
@@ -674,7 +674,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素について最小値となる方を選択します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Min(const Vector3f& left, const Vector3f& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Min(left, right);
@@ -682,7 +682,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素について最大値となる方を選択します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Max(const Vector3f& left, const Vector3f& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Max(left, right);
@@ -690,7 +690,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 最も近い整数に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Round(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Round(vector);
@@ -698,7 +698,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Truncate(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Truncate(vector);
@@ -706,7 +706,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 負の方向に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Floor(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Floor(vector);
@@ -714,7 +714,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Ceiling(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Ceiling(vector);
@@ -722,7 +722,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 指定範囲内で数値を設定する
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Clamp(const Vector3f& vector, const Vector3f& min, const Vector3f& max) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Clamp(vector, min, max);
@@ -730,7 +730,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 1以上には行かないようにする
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Saturate(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Saturate(vector);
@@ -738,7 +738,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 絶対値
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f Abs(const Vector3f& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector128Utility::Abs(vector);

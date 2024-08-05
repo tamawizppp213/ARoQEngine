@@ -36,8 +36,8 @@ SampleAudio::~SampleAudio()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleEmpty::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleEmpty::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -48,8 +48,8 @@ void SampleAudio::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gam
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleEmpty::Update()
+****************************************************************************/
+/* @fn        void SampleEmpty::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -61,8 +61,8 @@ void SampleAudio::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleEmpty::Draw()
+****************************************************************************/
+/* @fn        void SampleEmpty::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -76,8 +76,8 @@ void SampleAudio::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleEmpty::Terminate()
+****************************************************************************/
+/* @fn        void SampleEmpty::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -96,8 +96,8 @@ void SampleAudio::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleEmpty::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleEmpty::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -134,14 +134,14 @@ void SampleAudio::LoadMaterials()
 	_audioSource = std::make_shared<AudioSource>(_audioMaster, audioClip, SoundType::BGM, 1.0f);
 	_audioSource->Play();
 
-	_audioSubmix = std::make_shared<AudioSubmix>(_audioMaster, 2, audioClip->GetSamplingFrequency());
+	_audioSubmix = std::make_shared<AudioSubmix>(_audioMaster, 2, (std::uint32_t)audioClip->GetSamplingFrequency());
 	_audioSubmix->Regist(_audioSource);
 	_audioSubmix->Reverb(true);
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -197,8 +197,8 @@ void SampleAudio::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -209,8 +209,8 @@ void SampleAudio::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -221,8 +221,8 @@ void SampleAudio::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleEmpty::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleEmpty::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void

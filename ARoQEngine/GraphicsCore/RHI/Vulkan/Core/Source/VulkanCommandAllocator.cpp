@@ -60,8 +60,8 @@ RHICommandAllocator::~RHICommandAllocator()
 
 /****************************************************************************
 *                     CleanUp
-*************************************************************************//**
-*  @fn        void RHICommandAllocator::CleanUp()
+****************************************************************************/
+/* @fn        void RHICommandAllocator::CleanUp()
 * 
 *  @brief     Reset command pool
 * 
@@ -81,8 +81,8 @@ void RHICommandAllocator::CleanUp()
 
 /****************************************************************************
 *                     CleanUp
-*************************************************************************//**
-*  @fn        void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
+****************************************************************************/
+/* @fn        void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
 *
 *  @brief     Trimming
 *
@@ -98,8 +98,8 @@ void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
 
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void RHICommandAllocator::SetName(const std::wstring& name)
+****************************************************************************/
+/* @fn        void RHICommandAllocator::SetName(const std::wstring& name)
 *
 *  @brief     Set debugging name
 *

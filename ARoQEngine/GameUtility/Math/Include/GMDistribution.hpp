@@ -27,8 +27,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Random 
-	*************************************************************************//**
-	*  @class     Random 
+	****************************************************************************/
+	/* @class     Random 
 	*  @brief     Produces a random value of a real number.(double, long double..)
 	*****************************************************************************/
 	template<typename T>
@@ -44,7 +44,7 @@ namespace gm
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetRange(T min, T max)
 		{
@@ -75,7 +75,7 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::random_device _seed;
 		std::mt19937       _engine;
@@ -84,8 +84,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			RandomInt
-	*************************************************************************//**
-	*  @class     RandomInt
+	****************************************************************************/
+	/* @class     RandomInt
 	*  @brief     Produces a random value of a integer number.
 	*****************************************************************************/
 	class RandomInt
@@ -100,7 +100,7 @@ namespace gm
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetRange(int min, int max)
 		{
@@ -130,7 +130,7 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::random_device _seed;
 		std::mt19937       _engine;
@@ -140,8 +140,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Distribution
-	*************************************************************************//**
-	*  @class     Distribution
+	****************************************************************************/
+	/* @class     Distribution
 	*  @brief     Produces a random value of a integer number.
 	*****************************************************************************/
 	template<typename T>
@@ -163,8 +163,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Bernoulli Distribution
-	*************************************************************************//**
-	*  @class     Bernoulli_Distribution : public Distribution<double>
+	****************************************************************************/
+	/* @class     Bernoulli_Distribution : public Distribution<double>
 	*  @brief     BernoulliDistribution (p: true, 1-p: false)
 	*  @param[in] double probability (0.0 ~ 1.0)
 	*  @details   return true or false (situation: coin flipping)
@@ -178,7 +178,7 @@ namespace gm
 		bool GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double probability)
 		{
@@ -206,8 +206,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Binominal_Distribution
-	*************************************************************************//**
-	*  @class     Binominal_Distribution : public Distribution<int>
+	****************************************************************************/
+	/* @class     Binominal_Distribution : public Distribution<int>
 	*  @brief     BernoulliDistribution (p: true, 1-p: false)
 	*  @param[in] int count (total)
 	*  @param[in] double probability (0.0~1.0)
@@ -222,7 +222,7 @@ namespace gm
 		int GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(int count, double probability)
 		{
@@ -251,8 +251,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Negative_Binominal_Distribution
-	*************************************************************************//**
-	*  @class     Negative_Binominal_Distribution : public Distribution<int>
+	****************************************************************************/
+	/* @class     Negative_Binominal_Distribution : public Distribution<int>
 	*  @brief     NegativeBernoulliDistribution (p: true, 1-p: false)
 	*  @param[in] int successCount
 	*  @param[in] double probability (0.0~1.0)
@@ -267,7 +267,7 @@ namespace gm
 		int GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(int successCount, double probability)
 		{
@@ -296,8 +296,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Geometric_Distribution
-	*************************************************************************//**
-	*  @class     Geometric_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Geometric_Distribution : public Distribution<T>
 	*  @brief     Geometric_Distribution
 	*  @param[in] int count
 	*  @param[in] double probability (0.0~1.0)
@@ -314,7 +314,7 @@ namespace gm
 		double GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double probability)
 		{
@@ -341,8 +341,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Poisson_Distribution
-	*************************************************************************//**
-	*  @class     Poisson_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Poisson_Distribution : public Distribution<T>
 	*  @brief     Poisson_Distribution
 	*  @param[in] double mean
 	*  @details p(x | É ) = exp(-É )É ^i / (i!)
@@ -357,7 +357,7 @@ namespace gm
 		double GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double mean)
 		{
@@ -380,8 +380,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Exponential_Distribution
-	*************************************************************************//**
-	*  @class     Exponential_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Exponential_Distribution : public Distribution<T>
 	*  @brief     Exponential_Distribution
 	*  @param[in] T lambda
 	*  @details p(x | É…) = É… * exp(- É…x)
@@ -400,7 +400,7 @@ namespace gm
 		T Lambda(){ return _distribution.lambda; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T lambda)
 		{
@@ -423,8 +423,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Gamma_Distribution
-	*************************************************************************//**
-	*  @class     Gamma_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Gamma_Distribution : public Distribution<T>
 	*  @brief     Gamma_Distribution
 	*  @param[in] T alpha
 	*  @param[in] T beta
@@ -445,7 +445,7 @@ namespace gm
 		T Beta()  { return _distribution.beta; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T alpha, T beta)
 		{
@@ -468,8 +468,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Weibull_Distribution
-	*************************************************************************//**
-	*  @class     Weibull_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Weibull_Distribution : public Distribution<T>
 	*  @brief     Weibull_Distribution
 	*  @param[in] T a
 	*  @param[in] T b
@@ -490,7 +490,7 @@ namespace gm
 		T Param_B()     { return _distribution.b; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -513,8 +513,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Extream_Value_Distribution
-	*************************************************************************//**
-	*  @class     Extreme_Value_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Extreme_Value_Distribution : public Distribution<T>
 	*  @brief     Extreme_Value_Distribution
 	*  @param[in] T a
 	*  @param[in] T b
@@ -536,7 +536,7 @@ namespace gm
 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -559,8 +559,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			LogNormal_Distribution
-	*************************************************************************//**
-	*  @class     Normal_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Normal_Distribution : public Distribution<T>
 	*  @brief     Normal_Distribution
 	*  @param[in] T mean
 	*  @param[in] T stdev
@@ -582,7 +582,7 @@ namespace gm
 		T Sigma() { return _distribution.sigma; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T mean, T stdev)
 		{
@@ -605,8 +605,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			LogNormal_Distribution
-	*************************************************************************//**
-	*  @class     LogNormal_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     LogNormal_Distribution : public Distribution<T>
 	*  @brief     LogNormal_Distribution
 	*  @param[in] T mean
 	*  @param[in] T stdev
@@ -627,7 +627,7 @@ namespace gm
 		T Stdev() { return _distribution.s; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T mean, T stdev)
 		{
@@ -650,8 +650,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Chi_Squared_Distribution
-	*************************************************************************//**
-	*  @class     Chi_Squared_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Chi_Squared_Distribution : public Distribution<T>
 	*  @brief     Chi_Squared_Distribution
 	*  @param[in] T degree_of_freedom
 	*  @details p(x | n) = x^(n/2 - 1) * exp(-x/2) / (É°(n/2) * 2^(n/2))
@@ -669,7 +669,7 @@ namespace gm
 		T Max() { return _distribution.max; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T degree_of_freedom)
 		{
@@ -692,8 +692,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Cauchy_Distribution 
-	*************************************************************************//**
-	*  @class     Cauchy_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Cauchy_Distribution : public Distribution<T>
 	*  @brief     Cauchy_Distribution 
 	*  @param[in] T a
 	*  @param[in] T b
@@ -714,7 +714,7 @@ namespace gm
 		T Param_B() { return _distribution.b; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -737,8 +737,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Fisher_F_Distribution
-	*************************************************************************//**
-	*  @class     Fisher_F_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Fisher_F_Distribution : public Distribution<T>
 	*  @brief     Fisher_F_Distribution
 	*  @param[in] T m
 	*  @param[in] T n
@@ -759,7 +759,7 @@ namespace gm
 		T Param_N() { return _distribution.n; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T m, T n)
 		{
@@ -782,8 +782,8 @@ namespace gm
 
 	/****************************************************************************
 	*				  			Student_T_Distribution
-	*************************************************************************//**
-	*  @class     Student_T_Distribution : public Distribution<T>
+	****************************************************************************/
+	/* @class     Student_T_Distribution : public Distribution<T>
 	*  @brief     Student_T_Distribution 
 	*  @param[in] T mean
 	*  @param[in] T stdev
@@ -803,7 +803,7 @@ namespace gm
 		T Param_N() { return _distribution.n; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T n)
 		{

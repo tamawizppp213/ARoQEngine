@@ -38,8 +38,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			Base64StringView
-			*************************************************************************//**
-			*  @struct    Base64StringView
+			****************************************************************************/
+			/* @struct    Base64StringView
 			*  @brief     String view
 			*****************************************************************************/
 			struct Base64StringView
@@ -54,7 +54,7 @@ namespace gltf
 				std::string::const_iterator end  () const { return ItEnd; }
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string::const_iterator ItBegin;
 				std::string::const_iterator ItEnd;
@@ -71,8 +71,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			Base64BufferView
-			*************************************************************************//**
-			*  @struct    Base64BufferView
+			****************************************************************************/
+			/* @struct    Base64BufferView
 			*  @brief     intended to be used as a pass-by-value function parameter
 			*****************************************************************************/
 			struct Base64BufferView
@@ -83,7 +83,7 @@ namespace gltf
 				*****************************************************************************/
 				
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				void* const Buffer;
 				const size_t BufferByteLength;
@@ -99,8 +99,8 @@ namespace gltf
 			};
 			/****************************************************************************
 			*                       GetDecodeTable
-			*************************************************************************//**
-			*  @fn        inline std::vector<uint8_t> GetDecodeTable()
+			****************************************************************************/
+			/* @fn        inline std::vector<uint8_t> GetDecodeTable()
 			*  @brief     Return decode char table
 			*  @param[in] void
 			*  @return Å@Å@std::vector<uint8_t>
@@ -119,8 +119,8 @@ namespace gltf
 			}
 			/****************************************************************************
 			*                       Base64Decode
-			*************************************************************************//**
-			*  @fn        inline void Base64Decode(Base64StringView encodedData, Base64BufferView decodedData, size_t byteToSkip)
+			****************************************************************************/
+			/* @fn        inline void Base64Decode(Base64StringView encodedData, Base64BufferView decodedData, size_t byteToSkip)
 			*  @brief     Base64Decode
 			*  @param[in] Base64StringView encodeData
 			*  @param[in] Base64BufferView decodeData

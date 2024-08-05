@@ -31,12 +31,12 @@ namespace rhi::core
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::rendering
+namespace engine
 {
 	/****************************************************************************
 	*				  			    ScreenCapture
-	*************************************************************************//**
-	*  @class     ScreenCapture
+	****************************************************************************/
+	/* @class     ScreenCapture
 	*  @brief     If you press the PrintScreen button, The texture is saved in the current time directory.
 	              This class is used when executing in the debug mode 
 	*****************************************************************************/
@@ -58,7 +58,7 @@ namespace gc::rendering
 		bool Capture([[maybe_unused]]const FrameBufferPtr& frameBuffer);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -79,7 +79,7 @@ namespace gc::rendering
 		bool IsTriggerPrintScreenKey();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 		

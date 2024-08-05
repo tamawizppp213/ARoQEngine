@@ -44,8 +44,8 @@ namespace
     }
     /****************************************************************************
     *                       GetAccessorTypesAsString
-    *************************************************************************//**
-    *  @fn        std::string GetAccessorTypesAsString(const std::set<AccessorType>& accessorTypes)
+    ****************************************************************************/
+    /* @fn        std::string GetAccessorTypesAsString(const std::set<AccessorType>& accessorTypes)
     *  @brief     Get Accessor Types as string 
     *  @param[in] const std::set<AccessorType>&
     *  @return 　　std::string
@@ -64,8 +64,8 @@ namespace
     }
     /****************************************************************************
     *                       GetComponentTypesAsString
-    *************************************************************************//**
-    *  @fn        std::string GetAccessorTypesAsString(const std::set<ComponentType>& componentTypes)
+    ****************************************************************************/
+    /* @fn        std::string GetAccessorTypesAsString(const std::set<ComponentType>& componentTypes)
     *  @brief     Get Accessor Types as string
     *  @param[in] const std::set<ComponentType>&
     *  @return 　　std::string
@@ -84,8 +84,8 @@ namespace
     }
     /****************************************************************************
     *                       ValidateAccessorsImpl
-    *************************************************************************//**
-    *  @fn        void ValidateAccessorsImpl(const size_t count, const size_t byteOffset, const ComponentType& componentType,
+    ****************************************************************************/
+    /* @fn        void ValidateAccessorsImpl(const size_t count, const size_t byteOffset, const ComponentType& componentType,
         const AccessorType& accessorType, const std::string& id, const GLTFBufferView& bufferView, const GLTFBuffer& buffer)
     *  @brief     Validate accessor 
     *  @param[in] size_t count
@@ -201,8 +201,8 @@ namespace
 }
 /****************************************************************************
 *                       Validate
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::Validate(const GLTFDocument& document)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::Validate(const GLTFDocument& document)
 *  @brief     Validate accessors and meshes
 *  @param[in] const GLTFDocument& document
 *  @return 　　void
@@ -214,8 +214,8 @@ void gltf::detail::validation::Validate(const GLTFDocument& document)
 }
 /****************************************************************************
 *                       ValidateAccessors
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateAccessors(const GLTFDocument& document)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateAccessors(const GLTFDocument& document)
 *  @brief     Validate accessors
 *  @param[in] const GLTFDocument& document
 *  @return 　　void
@@ -229,8 +229,8 @@ void gltf::detail::validation::ValidateAccessors(const GLTFDocument& document)
 }
 /****************************************************************************
 *                       ValidateMeshes
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateMeshes(const GLTFDocument& document)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateMeshes(const GLTFDocument& document)
 *  @brief     Validate meshes
 *  @param[in] const GLTFDocument& document
 *  @return 　　void
@@ -247,8 +247,8 @@ void gltf::detail::validation::ValidateMeshes(const GLTFDocument& document)
 }
 /****************************************************************************
 *                       ValidateMeshPrimitive
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateMeshPrimitive(const GLTFDocument& document, const asset::GLTFMeshPrimitive& primitive)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateMeshPrimitive(const GLTFDocument& document, const asset::GLTFMeshPrimitive& primitive)
 *  @brief     Validate mesh primitive
 *  @param[in] const GLTFDocument& document
 *  @param[in] const GLTFMeshPrimitive& primitive
@@ -279,8 +279,8 @@ void gltf::detail::validation::ValidateMeshPrimitive(const GLTFDocument& documen
 }
 /****************************************************************************
 *                       ValidateMeshPrimitiveAttributeAccessors
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateMeshPrimitiveAttributeAccessors(const GLTFDocument& document, const std::unordered_map<std::string, std::string>& attributes, const size_t vertexCount)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateMeshPrimitiveAttributeAccessors(const GLTFDocument& document, const std::unordered_map<std::string, std::string>& attributes, const size_t vertexCount)
 *  @brief     Validate mesh primitive attribute
 *  @param[in] const GLTFDocument& document
 *  @param[in]  const std::unordered_map<std::string, std::string>& attributes, 
@@ -324,8 +324,8 @@ void gltf::detail::validation::ValidateMeshPrimitiveAttributeAccessors(const GLT
 }
 /****************************************************************************
 *                         ValidateAccessorTypes
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateAccessorTypes(const asset::GLTFAccessor& accessor, const std::string& accessorName,
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateAccessorTypes(const asset::GLTFAccessor& accessor, const std::string& accessorName,
 	          const std::set<asset::AccessorType>& accessorTypes, const std::set<asset::ComponentType>& componentTypes)
 *  @brief     Validate accessor types
 *  @param[in] const asset::GLTFAccessor& accessor,
@@ -358,8 +358,8 @@ void gltf::detail::validation::ValidateAccessorTypes(const asset::GLTFAccessor& 
 }
 /****************************************************************************
 *                         ValidateAccessor
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateAccessor(const GLTFDocument& document, const asset::GLTFAccessor& accessor)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateAccessor(const GLTFDocument& document, const asset::GLTFAccessor& accessor)
 *  @brief     Validate accessor
 *  @param[in] const GLTFDocument& document, 
 *  @param[in] const asset::GLTFAccessor& accessor
@@ -396,8 +396,8 @@ void gltf::detail::validation::ValidateAccessor(const GLTFDocument& document, co
 }
 /****************************************************************************
 *                         ValidateBufferView
-*************************************************************************//**
-*  @fn        void gltf::detail::validation::ValidateBufferView(const asset::GLTFBufferView& bufferView, const asset::GLTFBuffer& buffer)
+****************************************************************************/
+/* @fn        void gltf::detail::validation::ValidateBufferView(const asset::GLTFBufferView& bufferView, const asset::GLTFBuffer& buffer)
 *  @brief     Validate buffer view
 *  @param[in] const asset::GLTFBufferView& bufferView, 
 *  @param[in] const asset::GLTFBuffer& buffer

@@ -27,8 +27,8 @@ namespace rhi::directX12
 	class RHIDescriptorHeap;
 	/****************************************************************************
 	*				  			GPUResourceView
-	*************************************************************************//**
-	*  @class     GPUResourceView
+	****************************************************************************/
+	/* @class     GPUResourceView
 	*  @brief     Resource view 
 	*****************************************************************************/
 	class GPUResourceView : public core::GPUResourceView
@@ -39,21 +39,21 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Resource Layoutの配列インデックスをコマンドリストとバインドする
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : CPUのポインタを返すハンドラを取得します
-		/*----------------------------------------------------------------------*/
-		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
+		*----------------------------------------------------------------------*/
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler() const;
 
 		/*----------------------------------------------------------------------
 		*  @brief : GPUのポインタを返すハンドラを取得します
-		/*----------------------------------------------------------------------*/
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
+		*----------------------------------------------------------------------*/
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler() const;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -86,7 +86,7 @@ namespace rhi::directX12
 		const gu::SharedPointer<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 		
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::pair<core::DescriptorHeapType, gu::uint32> _heapOffset = {};
 		bool _hasCreated = false;

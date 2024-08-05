@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUTypeTraitsStruct.hpp
-///             @brief  note : __で始まる関数はコンパイラ特有の関数であるため, 実装は分かりません
-///                     https://github.com/hideakitai/ArxTypeTraits/blob/main/ArxTypeTraits/type_traits.h
-///                     https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md
-///             @author toide
-///             @date   2024/02/05 1:02:01
+///  @file   GUTypeTraitsStruct.hpp
+///  @brief  note : __で始まる関数はコンパイラ特有の関数であるため, 実装は分かりません@n
+///          https://github.com/hideakitai/ArxTypeTraits/blob/main/ArxTypeTraits/type_traits.h @n
+///          https://github.com/Quuxplusone/from-scratch/blob/master/include/scratch/bits/type-traits/compiler-magic.md @n
+///  @author toide
+///  @date   2024/02/05 1:02:01
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_TYPE_TRAITS_STRUCT_HPP

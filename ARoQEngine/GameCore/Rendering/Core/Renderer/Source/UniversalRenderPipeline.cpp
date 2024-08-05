@@ -12,7 +12,7 @@
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassLightCulling.hpp"
-#include "GameCore/Rendering/Effect/Include/SSAO.hpp"
+#include "GameCore/Rendering/PostProcess/Include/SSAO.hpp"
 #include "GameCore/Rendering/Light/Include/CascadeShadow.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
@@ -23,8 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc;
-using namespace gc::basepass;
+using namespace engine;
 using namespace rhi::core;
 
 namespace
@@ -40,16 +39,16 @@ _gameTimer(gameTimer)
 {
 	_zPrepass = gu::MakeShared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
 
-	_gBuffer = gu::MakeShared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
+	_gBuffer = gu::MakeShared<GBuffer>(engine, GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
 	_ssao = gu::MakeShared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
-	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
-	_cascadeShadowMap = gu::MakeShared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
+	const auto shadowDesc = CascadeShadowDesc();
+	_cascadeShadowMap = gu::MakeShared<CascadeShadow>(_engine, shadowDesc, L"URP");
 
-	_uiRenderer = gu::MakeShared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
+	_uiRenderer = gu::MakeShared<UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
-	_directionalLights = gu::MakeShared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
+	_directionalLights = gu::MakeShared<SceneLightBuffer<DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
 
 	PrepareModelPipeline();
 }
@@ -143,7 +142,7 @@ void URP::PrepareModelPipeline()
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map
 			ResourceLayoutElement(DescriptorHeapType::SRV, 2), // Normal map
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0) }
 	);
 
 	/*-------------------------------------------------------------------
@@ -151,15 +150,15 @@ void URP::PrepareModelPipeline()
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"),  SP("PSMain"), 6.4f, { SP("Shader\\Core" )}, {SP("USE_SPECULAR_F_NONE")});
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"), SP("VSMain"), { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"),  SP("PSMain"),{ SP("Shader\\Core")}, { SP("USE_SPECULAR_F_NONE")} });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
 	auto blend = BlendProperty::AlphaBlend();
 
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(blend));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid(false, FrontFace::Clockwise, CullingMode::Back)));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));

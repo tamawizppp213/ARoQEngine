@@ -89,8 +89,8 @@ GPUResourceView::~GPUResourceView()
 #pragma region Bind Function
 /****************************************************************************
 *                     Bind
-*************************************************************************//**
-*  @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
+****************************************************************************/
+/* @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
 *
 *  @brief     Bind resource layout array index to the command list.
 			  index : resource layout array index
@@ -168,8 +168,8 @@ void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& comman
 #pragma region Prepare View Function 
 /****************************************************************************
 *                     CreateView
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateView()
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateView()
 *
 *  @brief     Create view
 *
@@ -211,8 +211,8 @@ void GPUResourceView::CreateView()
 
 /****************************************************************************
 *                     CreateImageView
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateImageView()
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateImageView()
 *
 *  @brief     Create image view
 *
@@ -238,7 +238,7 @@ void GPUResourceView::CreateImageView()
 		(
 			GetImageAspectFlags(imageViewCreateInfo.format),        // aspect mask
 			0,                                                      // base mip levels
-			static_cast<std::uint32_t>(vkImage->GetMipMapLevels()), // level count
+			static_cast<std::uint32_t>(vkImage->GetMaxMipMapLevel()), // level count
 			0,                                                      // base array layer
 			static_cast<std::uint32_t>(vkImage->GetArrayLength())   // layer count
 		)
@@ -261,8 +261,8 @@ void GPUResourceView::CreateImageView()
 
 /****************************************************************************
 *                     CreateBufferView
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateBufferView()
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateBufferView()
 *
 *  @brief     Create buffer view
 *
@@ -316,8 +316,8 @@ void GPUResourceView::CreateBufferView()
 
 /****************************************************************************
 *                     GetImageAspectFlags
-*************************************************************************//**
-*  @fn        VkImageAspectFlags GPUResourceView::GetImageAspectFlags(const VkFormat format)
+****************************************************************************/
+/* @fn        VkImageAspectFlags GPUResourceView::GetImageAspectFlags(const VkFormat format)
 *
 *  @brief     Return the image aspect flags in accroding to the Vkformat.
 *
@@ -347,8 +347,8 @@ VkImageAspectFlags GPUResourceView::GetImageAspectFlags(const VkFormat format)
 
 /****************************************************************************
 *                     SelectDescriptorHeap
-*************************************************************************//**
-*  @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+****************************************************************************/
+/* @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
 * 
 *  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap
 * 

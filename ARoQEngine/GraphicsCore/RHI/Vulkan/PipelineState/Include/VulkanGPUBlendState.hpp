@@ -26,8 +26,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUBlendState : public rhi::core::GPUBlendState
@@ -38,7 +38,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkPipelineColorBlendStateCreateInfo& GetBlendState() const { return _blendDesc; }
 
@@ -49,9 +49,9 @@ namespace rhi::vulkan
 		
 		~GPUBlendState();
 		
-		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties);
+		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties, const bool alphaToCoverageEnable);
 		
-		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
+		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty, const bool alphaToCoverageEnable);
 	
 	protected:
 		/****************************************************************************
@@ -59,7 +59,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::DynamicArray<VkPipelineColorBlendAttachmentState> _attachments = {};
 		

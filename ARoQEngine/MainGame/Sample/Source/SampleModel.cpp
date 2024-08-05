@@ -13,7 +13,7 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/PostProcess/Include/DepthOfField.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 
@@ -23,11 +23,10 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
-using namespace gc::core;
+using namespace engine;
 
-gu::SharedPointer<basepass::ZPrepass> zprepass = nullptr;
-gu::SharedPointer<basepass::GBuffer> gbuffer = nullptr;
+gu::SharedPointer<ZPrepass> zprepass = nullptr;
+gu::SharedPointer<GBuffer> gbuffer = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +41,8 @@ SampleModel::~SampleModel()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleModel::Initialize(const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleModel::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
@@ -54,8 +53,8 @@ void SampleModel::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gam
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleModel::Update()
+****************************************************************************/
+/* @fn        void SampleModel::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -68,8 +67,8 @@ void SampleModel::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleModel::Draw()
+****************************************************************************/
+/* @fn        void SampleModel::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -84,8 +83,8 @@ void SampleModel::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleModel::Terminate()
+****************************************************************************/
+/* @fn        void SampleModel::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -100,8 +99,8 @@ void SampleModel::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleModel::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleModel::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -131,9 +130,9 @@ void SampleModel::LoadMaterials()
 	_model->Load(SP("Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx"));
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
-	zprepass = gu::MakeShared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	zprepass = gu::MakeShared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	zprepass->Add(_model);
-	gbuffer = gu::MakeShared<basepass::GBuffer>(_engine);
+	gbuffer = gu::MakeShared<GBuffer>(_engine);
 	gbuffer->Add(_model);
 
 	_dof = gu::MakeShared<Dof>(_engine, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight());
@@ -149,8 +148,8 @@ void SampleModel::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -188,8 +187,8 @@ void SampleModel::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -210,8 +209,8 @@ void SampleModel::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void

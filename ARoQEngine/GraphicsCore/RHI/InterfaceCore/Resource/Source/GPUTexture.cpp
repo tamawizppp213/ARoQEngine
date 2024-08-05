@@ -18,42 +18,19 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-size_t GPUTexture::GetWidth(const size_t mipLevel) const noexcept
+gu::uint16 GPUTexture::GetDepth(const gu::uint8 mipLevel) const noexcept
 {
-	auto result = _metaData.Width;
-	for (size_t index = 0; index < mipLevel; ++index)
-	{
-		result = std::max(result / 2, static_cast<size_t>(1));
-	}
-	return result;
-}
-
-size_t GPUTexture::GetHeight(const size_t mipLevel) const noexcept
-{
-	auto result = _metaData.Height;
-	for (size_t index = 0; index < mipLevel; ++index)
-	{
-		result = std::max(result / 2, static_cast<size_t>(1));
-	}
-	return result;
-}
-
-size_t GPUTexture::GetDepth(const size_t mipLevel) const noexcept
-{
-	auto result = _metaData.DepthOrArraySize;
 	if (IsArray()) 
 	{ 
 		return 1; 
 	}
 
-	for (size_t index = 0; index < mipLevel; ++index)
-	{
-		result = std::max(result / 2, static_cast<size_t>(1));
-	}
-	return result;
+	return _metaData.DepthOrArraySize > 1u << mipLevel ? 1u : _metaData.DepthOrArraySize >> mipLevel;
 }
 
-size_t GPUTexture::GetByteSize(const size_t mipLevel) const noexcept
+gu::uint64 GPUTexture::GetByteSize(const gu::uint8 mipLevel) const noexcept
 {
-	return GetWidth(mipLevel) * GetHeight(mipLevel) * GetDepth(mipLevel) * core::PixelFormatSizeOf::Get(GetPixelFormat()) * core::MultiSampleSizeOf::Get(GetMultiSample());
+	return GetWidth(mipLevel) * GetHeight(mipLevel) * GetDepth(mipLevel)
+		* core::PixelFormatInfo::GetConst(GetPixelFormat()).BlockBytes
+		* static_cast<gu::uint64>(GetMultiSample());
 }

@@ -24,8 +24,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 using namespace rhi::core;
 using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +52,11 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-        Shadow map
 	---------------------------------------------------------------------*/
-	_lightCamera = gu::MakeShared<gc::Camera>(_engine);
+	_lightCamera = gu::MakeShared<Camera>(_engine);
 	_shadowMaps.Resize(SHADOW_MAP_COUNT);
 	for (size_t i = 0; i < _shadowMaps.Size(); ++i)
 	{
-		_shadowMaps[i] = gu::MakeShared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
+		_shadowMaps[i] = gu::MakeShared<ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
 
 	PrepareResourceView (name);
@@ -74,8 +73,8 @@ CascadeShadow::~CascadeShadow()
 #pragma region Main Function
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void CascadeShadow::Draw()
+****************************************************************************/
+/* @fn        void CascadeShadow::Draw()
 * 
 *  @brief     Draw shadow map and draw shadow
 * 
@@ -105,8 +104,8 @@ void CascadeShadow::Draw(const gu::SharedPointer<GameTimer>& gameTimer,const gm:
 
 /****************************************************************************
 *							Add
-*************************************************************************//**
-*  @fn        void CascadeShadow::Add(const GameModelPtr& gameModel)
+****************************************************************************/
+/* @fn        void CascadeShadow::Add(const GameModelPtr& gameModel)
 *
 *  @brief     Add game models for the rendering shadow
 *
@@ -145,15 +144,15 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("ShadowInfo"));
-		buffer->Pack(&shadowInfo, nullptr);
+		buffer->UploadByte(&shadowInfo, metaData.GetTotalByte(), 0, nullptr);
 		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}
 }
 
 /****************************************************************************
 *						UpdateLightCamera
-*************************************************************************//**
-*  @fn        void CascadeShadow::Update()
+****************************************************************************/
+/* @fn        void CascadeShadow::Update()
 *
 *  @brief     Move the directional light camera
 *
@@ -252,6 +251,6 @@ void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const 
 		shadowInfo.LVPC[i] = lvpcMatrices[i].ToFloat4x4();
 	}
 
-	_shadowInfoView->GetBuffer()->Update(&shadowInfo, 1);
+	_shadowInfoView->GetBuffer()->UploadByte(&shadowInfo, sizeof(shadowInfo));
 }
 #pragma endregion SetUp Function

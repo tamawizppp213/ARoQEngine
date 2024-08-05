@@ -88,8 +88,8 @@ GPUTexture::~GPUTexture()
 #pragma region Main Function
 /****************************************************************************
 *                     Load
-*************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+****************************************************************************/
+/* @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture
 *
@@ -148,16 +148,16 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	---------------------------------------------------------------------*/
 	if (dxMetaData.IsCubemap())
 	{
-		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(image->width, image->height, dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else
 	{
-		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
-			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.arraySize),
+			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	// 必ず最初はUndefinedから始める.
 	_metaData.State = rhi::core::ResourceState::Common;
@@ -177,11 +177,11 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 		const auto stagingInfo = core::GPUBufferMetaData::UploadBuffer
 		(
 			sizeof(std::uint8_t),
-			pixelSize
+			(gu::uint32)pixelSize
 		);
 
 		_stagingBuffer = _device->CreateBuffer(stagingInfo, L"StagingBuffer");
-		_stagingBuffer->Update(image->pixels, pixelSize);
+		_stagingBuffer->UploadByte(image->pixels, sizeof(gu::uint8) * pixelSize);
 	}
 
 	/*-------------------------------------------------------------------
@@ -198,17 +198,17 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	};
 
 	const auto vkBuffer      = gu::StaticPointerCast<vulkan::GPUBuffer>(_stagingBuffer)->GetBuffer();
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
+	//commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
 	vkCmdCopyBufferToImage(vkCommandList, vkBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
+	//commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
 
 }
 #pragma endregion Main Function
 #pragma region Prepare 
 /****************************************************************************
 *                     Prepare
-*************************************************************************//**
-*  @fn        void GPUTexture::Prepare()
+****************************************************************************/
+/* @fn        void GPUTexture::Prepare()
 *
 *  @brief     Prepare texture
 *
@@ -233,14 +233,14 @@ void GPUTexture::Prepare()
 		.format                = EnumConverter::Convert(_metaData.PixelFormat),                 // pixel format
 		.extent                = VkExtent3D(static_cast<std::uint32_t>(_metaData.Width),        // texel size
 		                                    static_cast<std::uint32_t>(_metaData.Height),       
-		                        (_metaData.Dimension == core::ResourceDimension::Dimension3D ?
+		                        (_metaData.Dimension == core::ResourceDimension::Texture3D ?
 								static_cast<std::uint32_t>(_metaData.DepthOrArraySize) : 1)),
-		.mipLevels             = static_cast<std::uint32_t>(_metaData.MipLevels),               // max mipmap levels
-		.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Dimension3D ? 
+		.mipLevels             = static_cast<std::uint32_t>(_metaData.MipMapLevels),               // max mipmap levels
+		.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Texture3D ? 
 								  1 : _metaData.DepthOrArraySize),
 		.samples               = EnumConverter::Convert(_metaData.Sample),
 		.tiling                = VkImageTiling::VK_IMAGE_TILING_OPTIMAL,
-		.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).second,        // image resource usage
+		//.usage                 = EnumConverter::Convert(_metaData.).second,        // image resource usage
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,
 		.pQueueFamilyIndices   = nullptr,
@@ -289,8 +289,8 @@ void GPUTexture::Prepare()
 #pragma region Debug
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GPUBuffer::SetName(const gu::tstring& name)
 *  @brief     Set Buffer Name
 *  @param[in] const gu::tstring& name
 *  @return 　　void

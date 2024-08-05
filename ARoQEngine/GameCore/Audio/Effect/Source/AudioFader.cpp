@@ -34,7 +34,7 @@ AudioFader::AudioFader(const float startVolume, const float targetVolume, const 
 #pragma region Main Function
 /****************************************************************************
 *                       Update
-*************************************************************************//**
+****************************************************************************/
 *  @fn        float AudioFader::Update(const float deltaTime)
 *
 *  @brief     Update volume. Return current volume.

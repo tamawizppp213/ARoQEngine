@@ -32,8 +32,8 @@ Mouse::Mouse()
 
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
+****************************************************************************/
+/* @fn        bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 *  @brief     Mouse Initialize
 *  @param[in] LPDIRECTINPUT8 dInput
 *  @param[in] HINSTANCE hInstace
@@ -62,8 +62,8 @@ bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 
 /****************************************************************************
 *							Update
-*************************************************************************//**
-*  @fn        bool Mouse::Update()
+****************************************************************************/
+/* @fn        bool Mouse::Update()
 *  @brief     Check Mouse Input
 *  @param[in] void
 *  @return 　　void
@@ -86,8 +86,8 @@ void Mouse::Update()
 
 /****************************************************************************
 *							Finalize
-*************************************************************************//**
-*  @fn        void Mouse::Finalize()
+****************************************************************************/
+/* @fn        void Mouse::Finalize()
 *  @brief     Finish Mouse Device
 *  @param[in] void
 *  @return 　　void
@@ -104,26 +104,26 @@ void Mouse::Finalize()
 
 /****************************************************************************
 *							IsPress
-*************************************************************************//**
-*  @fn        void Mouse::IsPress()
+****************************************************************************/
+/* @fn        void Mouse::IsPress()
 *  @brief     Detect pressing button
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsPress(int mouseButton)
+bool Mouse::IsPress(int mouseButton) const
 {
 	return (_currentMouseState.rgbButtons[mouseButton] & 0x80) ? true : false;
 }
 
 /****************************************************************************
 *							IsTrigger
-*************************************************************************//**
-*  @fn        void Mouse::IsTrigger()
+****************************************************************************/
+/* @fn        void Mouse::IsTrigger()
 *  @brief     Detect trigger button
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsTrigger(int mouseButton)
+bool Mouse::IsTrigger(int mouseButton) const
 {
 	if (!(_previousMouseState.rgbButtons[mouseButton] & 0x80) &&
 		(_currentMouseState.rgbButtons[mouseButton] & 0x80))
@@ -135,13 +135,13 @@ bool Mouse::IsTrigger(int mouseButton)
 
 /****************************************************************************
 *							IsRelease
-*************************************************************************//**
-*  @fn        void Mouse::IsRelease()
+****************************************************************************/
+/* @fn        void Mouse::IsRelease()
 *  @brief     Detect release button
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsRelease(int mouseButton)
+bool Mouse::IsRelease(int mouseButton) const
 {
 	if ((_previousMouseState.rgbButtons[mouseButton] & 0x80) &&
 		!(_currentMouseState.rgbButtons[mouseButton] & 0x80))
@@ -153,8 +153,8 @@ bool Mouse::IsRelease(int mouseButton)
 
 /****************************************************************************
 *							GetMousePosition
-*************************************************************************//**
-*  @fn        MousePosition& Mouse::GetMousePosition
+****************************************************************************/
+/* @fn        MousePosition& Mouse::GetMousePosition
 *  @brief     Get Mouse Position
 *  @param[in] void
 *  @return 　　MousePosition&
@@ -168,8 +168,8 @@ MousePosition& Mouse::GetMousePosition()
 
 /****************************************************************************
 *							GetMousePosition_X
-*************************************************************************//**
-*  @fn        int Mouse::GetMousePosition_X
+****************************************************************************/
+/* @fn        int Mouse::GetMousePosition_X
 *  @brief     Get Mouse Position X
 *  @param[in] void
 *  @return 　　int
@@ -183,8 +183,8 @@ int Mouse::GetMousePosition_X()
 
 /****************************************************************************
 *							GetMousePosition_Y
-*************************************************************************//**
-*  @fn        int Mouse::GetMousePosition_Y
+****************************************************************************/
+/* @fn        int Mouse::GetMousePosition_Y
 *  @brief     Get Mouse Position Y
 *  @param[in] void
 *  @return 　　int
@@ -198,13 +198,13 @@ int Mouse::GetMousePosition_Y()
 
 /****************************************************************************
 *							GetMouseVelocity
-*************************************************************************//**
-*  @fn        DirectX::XMFLOAT2 Mouse::GetMouseVelocity
+****************************************************************************/
+/* @fn        DirectX::XMFLOAT2 Mouse::GetMouseVelocity
 *  @brief     GetMouseVelocity
 *  @param[in] void
 *  @return 　　XMFLOAT2
 *****************************************************************************/
-gm::Float2 Mouse::GetMouseVelocity()
+gm::Float2 Mouse::GetMouseVelocity() const
 {
 	gm::Float2 velocity={};
 	velocity.x = (float)_currentMouseState.lX;
@@ -214,7 +214,7 @@ gm::Float2 Mouse::GetMouseVelocity()
 #pragma endregion Public Function
 
 #pragma region Private Function
-bool Mouse::CreateHWND()
+bool Mouse::CreateHWND() const
 {
 	if (_hwnd == nullptr)
 	{
@@ -224,7 +224,7 @@ bool Mouse::CreateHWND()
 	return true;
 }
 
-bool Mouse::CreateHInstance()
+bool Mouse::CreateHInstance() const
 {
 	if (_hInstance == nullptr)
 	{

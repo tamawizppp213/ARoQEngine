@@ -12,6 +12,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUType.hpp"
+#include "GameUtility/Base/Private/Base/Include/GUTypeTraitsStruct.hpp"
+#include "GameUtility/Base/Include/GUAtomic.hpp"
 #include <atomic>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -21,7 +23,7 @@ namespace gu
 	enum class SharedPointerThreadMode : uint8
 	{
 		NotThreadSafe = 0,
-		ThreadSafe = 1
+		ThreadSafe    = 1
 	};
 }
 
@@ -34,15 +36,15 @@ namespace gu::details::smart_pointer
 {
 	/****************************************************************************
 	*				  			  ReferenceControllerBase
-	*************************************************************************//**
-	*  @class     ReferenceControllerBase
+	****************************************************************************/
+	/* @class     ReferenceControllerBase
 	*  @brief     参照カウントを保持するための基底クラス
 	*****************************************************************************/
 	template<SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
 	class ReferenceControllerBase
 	{
 	private:
-		using ReferenceCountType = std::conditional_t<Mode == SharedPointerThreadMode::ThreadSafe, std::atomic<int32>, int32>;
+		using ReferenceCountType = gu::details::type_traits::Conditional<Mode == SharedPointerThreadMode::ThreadSafe, gu::Atomic<int32>, int32>::ValueType;
 
 	public:
 		/****************************************************************************
@@ -50,35 +52,35 @@ namespace gu::details::smart_pointer
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Increment the shared reference count.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void AddSharedReference();
 
 		/*----------------------------------------------------------------------
 		*  @brief : Increment the weak + shared reference count.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void AddObserverReference();
 
 		/*----------------------------------------------------------------------
 		*  @brief : Decrement the shared reference count.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void ReleaseSharedReference();
 
 		/*----------------------------------------------------------------------
 		*  @brief : Decrement the weak + shared reference count.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void ReleaseObserverReference();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Return the reference count in the shared pointer.
-		/*----------------------------------------------------------------------*/
-		__forceinline int32 GetSharedReferenceCount() const 
+		*----------------------------------------------------------------------*/
+		__forceinline int32 GetSharedReferenceCount()
 		{
 			if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 			{
-				return _sharedReferenceCount.load(std::memory_order_relaxed);
+				return _sharedReferenceCount.Load(gu::MemoryOrder::Relaxed);
 			}
 			else
 			{
@@ -88,12 +90,12 @@ namespace gu::details::smart_pointer
 
 		/*----------------------------------------------------------------------
 		*  @brief : Return the total of observer reference count in the shared and weak pointer.
-		/*----------------------------------------------------------------------*/
-		__forceinline int32 GetObserverReferenceCount() const 
+		*----------------------------------------------------------------------*/
+		__forceinline int32 GetObserverReferenceCount()
 		{
 			if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 			{
-				return _observerReferenceCount.load(std::memory_order_relaxed);
+				return _observerReferenceCount.Load(gu::MemoryOrder::Relaxed);
 			}
 			else
 			{
@@ -103,22 +105,25 @@ namespace gu::details::smart_pointer
 
 		/*----------------------------------------------------------------------
 		*  @brief : Check if this class has the only one reference (true : Unique, false, some references)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool IsUnique() const;
 
 		/*----------------------------------------------------------------------
 		*  @brief : Return the Reference count is under 0;
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool EnableDelete() const { return _sharedReferenceCount <= 0; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		ReferenceControllerBase() = default;
+		ReferenceControllerBase() :
+			_sharedReferenceCount(1), _observerReferenceCount(1)
+		{
+		};
 
 		virtual ~ReferenceControllerBase() {};
 
-		ReferenceControllerBase           (const ReferenceControllerBase&) = delete;
+		ReferenceControllerBase(const ReferenceControllerBase&) = delete;
 		ReferenceControllerBase& operator=(const ReferenceControllerBase&) = delete;
 
 	protected:
@@ -127,31 +132,31 @@ namespace gu::details::smart_pointer
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Destroy ElementType*(template) resource
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void Dispose() = 0;
 
 		/*----------------------------------------------------------------------
 		*  @brief : Destroy pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void DeleteThis() = 0;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// ThreadsafeならAtomic<int32>, それ以外はint32
-		ReferenceCountType _sharedReferenceCount   = 1;    // shared pointer count
+		ReferenceCountType _sharedReferenceCount = 1;    // shared pointer count
 		ReferenceCountType _observerReferenceCount = 1; // weak + shared pointer count
 	};
 
 	/*----------------------------------------------------------------------
 	*  @brief : 参照カウントを増やす
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<SharedPointerThreadMode Mode>
 	__forceinline void ReferenceControllerBase<Mode>::AddSharedReference()
 	{
 		if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 		{
-			_sharedReferenceCount.fetch_add(1, std::memory_order_relaxed);
+			++_sharedReferenceCount;
 		}
 		else
 		{
@@ -161,13 +166,13 @@ namespace gu::details::smart_pointer
 
 	/*----------------------------------------------------------------------
 	*  @brief : 参照カウントを増やす
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<SharedPointerThreadMode Mode>
 	__forceinline void ReferenceControllerBase<Mode>::AddObserverReference()
 	{
 		if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 		{
-			_observerReferenceCount.fetch_add(1, std::memory_order_relaxed);
+			++_observerReferenceCount;
 		}
 		else
 		{
@@ -177,7 +182,7 @@ namespace gu::details::smart_pointer
 
 	/*----------------------------------------------------------------------
 	*  @brief : 参照カウントを減らす
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<SharedPointerThreadMode Mode>
 	void ReferenceControllerBase<Mode>::ReleaseSharedReference()
 	{
@@ -185,7 +190,7 @@ namespace gu::details::smart_pointer
 
 		if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 		{
-			_sharedReferenceCount.fetch_sub(1, std::memory_order_acq_rel);
+			--_sharedReferenceCount;
 		}
 		else
 		{
@@ -199,8 +204,8 @@ namespace gu::details::smart_pointer
 	}
 
 	/*----------------------------------------------------------------------
-	*  @brief : 参照カウントを減らす 
-	/*----------------------------------------------------------------------*/
+	*  @brief : 参照カウントを減らす
+	*----------------------------------------------------------------------*/
 	template<SharedPointerThreadMode Mode>
 	void ReferenceControllerBase<Mode>::ReleaseObserverReference()
 	{
@@ -208,7 +213,7 @@ namespace gu::details::smart_pointer
 
 		if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 		{
-			_observerReferenceCount.fetch_sub(1, std::memory_order_acq_rel);
+			--_observerReferenceCount;
 		}
 		else
 		{
@@ -218,13 +223,13 @@ namespace gu::details::smart_pointer
 
 	/*----------------------------------------------------------------------
 	*  @brief : ほかの参照を持っていないかを確認する
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<SharedPointerThreadMode Mode>
 	bool ReferenceControllerBase<Mode>::IsUnique() const
 	{
 		if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 		{
-			return _sharedReferenceCount.load(std::memory_order_acquire);
+			return _sharedReferenceCount.Load(gu::MemoryOrder::Acquire);
 		}
 		else
 		{

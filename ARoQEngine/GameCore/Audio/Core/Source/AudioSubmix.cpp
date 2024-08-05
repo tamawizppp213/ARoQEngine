@@ -39,8 +39,8 @@ AudioSubmix::~AudioSubmix()
 #pragma region Main Function
 /****************************************************************************
 *                       Regist
-*************************************************************************//**
-*  @fn        void AudioSubmix::Regist(const std::shared_ptr<AudioSource>& audioSource)
+****************************************************************************/
+/* @fn        void AudioSubmix::Regist(const std::shared_ptr<AudioSource>& audioSource)
 *
 *  @brief     Regist
 *
@@ -87,8 +87,8 @@ void AudioSubmix::Reverb(bool isOn)
 #pragma region Set up Function
 /****************************************************************************
 *                       CreateReverb
-*************************************************************************//**
-*  @fn        bool AudioSource::CreateReverb()
+****************************************************************************/
+/* @fn        bool AudioSource::CreateReverb()
 *  @brief     Create Reverb
 *  @param[in] void
 *  @return Å@Å@bool

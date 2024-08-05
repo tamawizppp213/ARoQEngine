@@ -49,77 +49,77 @@ GPUBuffer::~GPUBuffer()
 #pragma endregion Constructor and Destructor
 
 #pragma region Map
-void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
-{
-	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device)->GetDevice();
-
-	/*-------------------------------------------------------------------
-	-           GPU only accessible 
-	---------------------------------------------------------------------*/
-	if ((!_metaData.IsCPUAccessible()))
-	{
-#if _DEBUG
-		assert(copyCommandList->GetType() == core::CommandListType::Copy);
-#endif
-		/*-------------------------------------------------------------------
-		-           Reset intermediate buffer
-		---------------------------------------------------------------------*/
-		if (_stagingMemory) { vkFreeMemory   (vkDevice, _stagingMemory, nullptr); }
-		if (_stagingBuffer) { vkDestroyBuffer(vkDevice, _stagingBuffer, nullptr); }
-
-		/*-------------------------------------------------------------------
-		-           Create intermediate buffer
-		---------------------------------------------------------------------*/
-		Prepare(_stagingBuffer, _stagingMemory, EnumConverter::Convert(core::MemoryHeap::Upload));
-
-		/*-------------------------------------------------------------------
-		-           Create intermediate buffer
-		---------------------------------------------------------------------*/
-		if (vkMapMemory(vkDevice, _stagingMemory, 0, _metaData.ByteSize, 0, reinterpret_cast<void**>(&_stagingMappedData)) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to vk map memory.");
-		};
-		std::memcpy(_stagingMappedData, data, _metaData.ByteSize);
-		vkUnmapMemory(vkDevice, _stagingMemory);
-
-		/*-------------------------------------------------------------------
-		-           Copy intermediate buffer to the main buffer
-		---------------------------------------------------------------------*/
-		VkBufferCopy copy = 
-		{
-			.srcOffset = 0, 
-			.dstOffset = 0,
-			.size      = _metaData.ByteSize
-		};
-
-		const auto vkCommandList = gu::StaticPointerCast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
-		vkCmdCopyBuffer(vkCommandList, _stagingBuffer, _buffer, 1, &copy);
-
-	}
-	/*-------------------------------------------------------------------
-	-           CPU accessible
-	---------------------------------------------------------------------*/
-	else if (_metaData.HeapType == core::MemoryHeap::Upload || _metaData.HeapType == core::MemoryHeap::Readback)
-	{
-		Update(data, GetElementCount());
-	}
-	/*-------------------------------------------------------------------
-	-           Other
-	---------------------------------------------------------------------*/
-	else
-	{
-		throw std::runtime_error("Unknown memory heap type");
-	}
-}
+//void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
+//{
+//	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device)->GetDevice();
+//
+//	/*-------------------------------------------------------------------
+//	-           GPU only accessible 
+//	---------------------------------------------------------------------*/
+//	if ((!_metaData.IsCPUAccessible()))
+//	{
+//#if _DEBUG
+//		assert(copyCommandList->GetType() == core::CommandListType::Copy);
+//#endif
+//		/*-------------------------------------------------------------------
+//		-           Reset intermediate buffer
+//		---------------------------------------------------------------------*/
+//		if (_stagingMemory) { vkFreeMemory   (vkDevice, _stagingMemory, nullptr); }
+//		if (_stagingBuffer) { vkDestroyBuffer(vkDevice, _stagingBuffer, nullptr); }
+//
+//		/*-------------------------------------------------------------------
+//		-           Create intermediate buffer
+//		---------------------------------------------------------------------*/
+//		Prepare(_stagingBuffer, _stagingMemory, EnumConverter::Convert(core::MemoryHeap::Upload));
+//
+//		/*-------------------------------------------------------------------
+//		-           Create intermediate buffer
+//		---------------------------------------------------------------------*/
+//		if (vkMapMemory(vkDevice, _stagingMemory, 0, _metaData.GetTotalByte(), 0, reinterpret_cast<void**>(&_stagingMappedData)) != VK_SUCCESS)
+//		{
+//			throw std::runtime_error("failed to vk map memory.");
+//		};
+//		std::memcpy(_stagingMappedData, data, _metaData.GetTotalByte());
+//		vkUnmapMemory(vkDevice, _stagingMemory);
+//
+//		/*-------------------------------------------------------------------
+//		-           Copy intermediate buffer to the main buffer
+//		---------------------------------------------------------------------*/
+//		VkBufferCopy copy = 
+//		{
+//			.srcOffset = 0, 
+//			.dstOffset = 0,
+//			.size      = _metaData.GetTotalByte()
+//		};
+//
+//		const auto vkCommandList = gu::StaticPointerCast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
+//		vkCmdCopyBuffer(vkCommandList, _stagingBuffer, _buffer, 1, &copy);
+//
+//	}
+//	/*-------------------------------------------------------------------
+//	-           CPU accessible
+//	---------------------------------------------------------------------*/
+//	else if (_metaData.HeapType == core::MemoryHeap::Upload || _metaData.HeapType == core::MemoryHeap::Readback)
+//	{
+//		Update(data, GetElementCount());
+//	}
+//	/*-------------------------------------------------------------------
+//	-           Other
+//	---------------------------------------------------------------------*/
+//	else
+//	{
+//		throw std::runtime_error("Unknown memory heap type");
+//	}
+//}
 /****************************************************************************
 *                     CopyStart
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyStart()
+****************************************************************************/
+/* @fn        void GPUBuffer::CopyStart()
 *  @brief     Call Map Function
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyStart()
+void GPUBuffer::Map()
 {
 #if _DEBUG
 	assert(_metaData.IsCPUAccessible());
@@ -133,30 +133,9 @@ void GPUBuffer::CopyStart()
 }
 
 /****************************************************************************
-*                     CopyData
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
-* 
-*  @brief     GPU copy to one element 
-* 
-*  @param[in] const void* dataPtr
-* 
-*  @param[in] const size_t elementIndex
-* 
-*  @return 　　void
-*****************************************************************************/
-void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
-{
-#ifdef _DEBUG
-	assert(elementIndex <= _metaData.Count);
-#endif
-	std::memcpy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
-}
-
-/****************************************************************************
 *                     CopyTotalData
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
+****************************************************************************/
+/* @fn        void GPUBuffer::CopyData()
 * 
 *  @brief     GPU copy the specified range
 * 
@@ -166,19 +145,19 @@ void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
+void GPUBuffer::UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually)
 {
 #ifdef _DEBUG
-	assert(dataLength + indexOffset <= _metaData.Count);
+	assert(elementCount + offsetIndex <= _metaData.Count);
 #endif
 
-	std::memcpy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
+	std::memcpy(&_mappedData[offsetIndex * _metaData.Stride], data, _metaData.Stride * (size_t)elementCount);
 }
 
 /****************************************************************************
-*                     CopyEnd
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyEnd()
+*                     Unmap
+****************************************************************************/
+/* @fn        void GPUBuffer::Unmap()
 * 
 *  @brief     Call UnMap Function
 * 
@@ -186,7 +165,7 @@ void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const s
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyEnd()
+void GPUBuffer::Unmap()
 {
 	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	vkUnmapMemory(vkDevice, _memory);
@@ -195,8 +174,8 @@ void GPUBuffer::CopyEnd()
 #pragma region Debug
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GPUBuffer::SetName(const gu::tstring& name)
 * 
 *  @brief     Set Buffer Name
 * 
@@ -215,8 +194,8 @@ void GPUBuffer::SetName(const gu::tstring& name)
 #pragma region SetUp
 /****************************************************************************
 *                     Prepare
-*************************************************************************//**
-*  @fn        void GPUBuffer::Prepare()
+****************************************************************************/
+/* @fn        void GPUBuffer::Prepare()
 * 
 *  @brief     Create Buffer and Bind buffer memory
 * 
@@ -236,8 +215,8 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 		.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 		.pNext                 = nullptr,
 		.flags                 = 0,
-		.size                  = _metaData.ByteSize,
-		.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).first, // 役割
+		.size                  = _metaData.GetTotalByte(),
+		.usage                 = EnumConverter::Convert(_metaData.Usage).first, // 役割
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,
 		.pQueueFamilyIndices   = nullptr

@@ -35,7 +35,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace engine::setting;
+using namespace engine;
 using namespace engine::core;
 using namespace platform::core;
 
@@ -107,8 +107,8 @@ void PPPEngine::Run()
 
 /****************************************************************************
 *                     ExecuteMainThread
-*************************************************************************//**
-*  @fn        void PPPEngine::ExecuteMainThread()
+****************************************************************************/
+/* @fn        void PPPEngine::ExecuteMainThread()
 *
 *  @brief     Message loopÇì¸ÇÍÇƒÇ‹Ç∑.
 *
@@ -158,8 +158,8 @@ void PPPEngine::ExecuteUpdateThread()
 
 /****************************************************************************
 *                     ExecuteRenderThread
-*************************************************************************//**
-*  @fn        void PPPEngine::ExecuteRenderThread()
+****************************************************************************/
+/* @fn        void PPPEngine::ExecuteRenderThread()
 *
 *  @brief     ï`âÊÉãÅ[ÉvÇ≈Ç∑
 *

@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc::ui;
+using namespace engine;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,8 +63,8 @@ void UIRenderer::Clear()
 
 /****************************************************************************
 *					AddFrameObject
-*************************************************************************//**
-*  @fn        void UIRenderer::AddFrameObject(const gu::DynamicArray<ui::Image>& images, const Texture& texture)
+****************************************************************************/
+/* @fn        void UIRenderer::AddFrameObject(const gu::DynamicArray<ui::Image>& images, const Texture& texture)
 * 
 *  @brief     Add Frame Object
 * 
@@ -111,7 +111,7 @@ void UIRenderer::Clear()
 //	
 //}
 
-void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view)
+void UIRenderer::AddFrameObjects(const gu::DynamicArray<Image>& images, const ResourceViewPtr& view)
 {
 	/*-------------------------------------------------------------------
 	-               sprite count check
@@ -133,13 +133,13 @@ void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, cons
 	const auto& vertexBuffer = _vertexBuffers[currentFrame];
 	const auto  oneRectVertexCount = 4;
 
-	vertexBuffer->CopyStart();
+	vertexBuffer->Map();
 	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
 	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.Size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
-		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount);
+		vertexBuffer->UploadIndex(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount, nullptr, true);
 	}
-	vertexBuffer->CopyEnd();
+	vertexBuffer->Unmap();
 
 	/*-------------------------------------------------------------------
 	-               Count sprite num
@@ -148,8 +148,8 @@ void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, cons
 }
 /****************************************************************************
 *					Draw
-*************************************************************************//**
-*  @fn        void UIRenderer::Draw()
+****************************************************************************/
+/* @fn        void UIRenderer::Draw()
 * 
 *  @brief     Render all registered frame ui objects
 * 
@@ -201,8 +201,8 @@ void UIRenderer::Draw()
 #pragma region Protected Function
 /****************************************************************************
 *						ClearVertexBuffer
-*************************************************************************//**
-*  @fn        void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
+****************************************************************************/
+/* @fn        void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
 *
 *  @brief     Clear gpu vertex buffer
 *
@@ -221,13 +221,13 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 		Vertex(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0))
 	);
 	
-	_vertexBuffers[frameIndex]->Update(v.Data(), vertexCount);
+	_vertexBuffers[frameIndex]->UploadByte(v.Data(), sizeof(Vertex) * vertexCount);
 }
 
 /****************************************************************************
 *						PrepareMaxImageBuffer
-*************************************************************************//**
-*  @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare max writable ui count size buffer
 *
@@ -277,19 +277,19 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 		}
 
 		{
-			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.Size(), MemoryHeap::Default, ResourceState::Common);
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t),(gu::uint32)indices.Size(), MemoryHeap::Default, ResourceState::Common);
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + SP("IB"));
-			_indexBuffers[i]->Pack(indices.Data(), _engine->GetCommandList(CommandListType::Copy));
+			_indexBuffers[i]->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
 }
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Skybox::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare pipelineState
 * 
@@ -308,7 +308,7 @@ void UIRenderer::PreparePipelineState(const gu::tstring& name)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0) },
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),1) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),1) }
 	);
 
 	/*-------------------------------------------------------------------
@@ -316,13 +316,13 @@ void UIRenderer::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("VSMain"), { SP("Shader\\Core")} });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("PSMain"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(core::BlendProperty::AlphaBlend()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

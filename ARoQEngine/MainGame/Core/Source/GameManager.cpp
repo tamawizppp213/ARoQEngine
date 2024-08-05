@@ -15,11 +15,11 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-using namespace gc::core;
+using namespace engine;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(const engine::setting::StartUpParameters& parameters)
+void GameManager::GameStart(const engine::StartUpParameters& parameters)
 {
 	_engine = gu::MakeShared<PPPEngine>();
 	_engine->StartUp(parameters);

@@ -28,8 +28,8 @@ namespace rhi::vulkan
 	
 	/****************************************************************************
 	*				  			GPUResource
-	*************************************************************************//**
-	*  @class     GPUResource
+	****************************************************************************/
+	/* @class     GPUResource
 	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
 	*****************************************************************************/
 	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap
@@ -54,14 +54,14 @@ namespace rhi::vulkan
 		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) 
 		{ 
 			return _resourceAllocator.GetDescriptorSet(id); 
 		}
 		
-		VkDescriptorPool GetVkDescriptorPool() { return _descriptorPool; }
+		VkDescriptorPool GetVkDescriptorPool() const{ return _descriptorPool; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -82,7 +82,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkDescriptorPool   _descriptorPool = nullptr;
 		ResourceAllocator _resourceAllocator;

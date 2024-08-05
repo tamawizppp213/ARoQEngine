@@ -33,8 +33,8 @@ bool PlatformCommand::UseDebugger() const
 
 /****************************************************************************
 *                       PutDebugBreak
-*************************************************************************//**
-*  @fn        void PlatformCommand::PutDebugBreak() const
+****************************************************************************/
+/* @fn       void PlatformCommand::PutDebugBreak() const
 *
 *  @brief     デバッグ用のブレークポイントを設置します
 *
@@ -50,8 +50,8 @@ void PlatformCommand::PutDebugBreak() const
 #pragma endregion Debugging Command
 /****************************************************************************
 *                       IssueUUID
-*************************************************************************//**
-*  @fn        gu::UUID PlatformCommand::IssueUUID()
+****************************************************************************/
+/* @fn       gu::UUID PlatformCommand::IssueUUID()
 *
 *  @brief     オブジェクトを特定するUUIDを発行します. 
 *
@@ -69,8 +69,8 @@ gu::UUID PlatformCommand::IssueUUID()
 #pragma region Initialize and Finalize Windows.h
 /****************************************************************************
 *                       CoInitialize
-*************************************************************************//**
-*  @fn        bool PlatformCommand::CoInitialize(const bool useMultiThread = false)
+****************************************************************************/
+/* @fn       bool PlatformCommand::CoInitialize(const bool useMultiThread = false)
 *
 *  @brief     COMライブラリを初期化します
 *
@@ -88,8 +88,8 @@ bool PlatformCommand::CoInitialize(const bool useMultiThread)
 
 /****************************************************************************
 *                       CoUnInitialize
-*************************************************************************//**
-*  @fn        bool PlatformCommand::CoUnInitialize()
+****************************************************************************/
+/* @fn       bool PlatformCommand::CoUnInitialize()
 *
 *  @brief     COMライブラリを初期化します
 *

@@ -24,8 +24,8 @@ WavDecoder::WavDecoder()
 #pragma region Public Function
 /****************************************************************************
 *                       LoadFromFile
-*************************************************************************//**
-*  @fn        bool WavDecoder::LoadFromFile(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        bool WavDecoder::LoadFromFile(const std::wstring& filePath)
 *  @brief     Open Wav File
 *  @param[in] const std::wstring& filePath
 *  @return 　　bool
@@ -89,8 +89,8 @@ const size_t WavDecoder::GetWaveSize() const
 #pragma region Private Function
 /****************************************************************************
 *                       Open
-*************************************************************************//**
-*  @fn        bool WavDecoder::Open(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        bool WavDecoder::Open(const std::wstring& filePath)
 *  @brief     Open Wav File
 *  @param[in] const std::wstring& filePath
 *  @return 　　bool
@@ -128,8 +128,8 @@ bool WavDecoder::Open(const std::wstring& filePath)
 }
 /****************************************************************************
 *                       CreateWaveFormatEx
-*************************************************************************//**
-*  @fn        bool WavDecoder::CreateWaveFormatEx(size_t formatChunk)
+****************************************************************************/
+/* @fn        bool WavDecoder::CreateWaveFormatEx(size_t formatChunk)
 *  @brief     Create Wave Format Ex
 *  @param[in] size_t formatChunk
 *  @return 　　bool
@@ -149,8 +149,8 @@ bool WavDecoder::CreateWaveFormatEx(size_t formatChunk)
 }
 /****************************************************************************
 *                       CreateWaveData
-*************************************************************************//**
-*  @fn        bool WavDecoder::CreateWaveData(size_t dataSize)
+****************************************************************************/
+/* @fn        bool WavDecoder::CreateWaveData(size_t dataSize)
 *  @brief     CreateWaveData
 *  @param[in] size_t dataSize
 *  @return 　　bool
@@ -171,8 +171,8 @@ bool WavDecoder::CreateWaveData(size_t dataSize)
 }
 /****************************************************************************
 *                       CheckChunk
-*************************************************************************//**
-*  @fn        bool WavDecoder::CheckChunk()
+****************************************************************************/
+/* @fn        bool WavDecoder::CheckChunk()
 *  @brief     Check Chunk
 *  @param[in] void
 *  @return 　　bool
@@ -205,8 +205,8 @@ bool WavDecoder::CheckChunk(MMCKINFO* chunkNext, MMCKINFO* chunkPrev, char c0, c
 }
 /****************************************************************************
 *                       Close
-*************************************************************************//**
-*  @fn        bool WavDecoder::Close()
+****************************************************************************/
+/* @fn        bool WavDecoder::Close()
 *  @brief     Close Wav File
 *  @param[in] void
 *  @return 　　bool

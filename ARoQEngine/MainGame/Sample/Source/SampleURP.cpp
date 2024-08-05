@@ -30,9 +30,7 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -48,8 +46,8 @@ SampleURP::~SampleURP()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleURP::Initialize(const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleURP::Initialize(const GameTimerPtr& gameTimer)
 * 
 *  @brief     Initialize scene
 * 
@@ -64,8 +62,8 @@ void SampleURP::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameT
 
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleURP::Update()
+****************************************************************************/
+/* @fn        void SampleURP::Update()
 * 
 *  @brief     Update Scene
 * 
@@ -92,8 +90,8 @@ void SampleURP::Update()
 
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleURP::Draw()
+****************************************************************************/
+/* @fn        void SampleURP::Draw()
 * 
 *  @brief     Draw Scene]]
 * 
@@ -116,8 +114,8 @@ void SampleURP::Draw()
 
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleURP::Terminate()
+****************************************************************************/
+/* @fn        void SampleURP::Terminate()
 * 
 *  @brief     Terminate Scene
 * 
@@ -135,8 +133,8 @@ void SampleURP::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleURP::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleURP::LoadMaterials(GameTimer* gameTimer)
 * 
 *  @brief     Load Materials
 * 
@@ -185,7 +183,7 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
-	_renderer = gu::MakeShared<gc::URP>(_engine, _gameTimer);
+	_renderer = gu::MakeShared<URP>(_engine, _gameTimer);
 	_renderer->SetSceneView(_camera->GetResourceView());
 	_renderer->Add(Forward, _model);
 	_renderer->Add(Forward, _floor);
@@ -204,8 +202,8 @@ void SampleURP::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleURP::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleURP::OnKeyboardInput()
 * 
 *  @brief     KeyboardInput
 * 
@@ -254,8 +252,8 @@ void SampleURP::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleURP::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleURP::OnMouseInput()
 * 
 *  @brief     MouseInput
 * 
@@ -280,8 +278,8 @@ void SampleURP::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnGamePadInput()
 * 
 *  @brief     GamePadInput
 * 

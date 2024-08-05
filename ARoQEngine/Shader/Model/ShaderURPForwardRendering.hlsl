@@ -94,8 +94,8 @@ float4 PSMain(PSInput input) : SV_TARGET
 
 /****************************************************************************
 *				  		Calculate_Directional_Light_Illumination
-*************************************************************************//**
-*  @class     float3 Calculate_Directional_Light_Illumination(in const PointLight light, in BRDFSurface surface, const in float3 surfacePosition, const in float3 toEye )
+****************************************************************************/
+/* @class     float3 Calculate_Directional_Light_Illumination(in const PointLight light, in BRDFSurface surface, const in float3 surfacePosition, const in float3 toEye )
 *  @brief     Calculate directional light illumination
 *  @param[in] in const Directional;Light light
 *  @param[in] in BRDFSurface surface

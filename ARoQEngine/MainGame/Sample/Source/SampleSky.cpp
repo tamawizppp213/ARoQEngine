@@ -19,7 +19,7 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -35,8 +35,8 @@ SampleSky::~SampleSky()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleSky::Initialize(const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleSky::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
@@ -47,8 +47,8 @@ void SampleSky::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameT
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleSky::Update()
+****************************************************************************/
+/* @fn        void SampleSky::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -61,8 +61,8 @@ void SampleSky::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleSky::Draw()
+****************************************************************************/
+/* @fn        void SampleSky::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -74,15 +74,15 @@ void SampleSky::Draw()
 	---------------------------------------------------------------------*/
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
+		rhi::core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleSky::Terminate()
+****************************************************************************/
+/* @fn        void SampleSky::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -97,8 +97,8 @@ void SampleSky::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleSky::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleSky::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -133,8 +133,8 @@ void SampleSky::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleSky::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleSky::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -161,8 +161,8 @@ void SampleSky::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleSky::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleSky::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -183,8 +183,8 @@ void SampleSky::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleSky::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleSky::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void

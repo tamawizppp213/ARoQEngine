@@ -67,7 +67,7 @@ rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
 		}
 
 		// count offset 
-		_vertexBinding[slot].stride += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(_elements[index].Format));
+		_vertexBinding[slot].stride += static_cast<std::uint32_t>(core::PixelFormatInfo::GetConst(_elements[index].Format).BlockBytes);
 	}
 
 	for (size_t index = 0; index < _vertexBinding.Size(); ++index)

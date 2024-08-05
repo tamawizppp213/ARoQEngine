@@ -20,8 +20,8 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -49,8 +49,8 @@ DebugDrawer::~DebugDrawer()
 #pragma region Main Function
 /****************************************************************************
 *                          Draw
-*************************************************************************//**
-*  @fn        void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 *
 *  @brief     Draw wireframe object
 *
@@ -79,8 +79,8 @@ void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 
 /****************************************************************************
 *                          Add
-*************************************************************************//**
-*  @fn        void DebugDrawer::Add(const GameModelPtr& model)
+****************************************************************************/
+/* @fn        void DebugDrawer::Add(const GameModelPtr& model)
 *
 *  @brief     Add model
 *
@@ -95,8 +95,8 @@ void DebugDrawer::Add(const GameModelPtr& model)
 
 /****************************************************************************
 *                          Clear
-*************************************************************************//**
-*  @fn        void DebugDrawer::Clear()
+****************************************************************************/
+/* @fn        void DebugDrawer::Clear()
 *
 *  @brief     Clear registered model buffer
 *
@@ -140,13 +140,13 @@ void DebugDrawer::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::WireFrame()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());

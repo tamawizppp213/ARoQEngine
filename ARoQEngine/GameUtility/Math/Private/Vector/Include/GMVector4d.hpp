@@ -36,15 +36,15 @@ namespace gm
 
 	/****************************************************************************
 	*				  			   GMVector4
-	*************************************************************************//**
-	*  @class     GMVector4
+	****************************************************************************/
+	/* @class     GMVector4
 	*  @brief     SIMD演算用のVector4クラスです. アラインメントを行っているため, データを保持する場合はDouble4を使用してください
 	*****************************************************************************/
 	struct Double4
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		double x;
 		double y;
@@ -87,15 +87,15 @@ namespace gm
 
 	/****************************************************************************
 	*				  			   GMVector4
-	*************************************************************************//**
-	*  @class     GMVector4
+	****************************************************************************/
+	/* @class     GMVector4
 	*  @brief     SIMD演算用のVector4クラスです. アラインメントを行っているため, データを保持する場合はDouble4を使用してください
 	*****************************************************************************/
 	struct Vector4d
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 #pragma region Default Vector
 		// @brief : (0, 0, 0, 0)
@@ -124,7 +124,7 @@ namespace gm
 #pragma region Getter
 		/*----------------------------------------------------------------------
 		*  @brief : FPUレジスタに格納されたX(, Y, Z, W)等の要素を取り出す
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline gu::double64 GetX() const { return SIMD_NAME_SPACE::Vector256Utility::GetX(_vector); }
 		__forceinline gu::double64 GetY() const { return SIMD_NAME_SPACE::Vector256Utility::GetY(_vector); }
 		__forceinline gu::double64 GetZ() const { return SIMD_NAME_SPACE::Vector256Utility::GetZ(_vector); }
@@ -132,7 +132,7 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : Double4に変換する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Double4 ToDouble4()
 		{
 			Double4 value = {};
@@ -145,7 +145,7 @@ namespace gm
 #pragma region Setter
 		/*----------------------------------------------------------------------
 		*  @brief : Floatを使ってVectorのX(, Y, Z, W)要素に値を代入する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void SetX(const double x) { _vector = SIMD_NAME_SPACE::Vector256Utility::SetX(_vector, x); }
 		__forceinline void SetY(const double y) { _vector = SIMD_NAME_SPACE::Vector256Utility::SetY(_vector, y); }
 		__forceinline void SetZ(const double z) { _vector = SIMD_NAME_SPACE::Vector256Utility::SetZ(_vector, z); }
@@ -215,7 +215,7 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool InBounds(const Vector4d& bounds) noexcept { return SIMD_NAME_SPACE::Vector256Utility::InBoundsVector4(_vector, bounds._vector); }
 
 		__forceinline operator VECTOR256() const { return _vector; }
@@ -225,44 +225,44 @@ namespace gm
 #pragma region Math
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の逆数を算出します. (1.0f / vector)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Reciprocal() const { return SIMD_NAME_SPACE::Vector256Utility::Reciprocal(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 各要素にマイナスを取ったものを返す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Negate() const { return SIMD_NAME_SPACE::Vector256Utility::Negate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline double Length() const { return SIMD_NAME_SPACE::Vector256Utility::LengthVector4(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルムの二乗を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline double LengthSquared() const { return SIMD_NAME_SPACE::Vector256Utility::LengthSquaredVector4(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline double Dot(const Vector4d& right) const { return SIMD_NAME_SPACE::Vector256Utility::DotVector4(_vector, right._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 外積を算出 second, thirdに垂直なベクトルを返す
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Cross(const Vector4d& second, const Vector4d& third) const { return SIMD_NAME_SPACE::Vector256Utility::CrossVector4(_vector, second._vector, third._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Normalize() const { return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector4(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief     反射ベクトルを算出
 		*  @param[in] const Vector256&f : input  (入射ベクトル)
 		*  @param[in] const Vector256&f : normal (反射を行う法線ベクトル)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Reflect(const Vector4d& normal) const { return SIMD_NAME_SPACE::Vector256Utility::ReflectVector4(_vector, normal._vector); }
 
 		/*----------------------------------------------------------------------
@@ -270,54 +270,54 @@ namespace gm
 		*  @param[in] const Vector4d& : input  (入射ベクトル)
 		*  @param[in] const Vector4d& : normal (反射を行う法線ベクトル)
 		*  @param[in] const double    : refractionIndex (屈折率)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Refract(const Vector4d& normal, const double     refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector4(_vector, normal._vector, refractionIndex); }
 		__forceinline Vector4d Refract(const Vector4d& normal, const Vector4d& refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector4V(_vector, normal._vector, refractionIndex._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 非常に大きい値か
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool IsInfinite() const { return SIMD_NAME_SPACE::Vector256Utility::IsInfiniteVector4(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  ゼロかどうか
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool IsZero() const { return ZERO == _vector; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Sqrt() const { return SIMD_NAME_SPACE::Vector256Utility::Sqrt(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の逆数を取り, それに根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d ReciprocalSqrt() const { return SIMD_NAME_SPACE::Vector256Utility::ReciprocalSqrt(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsin, cos, tanを返します [rad]
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Sin() const { return SIMD_NAME_SPACE::Vector256Utility::Sin(_vector); }
 		__forceinline Vector4d Cos() const { return SIMD_NAME_SPACE::Vector256Utility::Cos(_vector); }
 		__forceinline Vector4d Tan() const { return SIMD_NAME_SPACE::Vector256Utility::Tan(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のarcsin, arccos, arctanを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d ArcSin() const { return SIMD_NAME_SPACE::Vector256Utility::ArcSin(_vector); }
 		__forceinline Vector4d ArcCos() const { return SIMD_NAME_SPACE::Vector256Utility::ArcCos(_vector); }
 		__forceinline Vector4d ArcTan() const { return SIMD_NAME_SPACE::Vector256Utility::ArcTan(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsinH, cosH, tanHを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d SinH() const { return SIMD_NAME_SPACE::Vector256Utility::SinH(_vector); }
 		__forceinline Vector4d CosH() const { return SIMD_NAME_SPACE::Vector256Utility::CosH(_vector); }
 		__forceinline Vector4d TanH() const { return SIMD_NAME_SPACE::Vector256Utility::TanH(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void SinCos(Vector4d& sin, Vector4d& cos) noexcept
 		{
 			SIMD_NAME_SPACE::Vector256Utility::SinCos(_vector, &sin._vector, &cos._vector);
@@ -325,73 +325,73 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の2^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Exp2() const { return SIMD_NAME_SPACE::Vector256Utility::Exp2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の10^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Exp10() const { return SIMD_NAME_SPACE::Vector256Utility::Exp10(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のe^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d ExpE() const { return SIMD_NAME_SPACE::Vector256Utility::ExpE(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog2{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Log2() const { return SIMD_NAME_SPACE::Vector256Utility::Log2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog10{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Log10() const { return SIMD_NAME_SPACE::Vector256Utility::Log10(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のloge{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d LogE() const { return SIMD_NAME_SPACE::Vector256Utility::LogE(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のPowを返します
 		*           base^{power}
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Pow(const Vector4d& power) const { return SIMD_NAME_SPACE::Vector256Utility::Pow(_vector, power._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 最も近い整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Round() const { return SIMD_NAME_SPACE::Vector256Utility::Round(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Truncate() const { return SIMD_NAME_SPACE::Vector256Utility::Truncate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 負の方向に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Floor() const { return SIMD_NAME_SPACE::Vector256Utility::Floor(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Ceiling() const { return SIMD_NAME_SPACE::Vector256Utility::Ceiling(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内で数値を設定する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Clamp(const Vector4d& min, const Vector4d& max) const { return SIMD_NAME_SPACE::Vector256Utility::Clamp(_vector, min._vector, max._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 1以上には行かないようにする
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Saturate() const { return SIMD_NAME_SPACE::Vector256Utility::Saturate(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4d Abs() const { return SIMD_NAME_SPACE::Vector256Utility::Abs(_vector); }
 
 
@@ -420,14 +420,14 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VECTOR256 _vector;
 	};
 
 	/*----------------------------------------------------------------------
 	*  @brief : 内積を算出 (ただし, 返り値はdoubleではなくVector256型で返されますので, 後々GetXなどで対応してください.)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline double Dot(const Vector4d& left, const Vector4d& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::DotVector4(left, right);
@@ -435,7 +435,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 外積を算出 first, second, thirdに垂直なベクトルを返す
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Cross(const Vector4d& first, const Vector4d& second, const Vector4d& third) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::CrossVector4(first, second, third);
@@ -443,7 +443,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 入力ベクトルの単位ベクトルを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Normalize(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector4(vector);
@@ -453,7 +453,7 @@ namespace gm
 	*  @brief     反射ベクトルを算出
 	*  @param[in] const Vector4d& : input  (入射ベクトル)
 	*  @param[in] const Vector4d& : normal (反射を行う法線ベクトル)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Reflect(const Vector4d& input, const Vector4d& normal) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::ReflectVector4(input, normal);
@@ -464,7 +464,7 @@ namespace gm
 	*  @param[in] const Vector4d& : input  (入射ベクトル)
 	*  @param[in] const Vector4d& : normal (反射を行う法線ベクトル)
 	*  @param[in] const double    : refractionIndex (屈折率)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Refract(const Vector4d& input, const Vector4d& normal, const double refractionIndex) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::RefractVector4(input, normal, refractionIndex);
@@ -477,7 +477,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 非常に大きい値か
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline bool IsInfinite(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::IsInfiniteVector4(vector);
@@ -485,7 +485,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素に根号を取ったものを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Sqrt(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Sqrt(vector);
@@ -493,7 +493,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の逆数を取り, それに根号を取ったものを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d ReciprocalSqrt(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::ReciprocalSqrt(vector);
@@ -501,7 +501,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のsin, cos, tanを返します [rad]
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Sin(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Sin(vector);
@@ -519,7 +519,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のarcsin, arccos, arctanを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d ArcSin(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::ArcSin(vector);
@@ -537,7 +537,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のsinH, cosH, tanHを返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d SinH(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::SinH(vector);
@@ -555,7 +555,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の2^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Exp2(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Exp2(vector);
@@ -563,7 +563,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素の10^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Exp10(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Exp10(vector);
@@ -571,7 +571,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のe^{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d ExpE(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::ExpE(vector);
@@ -579,7 +579,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のlog2{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Log2(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Log2(vector);
@@ -587,7 +587,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のlog10{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Log10(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Log10(vector);
@@ -595,7 +595,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のloge{vector}を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d LogE(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::LogE(vector);
@@ -604,7 +604,7 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素のPowを返します
 	*           base^{power}
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Pow(const Vector4d& base, const Vector4d& power) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Pow(base, power);
@@ -612,7 +612,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素について最小値となる方を選択します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Min(const Vector4d& left, const Vector4d& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Min(left, right);
@@ -620,7 +620,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 全ての要素について最大値となる方を選択します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Max(const Vector4d& left, const Vector4d& right) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Max(left, right);
@@ -628,7 +628,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 最も近い整数に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Round(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Round(vector);
@@ -636,7 +636,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Truncate(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Truncate(vector);
@@ -644,7 +644,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 負の方向に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Floor(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Floor(vector);
@@ -652,7 +652,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Ceiling(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Ceiling(vector);
@@ -660,7 +660,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 指定範囲内で数値を設定する
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Clamp(const Vector4d& vector, const Vector4d& min, const Vector4d& max) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Clamp(vector, min, max);
@@ -668,7 +668,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 1以上には行かないようにする
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Saturate(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Saturate(vector);
@@ -676,7 +676,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 絶対値
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector4d Abs(const Vector4d& vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Abs(vector);

@@ -31,132 +31,323 @@ namespace rhi::core
 	class RHIDevice;
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	****************************************************************************/
+	/* @brief     PipelineState
 	*****************************************************************************/
 	class GPUBasePipelineState : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		//static void DestroyAll(){};
+		#pragma region Public Function
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		inline gu::SharedPointer<RHIResourceLayout>   GetLayout() const noexcept { return _resourceLayout; }
+		#pragma endregion
+
+		#pragma region Public Property
 		
-		inline void SetLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) { _resourceLayout = resourceLayout; }
+		/*!**********************************************************************
+		*  @brief     ResourceLayoutを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<RHIResourceLayout> : ResourceLayout
+		*************************************************************************/
+		__forceinline gu::SharedPointer<RHIResourceLayout> GetLayout() const noexcept { return _resourceLayout; }
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     ResourceLayoutを設定します
+		*  @param[in] const gu::SharedPointer<RHIResourceLayout>& resourceLayout : ResourceLayout
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) { _resourceLayout = resourceLayout; }
+		
+		#pragma endregion
+		
+		#pragma region Public Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		GPUBasePipelineState() = default;
 
+		/*! @brief 論理デバイスを使って初期化します. */
 		explicit GPUBasePipelineState(const gu::SharedPointer<RHIDevice>& device,  const gu::SharedPointer<RHIResourceLayout>& layout)
 			: _device(device) ,_resourceLayout(layout) { };
 		
+		/*! @brief デフォルトデストラクタ*/
 		virtual ~GPUBasePipelineState() = default;
 
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+	protected:
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
+
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+
+		/*! @brief 論理デバイス*/
 		gu::SharedPointer<rhi::core::RHIDevice> _device = nullptr;
 
+		/*! @brief ResourceLayout*/
 		gu::SharedPointer<rhi::core::RHIResourceLayout> _resourceLayout = nullptr;
+
+		#pragma endregion
 	};
 
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	****************************************************************************/
+	/* @brief  グラフィクスパイプラインの基本クラス (VS, PS, GS, HS, DSが使用できます.)
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public GPUBasePipelineState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		virtual void CompleteSetting() = 0;
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief     ComputePipelineが作成できたタイミングで動作させます. Descriptorを作成します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*  @return    void
+		*************************************************************************/
+		virtual void CompleteSetting(const gu::tstring& name = SP("GraphicsPipeline")) = 0;
+		
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		gu::SharedPointer<RHIRenderPass>                GetRenderPass() const noexcept { return _renderPass; }
-		
-		inline gu::SharedPointer<GPUInputAssemblyState> GetInputAssemblyState() const noexcept { return _inputAssemblyState; }
-		
-		inline gu::SharedPointer<GPURasterizerState>    GetRasterizerState   () const noexcept { return _rasterizerState; }
-		
-		inline gu::SharedPointer<GPUDepthStencilState>  GetDepthStencilState () const noexcept { return _depthStencilState; }
-		
-		inline gu::SharedPointer<GPUBlendState>         GetBlendState        () const noexcept { return _blendState; }
-		
-		inline gu::SharedPointer<GPUShaderState>        GetVertexShader      () const noexcept { return _vertexShaderState; }
-		
-		inline gu::SharedPointer<GPUShaderState>        GetPixelShader       () const noexcept { return _pixelShaderState; }
-		
-		inline gu::SharedPointer<GPUShaderState>        GetGeometryShader    () const noexcept { return _geometryShaderState; }
-		
-		inline gu::SharedPointer<GPUShaderState>        GetHullShader        () const noexcept { return _hullShaderState; }
-		
-		inline gu::SharedPointer<GPUShaderState>        GetDomainShader      () const noexcept { return _domainShaderState; }
+		#pragma region Public Property
 
-		inline bool HasVertexShader() const { return _vertexShaderState; }
+		/*!**********************************************************************
+		*  @brief     RenderPassを返します
+		*  @param[in] void
+		*  @return    gu::SharedPointer<RHIRenderPass> : レンダーパス
+		*************************************************************************/
+		__forceinline gu::SharedPointer<RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+		
+		/*!**********************************************************************
+		*  @brief     InputAssemblyStateを返します
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUInputAssemblyState> : 入力アセンブリステート
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUInputAssemblyState> GetInputAssemblyState() const noexcept { return _inputAssemblyState; }
+		
+		/*!**********************************************************************
+		*  @brief     RasterizerStateを返します
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPURasterizerState> : ラスタライザステート
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPURasterizerState> GetRasterizerState() const noexcept { return _rasterizerState; }
+		
+		/*!**********************************************************************
+		*  @brief     DepthStencilStateを返します
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUDepthStencilState> : デプスステンシルステート
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUDepthStencilState> GetDepthStencilState() const noexcept { return _depthStencilState; }
+		
+		/*!**********************************************************************
+		*  @brief     BlendStateを返します
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUBlendState> : ブレンドステート
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUBlendState> GetBlendState() const noexcept { return _blendState; }
+		
+		/*!**********************************************************************
+		*  @brief     頂点シェーダのポインタを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUShaderState> : 頂点シェーダ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUShaderState> GetVertexShader() const noexcept { return _vertexShaderState; }
+		
+		/*!**********************************************************************
+		*  @brief     ピクセルシェーダのポインタを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUShaderState> : ピクセルシェーダ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUShaderState> GetPixelShader() const noexcept { return _pixelShaderState; }
+		
+		/*!**********************************************************************
+		*  @brief     ジオメトリシェーダのポインタを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUShaderState> : ジオメトリシェーダ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUShaderState> GetGeometryShader() const noexcept { return _geometryShaderState; }
+		
+		/*!**********************************************************************
+		*  @brief     Hullシェーダのポインタを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUShaderState> : ハルシェーダ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUShaderState> GetHullShader() const noexcept { return _hullShaderState; }
+		
+		/*!**********************************************************************
+		*  @brief     ドメインシェーダのポインタを返します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUShaderState> : ドメインシェーダ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUShaderState> GetDomainShader() const noexcept { return _domainShaderState; }
 
-		inline bool HasPixelShader() const { return _pixelShaderState; }
+		/*!**********************************************************************
+		*  @brief     VertexShaderが存在するかどうかを返します
+		*  @param[in] void
+		*  @return    bool
+		*************************************************************************/
+		__forceinline bool HasVertexShader() const { return _vertexShaderState; }
 
-		inline bool HasGeometryShader() const { return _geometryShaderState; }
+		/*!**********************************************************************
+		*  @brief     PixelShaderが存在するかどうかを返します
+		*  @param[in] void
+		*  @return    bool
+		*************************************************************************/
+		__forceinline bool HasPixelShader() const { return _pixelShaderState; }
 
-		inline bool HasHullShader() const { return _hullShaderState; }
+		/*!**********************************************************************
+		*  @brief     GeometryShaderが存在するかどうかを返します
+		*  @param[in] void
+		*  @return    bool
+		*************************************************************************/
+		__forceinline bool HasGeometryShader() const { return _geometryShaderState; }
 
-		inline bool HasDomainShader() const { return _domainShaderState; }
+		/*!**********************************************************************
+		*  @brief     HullShaderが存在するかどうかを返します
+		*  @param[in] void
+		*  @return    bool
+		*************************************************************************/
+		__forceinline bool HasHullShader() const { return _hullShaderState; }
 
-		inline void SetInputAssemblyState(const gu::SharedPointer<GPUInputAssemblyState>& inputAssembly)     { _inputAssemblyState = inputAssembly; }
+		/*!**********************************************************************
+		*  @brief     DomainShaderが存在するかどうかを返します
+		*  @param[in] void
+		*  @return    bool 
+		*************************************************************************/
+		__forceinline bool HasDomainShader() const { return _domainShaderState; }
+
+		/*!**********************************************************************
+		*  @brief     InputAssemblyStateステートを設定します
+		*  @param[in] const gu::SharedPointer<GPUInputAssemblyState>& inputAssembly
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetInputAssemblyState(const gu::SharedPointer<GPUInputAssemblyState>& inputAssembly){ _inputAssemblyState = inputAssembly; }
 		
-		inline void SetRasterizerState   (const gu::SharedPointer<GPURasterizerState>   & rasterizerState)   { _rasterizerState    = rasterizerState; }
+		/*!**********************************************************************
+		*  @brief     Rasterizerステートを設定します
+		*  @param[in] const gu::SharedPointer<GPURasterizerState>& rasterizerState
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetRasterizerState(const gu::SharedPointer<GPURasterizerState>& rasterizerState){ _rasterizerState = rasterizerState; }
 		
-		inline void SetDepthStencilState (const gu::SharedPointer<GPUDepthStencilState> & depthStencilState) { _depthStencilState  = depthStencilState; }
+		/*!**********************************************************************
+		*  @brief     DepthStencilステートを設定します
+		*  @param[in] const gu::SharedPointer<GPUDepthStencilState>& depthStencilState
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetDepthStencilState (const gu::SharedPointer<GPUDepthStencilState> & depthStencilState) { _depthStencilState  = depthStencilState; }
 		
-		inline void SetBlendState        (const gu::SharedPointer<GPUBlendState>        & blendState)        { _blendState         = blendState; }
+		/*!**********************************************************************
+		*  @brief     ブレンドステートを設定します
+		*  @param[in] const gu::ShadredPointer<GPUBlendState>& blendState
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetBlendState(const gu::SharedPointer<GPUBlendState>& blendState) { _blendState = blendState; }
 		
-		inline void SetVertexShader  (const gu::SharedPointer<GPUShaderState>& vertexShader)   { _vertexShaderState   = (vertexShader  ->GetShaderType() == ShaderType::Vertex  ) ? vertexShader   : nullptr; }
+		/*!**********************************************************************
+		*  @brief     頂点シェーダを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& 頂点シェーダ
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetVertexShader(const gu::SharedPointer<GPUShaderState>& vertexShader) 
+		{
+			Check(vertexShader->GetShaderType() == core::ShaderType::Vertex); 
+			_vertexShaderState = vertexShader; 
+		}
 		
-		inline void SetPixelShader   (const gu::SharedPointer<GPUShaderState>& pixelShader)    { _pixelShaderState    = (pixelShader   ->GetShaderType() == ShaderType::Pixel   ) ? pixelShader    : nullptr; }
+		/*!**********************************************************************
+		*  @brief     ピクセルシェーダを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& ピクセルシェーダ
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetPixelShader(const gu::SharedPointer<GPUShaderState>& pixelShader) 
+		{
+			Check(pixelShader->GetShaderType() == core::ShaderType::Pixel);
+			_pixelShaderState = pixelShader; 
+		}
 		
-		inline void SetGeometryShader(const gu::SharedPointer<GPUShaderState>& geometryShader) { _geometryShaderState = (geometryShader->GetShaderType() == ShaderType::Geometry) ? geometryShader : nullptr; }
+		/*!**********************************************************************
+		*  @brief     ジオメトリシェーダを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& ジオメトリシェーダ
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetGeometryShader(const gu::SharedPointer<GPUShaderState>& geometryShader)
+		{
+			Check(geometryShader->GetShaderType() == core::ShaderType::Geometry);
+			_geometryShaderState = (geometryShader->GetShaderType() == ShaderType::Geometry) ? geometryShader : nullptr; 
+		}
 		
-		inline void SetHullShader    (const gu::SharedPointer<GPUShaderState>& hullShader)     { _hullShaderState     = (hullShader    ->GetShaderType() == ShaderType::Hull    ) ? hullShader     : nullptr; }
+		/*!**********************************************************************
+		*  @brief     Hullシェーダを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& ジオメトリシェーダ
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetHullShader(const gu::SharedPointer<GPUShaderState>& hullShader)
+		{
+			Check(hullShader->GetShaderType() == core::ShaderType::Hull);
+			_hullShaderState = hullShader;
+		}
 		
-		inline void SetDomainShader  (const gu::SharedPointer<GPUShaderState>& domainShader)   { _domainShaderState   = (domainShader  ->GetShaderType() == ShaderType::Domain  ) ? domainShader   : nullptr; }
-		
-		// @brief : This function is needed to call after calling completeSetting function 
+		/*!**********************************************************************
+		*  @brief     ドメインシェーダを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& ドメインシェーダ
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetDomainShader(const gu::SharedPointer<GPUShaderState>& domainShader)
+		{
+			Check(domainShader->GetShaderType() == core::ShaderType::Domain);
+			_domainShaderState = domainShader;
+		}
+
+		/*!**********************************************************************
+		*  @brief     レンダーパスの設定
+		*  @param[in] const gu::SharedPointer<RHIRenderPass>
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass)
+		{
+			_renderPass = renderPass;
+		}
+
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトの設定
+		*  @param[in] const gu::SharedPointer<RHIResourceLayout>
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetRenderPass(const gu::SharedPointer<RHIResourceLayout>& resourceLayout)
+		{
+			_resourceLayout = resourceLayout;
+		}
+
+		/*!**********************************************************************
+		*  @brief     デバッグ時に使用する名前
+		*  @param[in] const gu::tstring& name
+		*  @return    void
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
+
+		#pragma endregion
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
+
 	protected:
+		#pragma region Protected Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		GPUGraphicsPipelineState() = default;
 		
+		/*! @brief 論理デバイスで初期化*/
 		explicit GPUGraphicsPipelineState(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, layout), _renderPass(renderPass) {};
 		
+		/*! @brief デストラクタ*/
 		~GPUGraphicsPipelineState() = default;
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
 		gu::SharedPointer<GPUInputAssemblyState> _inputAssemblyState  = nullptr;
 		gu::SharedPointer<GPURasterizerState>    _rasterizerState     = nullptr;
 		gu::SharedPointer<GPUDepthStencilState>  _depthStencilState   = nullptr;
@@ -167,89 +358,121 @@ namespace rhi::core
 		gu::SharedPointer<GPUShaderState>        _domainShaderState   = nullptr;
 		gu::SharedPointer<GPUShaderState>        _geometryShaderState = nullptr;
 		gu::SharedPointer<RHIRenderPass>         _renderPass          = nullptr;
+		#pragma endregion
 	};
 
 	/****************************************************************************
 	*				  			GPUComputePipelineState
-	*************************************************************************//**
-	*  @class     GPUComputePipelineState
+	****************************************************************************/
+	/* @class     GPUComputePipelineState
 	*  @brief     Compute PipelineState
 	*****************************************************************************/
 	class GPUComputePipelineState : public GPUBasePipelineState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		virtual void CompleteSetting() = 0;
+		#pragma region Public Function
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		void SetComputeShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
+		/*!**********************************************************************
+		*  @brief     ComputePipelineが作成できたタイミングで動作させます. Descriptorを作成します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*  @return    void
+		*************************************************************************/
+		virtual void CompleteSetting(const gu::tstring& name = SP("ComputePipeline")) = 0;
+
+		#pragma endregion
+
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     ComputeShaderを設定します
+		*  @param[in] const gu::SharedPointer<GPUShaderState>& shaderState
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetComputeShader(const gu::SharedPointer<GPUShaderState>& shaderState) 
+		{
+			Check(shaderState->GetShaderType() == core::ShaderType::Compute);
+			_computeShaderState = shaderState; 
+		};
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ時に使用する名前
+		*  @param[in] const gu::tstring& name
+		*  @return    void
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
+
+		#pragma endregion
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
+
 	protected:
-		
+		#pragma region Protected Constructor and Destructor
+
 		GPUComputePipelineState() = default;
 		
 		explicit GPUComputePipelineState(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, layout){};
 		
 		~GPUComputePipelineState() = default;
-		
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma endregion
+		
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
 		gu::SharedPointer<GPUShaderState> _computeShaderState = nullptr;
+		#pragma endregion
 	};
 
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPURayTracingPipelineState : public GPUBasePipelineState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+
+		/*!**********************************************************************
+		*  @brief     RayTracingPipelineが作成できたタイミングで動作させます. Descriptorを作成します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		virtual void CompleteSetting() = 0;
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Property
 		void SetShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ時に使用する名前
+		*  @param[in] const gu::tstring& name
+		*  @return    void
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) const = 0;
+		#pragma endregion
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
+
 	protected:
+		#pragma region Protected Constructor and Destructor
 		GPURayTracingPipelineState() = default;
 		
 		explicit GPURayTracingPipelineState(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout) {};
 		
 		~GPURayTracingPipelineState() = default;
+		#pragma endregion
 		
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Property
 		gu::SharedPointer<GPUShaderState> _rayTracingShaderState = nullptr;
+		#pragma endregion
 	};
 }
 #endif

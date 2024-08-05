@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIAdapter.hpp
-///             @brief  Physical Device (adapter), Describe gpu information 
-///             @author Toide Yutaro
-///             @date   2022_09_05
+///  @file   VulkanAdapter.hpp
+///  @brief  論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
+///  @author Toide Yutaro
+///  @date   2024_03_29
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef VULKAN_ADAPTER_HPP
@@ -25,10 +25,10 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			RHIAdapter
-	*************************************************************************//**
-	*  @class     RHIAdapter
-	*  @brief     Physical Device (Adapter)  Describe gpu information
+	*				  			RHIDisplayAdapter
+	****************************************************************************/
+	/* @class     RHIDisplayAdapter
+	*  @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
 	*****************************************************************************/
 	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{
@@ -53,18 +53,27 @@ namespace rhi::vulkan
 			VkPhysicalDeviceVulkan13Properties Properties13 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES };
 		};
 
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/* return logical device shared pointer. frame count is used for the command allocators*/
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief 自身の物理デバイスに基づいて論理デバイスを生成し, そのSharedPointerを渡します.
+		*************************************************************************/
 		gu::SharedPointer<core::RHIDevice> CreateDevice() override;
 		
-		/* Describe physical device name and spec(future work) */
-		void PrintInfo() override; 
-		
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief 物理デバイスの名前とスペックを出力に表示します@n
+		*         基本的に実行時のログとして使用するものになります. @n
+		*         ファイルや文字列に出力は行わないです.
+		*************************************************************************/
+		virtual void PrintInfo() const override; 
+
+		#pragma endregion Public Function
+
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief  アダプタに直接接続されている出力の数 (モニターなど)を返します.
+		*************************************************************************/
+		gu::uint64 GetOutputCount() const override { return 0; }
+
 		const VkPhysicalDevice GetPhysicalDevice() const noexcept { return _physicalDevice; }
 
 		/* return all physical device information(memory, feature, property)*/
@@ -94,6 +103,8 @@ namespace rhi::vulkan
 		gu::DynamicArray<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
 		
 		bool IsPresentSupported(VkSurfaceKHR surface, std::uint32_t queueFamilyIndex) const;
+
+		#pragma endregion Public Property
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -109,7 +120,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPhysicalDevice _physicalDevice = nullptr;
 

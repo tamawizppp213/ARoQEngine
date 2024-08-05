@@ -23,14 +23,14 @@ GPUBlendState::~GPUBlendState()
 	_attachments.Clear(); _attachments.ShrinkToFit();
 }
 
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties)
-	: rhi::core::GPUBlendState(device, blendProperties)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties, const bool alphaToCoverageEnable)
+	: rhi::core::GPUBlendState(device, blendProperties, alphaToCoverageEnable)
 {
 	Prepare();
 }
 
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
-	: rhi::core::GPUBlendState(device, blendProperty)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty, const bool alphaToCoverageEnable)
+	: rhi::core::GPUBlendState(device, blendProperty, alphaToCoverageEnable)
 {
 	Prepare();
 }
@@ -42,7 +42,7 @@ void GPUBlendState::Prepare()
 	{
 		const auto& prop = _blendProperties[index];
 		_attachments[index].colorWriteMask      = EnumConverter::Convert(prop.ColorMask);
-		_attachments[index].blendEnable         = prop.Enable;
+		_attachments[index].blendEnable         = prop.EnableBlend;
 		_attachments[index].alphaBlendOp        = EnumConverter::Convert(prop.AlphaOperator);
 		_attachments[index].colorBlendOp        = EnumConverter::Convert(prop.ColorOperator);
 		_attachments[index].srcColorBlendFactor = EnumConverter::Convert(prop.SourceRGB);

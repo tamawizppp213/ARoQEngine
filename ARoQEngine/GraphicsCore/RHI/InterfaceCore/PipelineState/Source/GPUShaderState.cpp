@@ -9,15 +9,12 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUShaderState.hpp"
-#include <stdexcept>
-#include <sstream>
-#include <fstream>
-#include <iomanip>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -40,14 +37,62 @@ gu::tstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 		case ShaderType::ClosestHit:
 		case ShaderType::Miss:         return SP("lib");
 		default:
-			throw std::runtime_error("not supported shader type");
+			throw "not supported shader type";
 	}
 }
 
+
 gu::tstring GPUShaderState::Format(float version)
 {
-	std::wstringstream stream;
-	stream << std::fixed << std::setprecision(1) << version;
-	std::wstring temp = stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
-	return gu::tstring(temp.c_str());
+	tstring number = gu::tstring::FromNumber(version);
+	number = number.Left(number.Find(SP(".")) + 2); // +2なのは, 小数第一位 + indexのずれ
+
+	return number.SubString(0, 1) + SP("_") + number.SubString(2, 1); // main version 5, 6, sub version .1, .2
+}
+
+/*!**********************************************************************
+*  @brief     有効なシェーダー設定かどうかを返します
+*  @param[in] void
+*  @return    bool
+*************************************************************************/
+bool GPUShaderState::IsValidShaderType() const noexcept
+{
+	// Mesh Shaderがサポートされていない場合は, Mesh Shaderを使用できません
+	if (_shaderType == ShaderType::Mesh && !_device->IsSupportedMeshShading())
+	{
+		return false;
+	}
+
+	// Ray Tracing Shaderがサポートされていない場合は, Ray Tracing Shaderを使用できません
+	if (IsRayTracingShader() && !_device->IsSupportedDxr())
+	{
+		return false;
+	}
+	
+	// それ以外の場合は, 有効なシェーダー設定です
+	return true;
+}
+
+/*!**********************************************************************
+*  @brief     設定されたシェーダーがRayTracingで使用可能なシェーダーか
+*  @param[in] void
+*  @return    bool
+*************************************************************************/
+bool GPUShaderState::IsRayTracingShader() const
+{
+	switch(_shaderType)
+	{
+		case ShaderType::RayGeneration:
+		case ShaderType::Intersection:
+		case ShaderType::AnyHit:
+		case ShaderType::ClosestHit:
+		case ShaderType::Miss:
+		{
+			return true;
+		}
+		default:
+		{
+			return false;
+		}
+	}
 }

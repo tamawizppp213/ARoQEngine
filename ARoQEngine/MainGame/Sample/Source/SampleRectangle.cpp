@@ -36,8 +36,8 @@ SampleRectangle::~SampleRectangle()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -48,8 +48,8 @@ void SampleRectangle::Initialize(const PPPEnginePtr& engine, const GameTimerPtr&
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleRectangle::Update()
+****************************************************************************/
+/* @fn        void SampleRectangle::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -60,8 +60,8 @@ void SampleRectangle::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleRectangle::Draw()
+****************************************************************************/
+/* @fn        void SampleRectangle::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -92,8 +92,8 @@ void SampleRectangle::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleRectangle::Terminate()
+****************************************************************************/
+/* @fn        void SampleRectangle::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -110,8 +110,8 @@ void SampleRectangle::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleRectangle::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleRectangle::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -137,8 +137,8 @@ void SampleRectangle::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -149,8 +149,8 @@ void SampleRectangle::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -161,8 +161,8 @@ void SampleRectangle::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -173,8 +173,8 @@ void SampleRectangle::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleRectangle::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleRectangle::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void
@@ -187,8 +187,8 @@ void SampleRectangle::ExecuteSceneTransition()
 #pragma region SetUp Function
 /****************************************************************************
 *                     BuildBuffer
-*************************************************************************//**
-*  @fn        void SampleRectangle::BuildBuffer()
+****************************************************************************/
+/* @fn        void SampleRectangle::BuildBuffer()
 *  @brief     Build Vertex and Index Buffers
 *  @param[in] void
 *  @return 　　void
@@ -196,7 +196,7 @@ void SampleRectangle::ExecuteSceneTransition()
 void SampleRectangle::BuildBuffer()
 {
 	// 頂点情報変えるならFrameCount分用意した方が良い.
-	gc::core::PrimitiveMesh rectangle = gc::core::PrimitiveMeshGenerator::Rect
+	engine::PrimitiveMesh rectangle = engine::PrimitiveMeshGenerator::Rect
 	(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer
@@ -204,11 +204,11 @@ void SampleRectangle::BuildBuffer()
 	{
 		GPUBufferMetaData metaData = GPUBufferMetaData::VertexBuffer(
 			sizeof(gm::Vertex),
-			rectangle.Vertices.size(),
+			static_cast<gu::uint32>(rectangle.Vertices.size()),
 			rhi::core::MemoryHeap::Upload);
 		_vertexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_vertexBuffer->SetName(SP("VertexBuffer"));
-		_vertexBuffer->Pack(rectangle.Vertices.data());
+		_vertexBuffer->UploadByte(rectangle.Vertices.data(), metaData.GetTotalByte());
 	}
 	/*-------------------------------------------------------------------
 	-             Index Buffer
@@ -216,12 +216,12 @@ void SampleRectangle::BuildBuffer()
 	{
 		GPUBufferMetaData metaData = GPUBufferMetaData::IndexBuffer(
 			sizeof(std::uint32_t),
-			rectangle.Indices.size(),
+			static_cast<gu::uint32>(rectangle.Indices.size()),
 			rhi::core::MemoryHeap::Default,
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_indexBuffer->SetName(SP("IndexBuffer"));
-		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy));
+		_indexBuffer->UploadByte(rectangle.Indices.data(), metaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
 	
 	}
 }
@@ -233,7 +233,7 @@ void SampleRectangle::BuildPipelineState()
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<SamplerLayoutElement> samplerElements(1);
-	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0,0);
+	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0,0);
 
 	/*-------------------------------------------------------------------
 	-             Set up graphics resource layout
@@ -247,13 +247,13 @@ void SampleRectangle::BuildPipelineState()
 	const auto vertexShader = factory->CreateShaderState();
 	const auto pixelShader  = factory->CreateShaderState();
 	// Compile 
-	vertexShader->Compile(ShaderType::Vertex, SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
-	pixelShader ->Compile(ShaderType::Pixel , SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("PSTest"), 6.4f, { SP("Shader\\Core") });
+	vertexShader->Compile({ ShaderType::Vertex, SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("VSMain"),{ SP("Shader\\Core")} });
+	pixelShader->Compile({ ShaderType::Pixel , SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("PSTest"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
-	_pipelineState = rhiDevice->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipelineState = rhiDevice->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipelineState->SetBlendState(factory->CreateBlendState());
 	_pipelineState->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipelineState->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

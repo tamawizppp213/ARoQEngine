@@ -70,8 +70,8 @@ RHIFence::~RHIFence()
 #pragma region Public Function
 /****************************************************************************
 *                     GetCompletedValue
-*************************************************************************//**
-*  @fn        std::uint64_t RHIFence::GetCompletedValue()
+****************************************************************************/
+/* @fn        std::uint64_t RHIFence::GetCompletedValue()
 * 
 *  @brief     Return current fence value
 * 
@@ -94,8 +94,8 @@ std::uint64_t RHIFence::GetCompletedValue()
 
 /****************************************************************************
 *                     Wait
-*************************************************************************//**
-*  @fn        void RHIFence::Wait(std::uint64_t value)
+****************************************************************************/
+/* @fn        void RHIFence::Wait(std::uint64_t value)
 * 
 *  @brief     Detect the completion of GPU processing on the CPU side. If not, it waits.
 * 
@@ -125,8 +125,8 @@ void RHIFence::Wait(const std::uint64_t value)
 
 /****************************************************************************
 *                     Signal
-*************************************************************************//**
-*  @fn        void RHIFence::Signal(const gu::SharedPointer<rhi::core::RHICommandQueue>& queue)
+****************************************************************************/
+/* @fn        void RHIFence::Signal(const gu::SharedPointer<rhi::core::RHICommandQueue>& queue)
 * 
 *  @brief     @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)
 * 

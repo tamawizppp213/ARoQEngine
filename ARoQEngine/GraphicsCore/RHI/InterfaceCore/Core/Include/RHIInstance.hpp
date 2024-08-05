@@ -1,8 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIInstance.hpp
-///             @brief  Select device api (このエンジンを使用時最初に呼び出す.) 
-///             @author Toide Yutaro
-///             @date   2022_09_05
+/// @file   RHIInstance.hpp
+/// @brief  GraphicsAPIを選択し, 以降でGraphicsAPIに対応するRenderResourceを呼び出すためのクラス@n
+///         そのほか, 物理デバイスの選択やCPU, GPUデバッガの有無なども登録することが出来ます.@n 
+/// @author Toide Yutaro
+/// @date   2024_03_27
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_INSTANCE_HPP
@@ -27,67 +28,117 @@ namespace rhi::core
 	class RHIDisplayAdapter;
 	/****************************************************************************
 	*				  			RHIInstance
-	*************************************************************************//**
-	*  @class     RHIInstance
-	*  @brief     Select device api 
+	****************************************************************************/
+	/* @class     RHIInstance
+	*   @brief     GraphicsAPIを選択し, 以降でGraphicsAPIに対応するRenderResourceを呼び出すためのクラス@n
+	*              そのほか, 物理デバイスの選択やCPU, GPUデバッガの有無なども登録することが出来ます.@n 
 	*****************************************************************************/
 	class RHIInstance : public gu::NonCopyable
 	{
 	public:
-		/*----------------------------------------------------------------------
-		*  @brief : CPU DebuggerとGPU DebuggerはReleaseモードでは何も起こしません. 
-		* 
-		*           GPU Debuggerはフレームレートに影響を及ぼすことから, デフォルトはoffとなっています. 
-		* 
-		*----------------------------------------------------------------------*/
-		static gu::SharedPointer<RHIInstance> CreateInstance(const core::APIVersion version, const bool enableCPUDebugger = true, bool enableGPUDebugger = false, const bool useGPUDebugBreak = false);
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief     手動でGraphics APIを選択します. @n
+		*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
+		*  @param[in] const core::GraphicsAPI グラフィクスAPI
+		*  @param[in] const RHIInstanceCreateInfo&  CPU, GPUデバッガの有無を指定する構造体
+		*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
+		*************************************************************************/
+		static gu::SharedPointer<RHIInstance> CreateInstance(const core::GraphicsAPI graphicsAPI, const RHIDebugCreateInfo& debugCreateInfo);
 		
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/* directX12 : (High) xGPU, dGPU iGPU (Low), vulkan : dGPU (not : first select gpu) */
-		virtual gu::SharedPointer <RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
+		/*!**********************************************************************
+		*  @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
+		*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
+		*  @param[in] const RHIDebugCreateInfo& CPU, GPUデバッガの有無を指定する構造体
+		*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
+		*************************************************************************/
+		static gu::SharedPointer<RHIInstance> CreateInstance(const RHIDebugCreateInfo& debugCreateInfo);
+
+		/*!**********************************************************************
+		*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
+		*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.　@n 
+		*             Vulkanではまだ外部GPUが対応できておらず, ディスクリートGPU, integrated GPU (最初に選択されたGPU)の順に選択されます@n
+		*  @param[in] void
+		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
 		
-		/* directX12 : (Low) iGPU, dGPU xGPU (High), vulkan : iGPU (not : first select gpu) */
-		virtual gu::SharedPointer<RHIDisplayAdapter>  SearchMinimumPowerAdapter() = 0;
+		/*!**********************************************************************
+		*  @brief     最も性能が低い(消費電力が低い)物理デバイスを自動で選定します. 高い順にiGPU (integrated GPU), dGPU(discrete GPU), xGPU(外部GPU)の順に優先されます
+		*  @note      DirectX12では統合GPU, ディスクリートGPU, 外部GPUの順に選択されます.　@n
+		*             Vulkanではまだ外部GPUが対応できておらず, integrated GPU, ディスクリートGPU (最初に選択されたGPU)の順に選択されます
+		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIDisplayAdapter> SearchMinimumPowerAdapter() = 0;
 		
-		/* return all available display adapter*/
-		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() = 0;
+		/*!**********************************************************************
+		*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
+		*  @attention この関数は, 配列の順番が特に指定がありません.
+		*  @param[in] void
+		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
+		*************************************************************************/
+		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() const = 0;
 		
-		/* OutputDebugString : adapter list*/
-		virtual void LogAdapters() = 0;
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     出力欄に全ての物理デバイスを記入します
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		virtual void LogAdapters() const = 0;
+
+		/*!**********************************************************************
+		*  @brief     物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
+		*             コマンドラインの文字列は, prefer_(DisplayAdapterVenderTypeに指定されるベンダー名)で指定してください
+		*  @details   コマンド一覧 @n
+		*             prefer_AMD, prefer_Intel, prefer_Nvidia, prefer_Microsoft
+		*************************************************************************/
+		core::DisplayAdapterVendorType GetPreferredAdapterVendor() const;
+
+		#pragma endregion Public Function
+
+		#pragma region Public Member Function
+		/*!**********************************************************************
+		*  @brief    エンジンの名前を取得します
+		*************************************************************************/
 		const char* GetEngineName() const { return EngineName; }
 
-		bool UseGPUDebugBreak() const { return _useGPUDebugBreak; }
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief    GPUのブレークポイントを設定できるかを返します.
+		*************************************************************************/
+		bool UseGPUDebugBreak() const { return _debugInfo.EnableGPUDebugBreak; }
+
+		/*!**********************************************************************
+		*  @brief    メッセージの深刻度を設定します.
+		*************************************************************************/
+		MessageSeverity GetMessageSeverity() const { return _debugInfo.GPUDebugBreakOnSeverity; }
+		#pragma endregion Public Member Function
+
+		#pragma region Public Constructor and Destructor
+
+		#pragma endregion
 
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		
+		/*! @brief : デフォルトコンストラクタ*/
 		RHIInstance() = default;
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) :
-			_enableCPUDebugger(enableCPUDebugger),
-			_enableGPUDebugger(enableGPUDebugger),
-			_useGPUDebugBreak(useGPUDebugBreak)
-		{
-		};
+		/*! @brief : Debuggerを使うコンストラクタ*/
+		RHIInstance(const core::RHIDebugCreateInfo& debugCreateInfo) : _debugInfo(debugCreateInfo) {};
 
 		virtual ~RHIInstance() = default;
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		bool _enableCPUDebugger = false; // debug only
-		bool _enableGPUDebugger = false; // debug only
-		bool _useGPUDebugBreak  = false; // debug only
-		const char* EngineName = "PPP_Engine";
+		#pragma endregion
+
+		#pragma region Protected Property
+
+		/* @ Debuggerを指定するコンストラクタ*/
+		core::RHIDebugCreateInfo _debugInfo;
+
+		/*! @brief : エンジン名*/
+		const char* EngineName = "ARoQ Engine";
+
+		#pragma endregion 
 	};
 	
 }

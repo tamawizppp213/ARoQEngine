@@ -35,7 +35,7 @@ namespace rhi::core
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::core
+namespace engine
 {
 	enum class UsageTexture
 	{
@@ -47,14 +47,13 @@ namespace gc::core
 
 	/****************************************************************************
 	*				  			Material
-	*************************************************************************//**
-	*  @class     Material
+	****************************************************************************/
+	/* @class     Material
 	*  @brief     Material Buffer
 	*****************************************************************************/
 	class Material : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GPUBufferPtr              = gu::SharedPointer<rhi::core::GPUBuffer>;
 		using GPUResourceViewPtr        = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using RHIDescriptorHeapPtr      = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
 		using GPUResourceCachePtr       = gu::SharedPointer<rhi::core::GPUResourceCache>;
@@ -73,7 +72,7 @@ namespace gc::core
 		GPUResourceViewPtr LoadTexture(const gu::tstring& filePath, const UsageTexture textureType);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		GPUResourceViewPtr GetMaterialView() const noexcept { return _materialBufferView; }
 
@@ -100,7 +99,7 @@ namespace gc::core
 		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

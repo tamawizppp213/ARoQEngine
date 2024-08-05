@@ -71,9 +71,9 @@ namespace
 }
 
 /****************************************************************************
-	*                       ReadFloatData
-*************************************************************************//**
-*  @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
+*                       ReadFloatData
+****************************************************************************/
+/* @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
 *  @brief     Read float data. Return std::vector<float>
 *  @param[in] const GLTFDocument& document
 *  @param[in] const detail::asset::GLTFBufferView& bufferView

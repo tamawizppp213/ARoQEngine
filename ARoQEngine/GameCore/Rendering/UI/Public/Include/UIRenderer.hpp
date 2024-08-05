@@ -35,12 +35,12 @@ struct Texture;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::ui
+namespace engine
 {
 	/****************************************************************************
 	*				  			UIRenderer
-	*************************************************************************//**
-	*  @class     UIRenderer
+	****************************************************************************/
+	/* @class     UIRenderer
 	*  @brief     2D Sprite
 	*****************************************************************************/
 	class UIRenderer : public gu::NonCopyable
@@ -52,7 +52,7 @@ namespace gc::ui
 		using PipelineStatePtr  = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using ResourceViewPtr   = gu::SharedPointer<rhi::core::GPUResourceView>;
-		using ImagePtr = gu::SharedPointer<ui::Image>;
+		using ImagePtr = gu::SharedPointer<Image>;
 
 	public:
 		/****************************************************************************
@@ -62,13 +62,13 @@ namespace gc::ui
 
 		/* @brief : Add frame ui objects (image, text etc...)*/
 		//void AddFrameObjects(const gu::DynamicArray<ImagePtr>& images, const ResourceViewPtr& view);
-		void AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view);
+		void AddFrameObjects(const gu::DynamicArray<Image>& images, const ResourceViewPtr& view);
 
 		/* @brief : Render all registered frame ui objects*/
 		void Draw();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -94,7 +94,7 @@ namespace gc::ui
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
@@ -126,7 +126,7 @@ namespace gc::ui
 		void CountUpDrawImageAndView(const std::uint64_t arrayLength, const ResourceViewPtr& view);
 		
 		/****************************************************************************
-		**             Private Member Variables
+		**             Private Property
 		*****************************************************************************/
 		std::uint32_t _maxWritableUICount = 1024;
 	};

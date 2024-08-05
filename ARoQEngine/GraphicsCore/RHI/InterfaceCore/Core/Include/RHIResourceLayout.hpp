@@ -28,19 +28,31 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIResourceLayoutDesc
-	*************************************************************************//**
-	*  @class     RHIResourceLayoutDesc
-	*  @brief     Resource layout descriptor (set up how to bind gpu resource)
+	****************************************************************************/
+	/* @brief  Resource layout descriptor (set up how to bind gpu resource)
 	*****************************************************************************/
 	struct RHIResourceLayoutDesc
 	{
+		/*! @brief Descriptor Tableに登録される各要素*/
 		gu::DynamicArray<core::ResourceLayoutElement> Elements = {};
+
+		/*! @brief 動的サンプラー*/
 		gu::DynamicArray<core::SamplerLayoutElement>  Samplers = {};
-		gu::Optional<core::Constant32Bits>      Constant32Bits = {};
+		
+		/*! @brief 32bitの定数*/
+		gu::Optional<core::Constant32Bits> Constant32Bits = {};
+
+		/*! @brief RootSignatureの種類を指定*/
 		RootSignatureType ResourceLayoutType = RootSignatureType::Rasterize;
+
+		/*! @brief リソースに直接Indexで指定できるようにするか*/
 		bool UseDirectlyIndexedResourceHeap  = false;
+
+		/*! @brief 動的サンプラーに直接Indexで指定するようにするか*/
 		bool UseDirectlyIndexedSamplerHeap   = false;
-		bool UseIAInputLayout                = true;
+
+		/*! @brief Input Assemblyの入力レイアウトをシェーダーステージに採用するか*/
+		bool UseIAInputLayout = true;
 
 		RHIResourceLayoutDesc(
 			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
@@ -67,61 +79,75 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIResourceLayout
-	*************************************************************************//**
-	*  @class     RHIResourceLayout
-	*  @brief     Resource layout (set up how to bind gpu resource)
+	****************************************************************************/
+	/*  @brief  GPUのリソースのバインド方法を設定するリソースレイアウト
 	*****************************************************************************/
 	class RHIResourceLayout : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief :  Return gpu resource shader binding element
-		/*----------------------------------------------------------------------*/
-		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _desc.Elements[index]; }
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     GPUリソースのシェーダーバインディング要素を返します
+		*  @param[in] void
+		*  @return    const ResourceLayoutElement&
+		*************************************************************************/
+		const ResourceLayoutElement&  GetResourceElement(const gu::uint8 index) const { return _desc.Elements[index]; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return shader layout element of the sampler state
-		/*----------------------------------------------------------------------*/
-		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _desc.Samplers[index]; }
+		/*!**********************************************************************
+		*  @brief     SamplerLayoutElementを返します
+		*  @param[in] void
+		*  @return    const SamplerLayoutElement& 
+		*************************************************************************/
+		const SamplerLayoutElement& GetSamplerElement (const gu::uint8 index) const { return _desc.Samplers[index]; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Constant32Bits data
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Constant32Bitsを返します
+		*  @param[in] void
+		*  @return    gu::Optional<Constant32Bits>
+		*************************************************************************/
 		gu::Optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return All gpu resource shader binding elements
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     全てのResourceLayoutElementを返します
+		*  @param[in] void
+		*  @return    gu::DynamicArray<ResourceLayoutElement>
+		*************************************************************************/
 		const gu::DynamicArray<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return all sampler state shader binding elements
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     サンプラーステートのシェーダーバインディング要素を返します
+		*  @param[in] void 
+		*  @return    gu::DynamicArray<SamplerLayoutElement>& : サンプラーステートのシェーダーバインディング要素
+		*************************************************************************/
 		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します
+		*  @param[in] const gu::tstring& name : デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
 
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHIResourceLayout() = default;
 
+		/*! @brief デストラクタ*/
 		virtual ~RHIResourceLayout()
 		{
 			if (_device) { _device.Reset(); }
 		}
 
+		/*! @brief Descriptorで作成*/
 		explicit RHIResourceLayout(const gu::SharedPointer<RHIDevice>& device, const RHIResourceLayoutDesc& desc)
 			: _device(device), _desc(desc)
 		{
@@ -151,16 +177,18 @@ namespace rhi::core
 			_desc.Constant32Bits = { constant32Bits };
 		}
 
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 		
+		/*! @brief ResourceLayoutの*/
 		RHIResourceLayoutDesc _desc = {};
+		#pragma endregion
 	};
 }
 #endif

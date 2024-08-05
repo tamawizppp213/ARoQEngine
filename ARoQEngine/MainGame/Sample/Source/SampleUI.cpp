@@ -21,7 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
-using namespace gc::ui;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +42,8 @@ SampleUI::~SampleUI()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleUI::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleUI::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -54,8 +54,8 @@ void SampleUI::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTi
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleUI::Update()
+****************************************************************************/
+/* @fn        void SampleUI::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -71,8 +71,8 @@ void SampleUI::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleUI::Draw()
+****************************************************************************/
+/* @fn        void SampleUI::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -86,8 +86,8 @@ void SampleUI::Draw()
 	---------------------------------------------------------------------*/
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
+		rhi::core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_renderer->Draw();
 
@@ -95,8 +95,8 @@ void SampleUI::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleUI::Terminate()
+****************************************************************************/
+/* @fn        void SampleUI::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -111,8 +111,8 @@ void SampleUI::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleUI::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleUI::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -152,7 +152,7 @@ void SampleUI::LoadMaterials()
 	_slider->AddListener(gu::MakeShared<std::function<void(float)>>([&](float value) { return DebugSliderValue(value); }));
 
 	// Create UI Renderer
-	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -165,8 +165,8 @@ void SampleUI::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleUI::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleUI::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -185,8 +185,8 @@ void SampleUI::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleUI::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleUI::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -200,8 +200,8 @@ void SampleUI::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleUI::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleUI::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -212,8 +212,8 @@ void SampleUI::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleUI::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleUI::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void

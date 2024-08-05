@@ -26,8 +26,8 @@ namespace gc::audio
 
 	/****************************************************************************
 	*				  			AudioSubmix
-	*************************************************************************//**
-	*  @class     AudioSubmix
+	****************************************************************************/
+	/* @class     AudioSubmix
 	*  @brief     Manage AudioSource in one place
 	*****************************************************************************/
 	class AudioSubmix
@@ -46,9 +46,9 @@ namespace gc::audio
 		void Reverb(bool isOn);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		SubmixVoicePtr GetSubmixVoice() { return _submixVoice; }
+		SubmixVoicePtr GetSubmixVoice() const { return _submixVoice; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -69,7 +69,7 @@ namespace gc::audio
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SubmixVoicePtr _submixVoice  = nullptr;
 		AudioMasterPtr _audioMaster  = nullptr;

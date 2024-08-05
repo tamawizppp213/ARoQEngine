@@ -11,13 +11,13 @@
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
-#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
-#include "GameCore/Rendering/Effect/Include/Blur.hpp"
-#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
-#include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
-#include "GameCore/Rendering/Effect/Include/Vignette.hpp"
-#include "GameCore/Rendering/Effect/Include/WhiteBalance.hpp"
-#include "GameCore/Rendering/Effect/Include/ScreenSpaceReflection.hpp"
+#include "GameCore/Rendering/PostProcess/Include/ColorChange.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Blur.hpp"
+#include "GameCore/Rendering/PostProcess/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Mosaic.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Vignette.hpp"
+#include "GameCore/Rendering/PostProcess/Include/WhiteBalance.hpp"
+#include "GameCore/Rendering/PostProcess/Include/ScreenSpaceReflection.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
@@ -28,14 +28,14 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 namespace
 {
-	gu::SharedPointer<gc::rendering::ScreenCapture> _capture = nullptr;
+	gu::SharedPointer<ScreenCapture> _capture = nullptr;
 }
 SampleColorChange::SampleColorChange()
 {
@@ -48,8 +48,8 @@ SampleColorChange::~SampleColorChange()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -60,8 +60,8 @@ void SampleColorChange::Initialize(const PPPEnginePtr& engine, const GameTimerPt
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleColorChange::Update()
+****************************************************************************/
+/* @fn        void SampleColorChange::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -74,8 +74,8 @@ void SampleColorChange::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleSky::Draw()
+****************************************************************************/
+/* @fn        void SampleSky::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -90,8 +90,8 @@ void SampleColorChange::Draw()
 	const auto frameBuffer = _engine->GetFrameBuffer(frameIndex);
 
 	commandList->SetViewportAndScissor(
-		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
+		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 
@@ -109,8 +109,8 @@ void SampleColorChange::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleColorChange::Terminate()
+****************************************************************************/
+/* @fn        void SampleColorChange::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -133,8 +133,8 @@ void SampleColorChange::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -179,7 +179,7 @@ void SampleColorChange::LoadMaterials()
 	_vignette = gu::MakeShared<Vignette>(_engine, vignetteSettings);
 
 	_whiteBalance = gu::MakeShared<WhiteBalance>(_engine, 1.0f, 0.0f);
-	_capture = gu::MakeShared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
+	_capture = gu::MakeShared<ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -193,8 +193,8 @@ void SampleColorChange::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -219,7 +219,7 @@ void SampleColorChange::OnKeyboardInput()
 	}
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_P))
 	{
-		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
+		_colorIndex = ((gu::uint64)_colorIndex + 1) % _colorChanges.size();
 	}
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
 	{
@@ -244,8 +244,8 @@ void SampleColorChange::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -266,8 +266,8 @@ void SampleColorChange::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void

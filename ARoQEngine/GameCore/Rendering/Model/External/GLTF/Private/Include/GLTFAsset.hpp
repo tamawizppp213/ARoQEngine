@@ -165,8 +165,8 @@ namespace gltf
 #pragma region Asset
 			/****************************************************************************
 			*				  			Asset
-			*************************************************************************//**
-			*  @struct    Asset
+			****************************************************************************/
+			/* @struct    Asset
 			*  @brief     temp
 			*****************************************************************************/
 			struct GLTFAccessor : public GLTFChildOfRootProperty
@@ -209,7 +209,7 @@ namespace gltf
 
 				size_t GetByteLength() const { return Count * GetComponentTypeSize(ComponentDataType) * GetTypeCount(AccessorDataType); }
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string   BufferViewID      = ""; // The index of the buffer view
 				size_t        ByteOffset        = 0U; // The offset relative to the start of the buffer view in bytes
@@ -233,21 +233,21 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Private Member Variables
+				**                Private Property
 				*****************************************************************************/
 			};
 
 			/****************************************************************************
 			*				  			Asset
-			*************************************************************************//**
-			*  @struct    Asset
+			****************************************************************************/
+			/* @struct    Asset
 			*  @brief     Has Copyright, Generator, Version, MinVersion Info.
 			*****************************************************************************/
 			struct GLTFAsset : public GLTFProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string CopyRight; // A copyright message suitable for display to credit the content creator
 				std::string Generator; // Tool that generated this GLTF model. Useful for debugging.
@@ -265,15 +265,15 @@ namespace gltf
 #pragma region Buffer
 			/****************************************************************************
 			*				  			GLTFBufferView
-			*************************************************************************//**
-			*  @struct    GLTFBufferView
+			****************************************************************************/
+			/* @struct    GLTFBufferView
 			*  @brief     A view into a buffer generally representing a subset of the buffer
 			*****************************************************************************/
 			struct GLTFBufferView : public GLTFChildOfRootProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string                BufferID;         // The index of buffer
 				size_t                     ByteOffset = 0U;  // The offset into the buffer in bytes
@@ -297,15 +297,15 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFBuffer
-			*************************************************************************//**
-			*  @struct    GLTFBuffer
+			****************************************************************************/
+			/* @struct    GLTFBuffer
 			*  @brief     A Buffer points to binary geometry, animation, or skins
 			*****************************************************************************/
 			struct GLTFBuffer : public GLTFChildOfRootProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string URI;        // The URI of the buffer. Relative oath are relatiave to the current glTF asset.
 				size_t ByteLength = 0U; // The length of the buffer in bytes.
@@ -325,15 +325,15 @@ namespace gltf
 #pragma region Camera
 			/****************************************************************************
 			*				  			GLTFProjection
-			*************************************************************************//**
-			*  @struct    GLTFProjection
+			****************************************************************************/
+			/* @struct    GLTFProjection
 			*  @brief     Camera 
 			*****************************************************************************/
 			struct GLTFProjection : public GLTFProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				virtual ProjectionType      GetProjectionType() const = 0;
 				virtual std::unique_ptr<GLTFProjection> Clone() const = 0;
@@ -355,8 +355,8 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFProjection
-			*************************************************************************//**
-			*  @struct    GLTFOrthographic
+			****************************************************************************/
+			/* @struct    GLTFOrthographic
 			*  @brief     Orthographic Camera
 			*****************************************************************************/
 			struct GLTFOrthographic : GLTFProjection
@@ -370,7 +370,7 @@ namespace gltf
 				std::unique_ptr<GLTFProjection> Clone() const override { return std::make_unique<GLTFOrthographic>(*this); }
 				bool IsEqual(const GLTFProjection& rhs) const override;
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				float XMagnification; // The floating-point horizontal magnification of the view. 
 				float YMagnification; // The floating-point vertical magnification of the view.
@@ -390,8 +390,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				a  			GLTFProjection
-			*************************************************************************//**
-			*  @struct    GLTFOrthographic
+			****************************************************************************/
+			/* @struct    GLTFOrthographic
 			*  @brief     Orthographic Camera
 			*****************************************************************************/
 			struct GLTFPerspective : public GLTFProjection
@@ -408,7 +408,7 @@ namespace gltf
 				bool IsEqual(const GLTFProjection& rhs) const override;
 				
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				Optional<float> AspectRatio;
 				float YFov;
@@ -428,8 +428,8 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFProjection
-			*************************************************************************//**
-			*  @struct    GLTFOrthographic
+			****************************************************************************/
+			/* @struct    GLTFOrthographic
 			*  @brief     Orthographic Camera
 			*****************************************************************************/
 			struct GLTFCamera : public GLTFChildOfRootProperty
@@ -442,7 +442,7 @@ namespace gltf
 				const GLTFOrthographic& GetOrthographic() const;
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::unique_ptr<GLTFProjection> Projection;
 				/****************************************************************************
@@ -464,8 +464,8 @@ namespace gltf
 #pragma region Texture
 			/****************************************************************************
 			*				  			GLTFProjection
-			*************************************************************************//**
-			*  @struct    GLTFOrthographic
+			****************************************************************************/
+			/* @struct    GLTFOrthographic
 			*  @brief     Orthographic Camera
 			*****************************************************************************/
 			struct GLTFImage : public GLTFChildOfRootProperty
@@ -476,7 +476,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string URI;           // The uri of the image
 				std::string MimeType;      // The image's media type. image/png
@@ -496,8 +496,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFTextureInfo
-			*************************************************************************//**
-			*  @struct    GLTFTextureInfo
+			****************************************************************************/
+			/* @struct    GLTFTextureInfo
 			*  @brief     Texture infomation
 			*****************************************************************************/
 			struct GLTFTextureInfo : public GLTFProperty
@@ -508,7 +508,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string TextureID = ""; // idÇÕñ{óàintÇæÇ™, ñºëOÇ≈ä«óù
 				size_t      TexCoord = 0;
@@ -531,8 +531,8 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFSampler
-			*************************************************************************//**
-			*  @struct    GLTFSampler
+			****************************************************************************/
+			/* @struct    GLTFSampler
 			*  @brief     Sampler Mode
 			*****************************************************************************/
 			struct GLTFSampler : public GLTFChildOfRootProperty
@@ -546,7 +546,7 @@ namespace gltf
 				static WrapMode      GetAddressingMode(size_t readValue);
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				Optional<MagFilterMode> MagFilter;
 				Optional<MinFilterMode> MinFilter;
@@ -566,8 +566,8 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFTexture
-			*************************************************************************//**
-			*  @struct    GLTFTexture
+			****************************************************************************/
+			/* @struct    GLTFTexture
 			*  @brief     Textures that references an Image.
 			*****************************************************************************/
 			struct GLTFTexture : public GLTFChildOfRootProperty
@@ -578,7 +578,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string SamplerID; // The index of the sampler used by this texture
 				std::string ImageID;   // The index of the image by this textyre
@@ -602,8 +602,8 @@ namespace gltf
 #pragma region Material
 			/****************************************************************************
 			*				  		 GLTFMaterial
-			*************************************************************************//**
-			*  @struct    GLTFMaterial
+			****************************************************************************/
+			/* @struct    GLTFMaterial
 			*  @brief     Material
 			*****************************************************************************/
 			struct GLTFMaterial : public GLTFChildOfRootProperty
@@ -667,7 +667,7 @@ namespace gltf
 					};
 				}
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				PBRMetallicRoughness  MetallicRoughness;
 				NormalTextureInfo     NormalTexture;
@@ -699,8 +699,8 @@ namespace gltf
 #pragma region Scene
 			/****************************************************************************
 			*				  			GLTFScene
-			*************************************************************************//**
-			*  @struct    GLTFScene
+			****************************************************************************/
+			/* @struct    GLTFScene
 			*  @brief     The root nodes of a scene
 			*****************************************************************************/
 			struct GLTFScene : public GLTFChildOfRootProperty
@@ -711,7 +711,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::vector<std::string> Nodes;
 				/****************************************************************************
@@ -728,8 +728,8 @@ namespace gltf
 #pragma region Skeleton
 			/****************************************************************************
 			*				  			GLTFMorphTarget
-			*************************************************************************//**
-			*  @struct    GLTFMorphTarget
+			****************************************************************************/
+			/* @struct    GLTFMorphTarget
 			*  @brief     Morph Target
 			*****************************************************************************/
 			struct GLTFMorphTarget
@@ -740,7 +740,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string PositionsAccessorID;
 				std::string NormalsAccessorID;
@@ -759,8 +759,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFMorphTarget
-			*************************************************************************//**
-			*  @struct    GLTFMorphTarget
+			****************************************************************************/
+			/* @struct    GLTFMorphTarget
 			*  @brief     Morph Target
 			*****************************************************************************/
 			struct GLTFMeshPrimitive : public GLTFProperty
@@ -773,7 +773,7 @@ namespace gltf
 				const std::string& GetAttributeAccessorID(const std::string& name) const;
 				bool TryGetAttributeAccessorID(const std::string& name, std::string& accessorID) const;
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::unordered_map<std::string, std::string> Attributes; // A plain JSON objects where each key corresponds to a mesh attribute semantic
 				std::string                  IndicesAccessorID;
@@ -797,8 +797,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFMesh
-			*************************************************************************//**
-			*  @struct    GLTFMesh
+			****************************************************************************/
+			/* @struct    GLTFMesh
 			*  @brief     Mesh
 			*****************************************************************************/
 			struct GLTFMesh : public GLTFChildOfRootProperty
@@ -809,7 +809,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::vector<GLTFMeshPrimitive> Primitives;
 				std::vector<float> Weights;
@@ -832,8 +832,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFNode
-			*************************************************************************//**
-			*  @struct    GLTFNode
+			****************************************************************************/
+			/* @struct    GLTFNode
 			*  @brief     Node in the node hierarchy
 			*****************************************************************************/
 			struct GLTFNode : public GLTFChildOfRootProperty
@@ -857,7 +857,7 @@ namespace gltf
 						&& Scale       == gm::Float3(1, 1, 1);
 				}
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string              CameraID; // The index of the camera referenced by this node
 				std::vector<std::string> Children; // The indices of this node's children
@@ -897,8 +897,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFSkin
-			*************************************************************************//**
-			*  @struct    GLTFSkin
+			****************************************************************************/
+			/* @struct    GLTFSkin
 			*  @brief     Joints and matrices defining a skin
 			*****************************************************************************/
 			struct GLTFSkin : public GLTFChildOfRootProperty
@@ -909,7 +909,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string InverseBindMatricesAccessorID; // The index of the accessor containing the floating-point 4x4 inverse bind matrices
 				std::string SkeletonID;            // The index of the node used as a skeleton root.
@@ -931,15 +931,15 @@ namespace gltf
 #pragma region Animation
 			/****************************************************************************
 			*				  			GLTFAnimationTarget
-			*************************************************************************//**
-			*  @struct    GLTFAnimationTarget
+			****************************************************************************/
+			/* @struct    GLTFAnimationTarget
 			*  @brief     Animation Target Node
 			*****************************************************************************/
 			struct GLTFAnimationTarget : public GLTFProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string NodeID;
 				TargetPath  Path = Target_Unknown;
@@ -956,15 +956,15 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFAnimationChannel
-			*************************************************************************//**
-			*  @struct    GLTFAnimationChannel
+			****************************************************************************/
+			/* @struct    GLTFAnimationChannel
 			*  @brief     Animation Channel 
 			*****************************************************************************/
 			struct GLTFAnimationChannel : public GLTFProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string ID;
 				std::string SampleID;
@@ -983,15 +983,15 @@ namespace gltf
 			};
 			/****************************************************************************
 			*				  			GLTFAnimationSampler
-			*************************************************************************//**
-			*  @struct    GLTFAnimationSampler
+			****************************************************************************/
+			/* @struct    GLTFAnimationSampler
 			*  @brief     Animation Interpolation 
 			*****************************************************************************/
 			struct GLTFAnimationSampler : public GLTFProperty
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string ID;
 				std::string InputAccessorID;
@@ -1013,8 +1013,8 @@ namespace gltf
 
 			/****************************************************************************
 			*				  			GLTFAnimation
-			*************************************************************************//**
-			*  @struct    GLTFAnimation
+			****************************************************************************/
+			/* @struct    GLTFAnimation
 			*  @brief     Animation
 			*****************************************************************************/
 			struct GLTFAnimation : public GLTFChildOfRootProperty
@@ -1022,7 +1022,7 @@ namespace gltf
 			public:
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				IndexedContainer<const GLTFAnimationChannel> Channels;
 				IndexedContainer<const GLTFAnimationSampler> Samplers;

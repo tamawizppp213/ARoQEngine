@@ -26,7 +26,7 @@ namespace rhi::core
 {
 	class GPUResourceView;
 }
-namespace gc
+namespace engine
 {
 	class IRenderPipeline;
 	class Camera;
@@ -37,8 +37,8 @@ namespace gc
 
 /****************************************************************************
 *				  			    PPPEngine
-*************************************************************************//**
-*  @class     PPPEngine
+****************************************************************************/
+/* @class     PPPEngine
 *  @brief     各分野のEngineをまとめたクラス
 *****************************************************************************/
 class PPPEngine : public gu::NonCopyable
@@ -50,14 +50,14 @@ protected:
 	using EngineThreadManagerPtr    = gu::SharedPointer<engine::core::EngineThreadManager>;
 	using GameTimerPtr              = gu::SharedPointer<GameTimer>;
 	using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-	using RenderPipelinePtr         = gu::SharedPointer<gc::IRenderPipeline>;
+	using RenderPipelinePtr         = gu::SharedPointer<engine::IRenderPipeline>;
 	using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
-	using CameraPtr                 = gu::SharedPointer<gc::Camera>;
+	using CameraPtr                 = gu::SharedPointer<engine::Camera>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void StartUp(const engine::setting::StartUpParameters& setting);
+	void StartUp(const engine::StartUpParameters& setting);
 
 	void Run();
 
@@ -67,7 +67,7 @@ public:
 
 	void ShutDown();
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	LowLevelGraphicsEnginePtr GetLowLevelGraphics() const noexcept { return _graphicsEngine; }
 	
@@ -96,12 +96,12 @@ protected:
 	*****************************************************************************/
 
 	/****************************************************************************
-	**                Protected Member Variables
+	**                Protected Property
 	*****************************************************************************/
 #pragma region Variables
 #pragma region Common 
 	// @ brief : 初期設定
-	engine::setting::StartUpParameters StartUpParameter = {};
+	engine::StartUpParameters StartUpParameter = {};
 
 	/* @brief : ウィンドウを管理するクラス*/
 	gu::SharedPointer<platform::core::PlatformApplication>  _platformApplication = nullptr;

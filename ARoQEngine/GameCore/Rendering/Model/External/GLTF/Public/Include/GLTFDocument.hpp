@@ -25,8 +25,8 @@ namespace gltf
 {
 	/****************************************************************************
 	*				  			GLTFDocument
-	*************************************************************************//**
-	*  @class     GLTFDocument
+	****************************************************************************/
+	/* @class     GLTFDocument
 	*  @brief     Document
 	*****************************************************************************/
 	class GLTFDocument : public gltf::detail::GLTFProperty
@@ -43,7 +43,7 @@ namespace gltf
 		const detail::asset::GLTFScene& GetDefaultScene() const;
 		const detail::asset::GLTFScene& SetDefaultScene(detail::asset::GLTFScene&& scene, AppendIdPolicy policy);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		detail::asset::GLTFAsset Asset;
 		IndexedContainer<const detail::asset::GLTFAccessor>   Accessors;
@@ -76,7 +76,7 @@ namespace gltf
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 

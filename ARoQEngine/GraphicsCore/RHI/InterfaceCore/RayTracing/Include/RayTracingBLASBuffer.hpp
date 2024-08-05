@@ -31,8 +31,8 @@ namespace rhi::core
 	class RayTracingGeometry;
 	/****************************************************************************
 	*				  			BLASBuffer
-	*************************************************************************//**
-	*  @struct    BLASBuffer
+	****************************************************************************/
+	/* @struct    BLASBuffer
 	*  @brief     BLASBuffer
 	*****************************************************************************/
 	class BLASBuffer : public gu::NonCopyable
@@ -43,7 +43,7 @@ namespace rhi::core
 		*****************************************************************************/
 		virtual void Build(const gu::SharedPointer<RHICommandList>& commandList) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		//gu::SharedPointer<GPUBuffer> GetSource () const noexcept { return _source; }
 		gu::SharedPointer<GPUBuffer> GetDest   () const noexcept { return _destination; }
@@ -64,7 +64,7 @@ namespace rhi::core
 			const gu::DynamicArray<gu::SharedPointer<RayTracingGeometry>>& geometryDesc,
 			const core::BuildAccelerationStructureFlags flags) : _device(device),  _geometryDescs(geometryDesc), _flags(flags) { };
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		//gu::SharedPointer<GPUBuffer> _source        = nullptr;Å@å„Ç≈ïKóvÇ…Ç»ÇÈÇ©Ç‡
 		gu::SharedPointer<GPUBuffer> _destination   = nullptr;

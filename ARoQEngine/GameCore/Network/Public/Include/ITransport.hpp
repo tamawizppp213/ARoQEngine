@@ -29,8 +29,8 @@ namespace gc
 	class Socket;
 	/****************************************************************************
 	*				  			 TransportTCP
-	*************************************************************************//**
-	*  @class     TransportTCP
+	****************************************************************************/
+	/* @class     TransportTCP
 	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
 	class ITransport: public gu::NonCopyable
@@ -54,7 +54,7 @@ namespace gc
 		/* @brief : Transport Disconnection*/
 		virtual void Disconnect() = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		bool IsConnected() const { return _isConnected; }
 
@@ -71,7 +71,7 @@ namespace gc
 		
 		virtual ~ITransport();
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief: Connection Flags*/
 		bool _isConnected = false;

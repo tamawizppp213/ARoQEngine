@@ -28,8 +28,8 @@ namespace gm::simd::avx
 {
 	/****************************************************************************
 	*				  			   SimdVector128AVX
-	*************************************************************************//**
-	*  @class     SimdVector128AVX
+	****************************************************************************/
+	/* @class     SimdVector128AVX
 	*  @brief     AVX用のsimd演算
 	*****************************************************************************/
 	class Vector128Utility : public gm::simd::sse4::Vector128Utility
@@ -40,7 +40,7 @@ namespace gm::simd::avx
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルを並び替えます.indexを指定するとそのindexにあったVector4型を取得
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Swizzle(ConstVector128 vector,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;
@@ -49,13 +49,13 @@ namespace gm::simd::avx
 		*  @brief : 2つのベクトルから要素を抽出し, 新しいベクトルを作成する
 		*           0～3 : aからのx, y, z, w
 		*           4～7 : bからのx, y, z, w
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Permute(ConstVector128 a, ConstVector128,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -68,15 +68,15 @@ namespace gm::simd::avx
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 
 #pragma region Implement
 	/****************************************************************************
 	*                       Swizzle
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Swizzle(ConstVector128 vector,
+	****************************************************************************/
+	/* @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Swizzle(ConstVector128 vector,
 				  const gu::uint32 xIndex, const gu::uint32 yIndex,
 				  const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	*
@@ -96,8 +96,8 @@ namespace gm::simd::avx
 
 	/****************************************************************************
 	*                       Permute
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Permute(ConstVector128 a, ConstVector128 b,
+	****************************************************************************/
+	/* @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Permute(ConstVector128 a, ConstVector128 b,
 				  const gu::uint32 xIndex, const gu::uint32 yIndex,
 				  const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	*

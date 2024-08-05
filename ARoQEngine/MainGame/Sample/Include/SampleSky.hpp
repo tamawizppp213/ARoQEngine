@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
@@ -30,14 +30,14 @@ namespace sample
 
 	/****************************************************************************
 	*				  			SampleSky
-	*************************************************************************//**
-	*  @class     SampleSky
+	****************************************************************************/
+	/* @class     SampleSky
 	*  @brief     Skybox sample
 	*****************************************************************************/
 	class SampleSky : public Scene
 	{
-		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr  = gu::SharedPointer<gc::Camera>;
+		using SkyDomePtr = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<engine::Camera>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -47,7 +47,7 @@ namespace sample
 		void Draw     () override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -64,7 +64,7 @@ namespace sample
 		void OnMouseInput  () override;
 		void OnGamePadInput() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;

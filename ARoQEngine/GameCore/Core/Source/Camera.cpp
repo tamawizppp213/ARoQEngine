@@ -20,7 +20,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
@@ -111,8 +111,8 @@ void Camera::Update(const GameTimerPtr& gameTimer)
 
 /****************************************************************************
 *                       RotateRoll
-*************************************************************************//**
-*  @fn        void Camera::RotateRoll(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotateRoll(float angle)
 * 
 *  @brief     Rotate Roll
 * 
@@ -132,8 +132,8 @@ void Camera::RotateRoll(float angle)
 }
 /****************************************************************************
 *                       RotatePitch
-*************************************************************************//**
-*  @fn        void Camera::RotatePitch(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotatePitch(float angle)
 * 
 *  @brief     Rotate Pitch
 * 
@@ -154,8 +154,8 @@ void Camera::RotatePitch(float angle)
 
 /****************************************************************************
 *                       RotateYaw
-*************************************************************************//**
-*  @fn        void Camera::RotateYaw(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotateYaw(float angle)
 * 
 *  @brief     Rotate Yaw
 * 
@@ -176,8 +176,8 @@ void Camera::RotateYaw(float angle)
 
 /****************************************************************************
 *                       RotateWorldX
-*************************************************************************//**
-*  @fn        void Camera::RotateWorldX(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotateWorldX(float angle)
 *  @brief     Rotate X
 *  @param[in] float angle
 *  @return 　　void
@@ -196,8 +196,8 @@ void Camera::RotateWorldX(float angle)
 }
 /****************************************************************************
 *                       RotateWorldY
-*************************************************************************//**
-*  @fn        void Camera::RotateWorldY(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotateWorldY(float angle)
 *  @brief     Rotate Y
 *  @param[in] float angle
 *  @return 　　void
@@ -216,8 +216,8 @@ void Camera::RotateWorldY(float angle)
 
 /****************************************************************************
 *                       RotateWorldZ
-*************************************************************************//**
-*  @fn        void Camera::RotateWorldZ(float angle)
+****************************************************************************/
+/* @fn        void Camera::RotateWorldZ(float angle)
 *  @brief     Rotate Z
 *  @param[in] float angle
 *  @return 　　void
@@ -237,8 +237,8 @@ void Camera::RotateWorldZ(float angle)
 
 /****************************************************************************
 *                       SetLens
-*************************************************************************//**
-*  @fn        void Camera::SetLens(const float fovVertical, const float aspect, const float nearZ, const float farZ)
+****************************************************************************/
+/* @fn        void Camera::SetLens(const float fovVertical, const float aspect, const float nearZ, const float farZ)
 * 
 *  @brief     Set perspective lens
 * 
@@ -273,8 +273,8 @@ void Camera::SetLens(const float fovVertical, const float aspect, const float ne
 
 /****************************************************************************
 *                       SetOrthoLens
-*************************************************************************//**
-*  @fn        void Camera::SetOrthoLens(const float width, const float height, const float nearZ, const float farZ)
+****************************************************************************/
+/* @fn        void Camera::SetOrthoLens(const float width, const float height, const float nearZ, const float farZ)
 * 
 *  @brief     Set Ortho lens
 * 
@@ -306,8 +306,8 @@ void Camera::SetOrthoLens(const float width, const float height, const float nea
 
 /****************************************************************************
 *                       SetZRange
-*************************************************************************//**
-*  @fn        void Camera::SetZRange(float nearZ, float farZ)
+****************************************************************************/
+/* @fn        void Camera::SetZRange(float nearZ, float farZ)
 * 
 *  @brief     Set ZRange in the perspective or orthographic camera
 * 
@@ -333,8 +333,8 @@ void Camera::SetZRange(const float nearZ, const float farZ)
 
 /****************************************************************************
 *                       LookAt
-*************************************************************************//**
-*  @fn        vvoid Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
+****************************************************************************/
+/* @fn        vvoid Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
 *  @brief     LookAt Camera
 *  @param[in] Vector3 cameraPosition (world coordinate)
 *  @param[in] Vector3 targetPosition (world coordinate)
@@ -357,8 +357,8 @@ void Camera::LookAt(Vector3f position, Vector3f target, Vector3f worldUp)
 }
 /****************************************************************************
 *                       LookAt
-*************************************************************************//**
-*  @fn        void Camera::LookAt(const Float3& position, const Float3& target, const Float3& up)
+****************************************************************************/
+/* @fn        void Camera::LookAt(const Float3& position, const Float3& target, const Float3& up)
 *  @brief     LookAt Camera
 *  @param[in] Float3 cameraPosition (world coordinate)
 *  @param[in] Float3 targetPosition (world coordinate)
@@ -378,8 +378,8 @@ void Camera::LookAt(const Float3& position, const Float3& target, const Float3& 
 
 /****************************************************************************
 *                       Strafe
-*************************************************************************//**
-*  @fn        void Camera::Strafe(float distance)
+****************************************************************************/
+/* @fn        void Camera::Strafe(float distance)
 *  @brief     Strafe camera
 *  @param[in] float distance
 *  @return 　　void
@@ -398,8 +398,8 @@ void Camera::Strafe(float distance)
 }
 /****************************************************************************
 *                       Walk
-*************************************************************************//**
-*  @fn        void Camera::Walk(float distance)
+****************************************************************************/
+/* @fn        void Camera::Walk(float distance)
 *  @brief     Walk camera
 *  @param[in] float distance
 *  @return 　　void
@@ -419,8 +419,8 @@ void Camera::Walk(float distance)
 
 /****************************************************************************
 *                       UpdateViewMatrix
-*************************************************************************//**
-*  @fn        void Camera::UpdateViewMatrix()
+****************************************************************************/
+/* @fn        void Camera::UpdateViewMatrix()
 * 
 *  @brief     Update camera view matrix
 * 
@@ -638,6 +638,6 @@ void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 	scene.TotalTime               = gameTimer->TotalTime();
 	scene.DeltaTime               = gameTimer->DeltaTime();
 
-	_sceneConstantBuffer->Pack(&scene, nullptr); 
+	_sceneConstantBuffer->UploadByte(&scene, _sceneConstantBuffer->GetTotalByteSize(), 0, nullptr); 
 }
 #pragma endregion Protected Function

@@ -76,8 +76,8 @@ struct VertexOut
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			NDCDepthToViewDepth
-*************************************************************************//**
-*  @fn        float NDCDepthToViewDepth(const float z_ndc)
+****************************************************************************/
+/* @fn        float NDCDepthToViewDepth(const float z_ndc)
 
 *  @brief     Convert ndc Depth to view space depth
 
@@ -94,8 +94,8 @@ float NDCDepthToViewDepth(const float z_ndc)
 
 /****************************************************************************
 *				  			CalculateOcclusion
-*************************************************************************//**
-*  @fn        float CalculateOcclusion(const float distZ)
+****************************************************************************/
+/* @fn        float CalculateOcclusion(const float distZ)
 
 *  @brief     Return calculate occlusion ratio from 0.0f to 1.0f
 

@@ -27,8 +27,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHICommandQueue
-	*************************************************************************//**
-	*  @class     RHICommandQueue
+	****************************************************************************/
+	/* @class     RHICommandQueue
 	*  @brief     Send drawing commands to the GPU,
 				  provide methods for synchronous processing of drawing command execution
 				  There are three types : Graphics, Compute, Copy command queue.
@@ -49,7 +49,7 @@ namespace rhi::vulkan
 		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return VkQueue.*/
 		VkQueue GetQueue() const noexcept { return _queue; }
@@ -64,12 +64,12 @@ namespace rhi::vulkan
 
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		gu::uint64 GetTimestampFrequency() override { return 0; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  CPUとGPUの計測時間をMicroseconds単位で取得します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 		{
 			return core::GPUTimingCalibrationTimestamp();
@@ -88,7 +88,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkQueue       _queue            = nullptr;
 		std::uint32_t _queueFamilyIndex = 0; // CommandQueueの種類ごとに振られるGroupID

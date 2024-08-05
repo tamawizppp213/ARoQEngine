@@ -81,8 +81,8 @@ GPUResourceView::~GPUResourceView()
 #pragma region Bind Function
 /****************************************************************************
 *                     Bind
-*************************************************************************//**
-*  @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
+****************************************************************************/
+/* @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
 *
 *  @brief     Bind resource layout array index to the command list.
               index : resource layout array index
@@ -139,8 +139,8 @@ void GPUResourceView::CreateView(const gu::SharedPointer<directX12::RHIDescripto
 
 /****************************************************************************
 *                     CreateSRV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create shader resource view
 * 
@@ -164,7 +164,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		resourceViewDesc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		
 		// For depth stencil texture
 		// EnumConverterÇ≈ÇÕD32Ç™ìnÇ≥ÇÍÇƒÇµÇ‹Ç§ÇΩÇﬂ, ì¡ï Ç…à»â∫ÇÃëŒâûÇçsÇ¢Ç‹ÇµÇΩ. 
@@ -178,7 +178,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture1D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1D;
-				resourceViewDesc.Texture1D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture1D.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.Texture1D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture1D.ResourceMinLODClamp = 0.0f;
 				break;
@@ -186,7 +186,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture2D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2D;
-				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0; 
 				resourceViewDesc.Texture2D.PlaneSlice          = static_cast<UINT>(_planeSlice);
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
@@ -196,7 +196,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture3D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE3D;
-				resourceViewDesc.Texture3D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture3D.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.Texture3D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture3D.ResourceMinLODClamp = 0.0f;
 				break;
@@ -204,7 +204,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::TextureCube:
 			{
 				resourceViewDesc.ViewDimension                   = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBE;
-				resourceViewDesc.TextureCube.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.TextureCube.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.TextureCube.MostDetailedMip     = 0;
 				resourceViewDesc.TextureCube.ResourceMinLODClamp = 0.0f;
 				break;
@@ -213,7 +213,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
 				resourceViewDesc.Texture1DArray.FirstArraySlice     = 0;
-				resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.Texture1DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture1DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
 				resourceViewDesc.Texture1DArray.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
@@ -223,7 +223,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
 				resourceViewDesc.Texture2DArray.FirstArraySlice     = 0;
-				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
 				resourceViewDesc.Texture2DArray.PlaneSlice          = _planeSlice;
@@ -247,7 +247,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                        = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBEARRAY;
 				resourceViewDesc.TextureCubeArray.First2DArrayFace    = 0;
-				resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapCount());
 				resourceViewDesc.TextureCubeArray.MostDetailedMip     = 0;
 				resourceViewDesc.TextureCubeArray.ResourceMinLODClamp = 0;
 				resourceViewDesc.TextureCubeArray.NumCubes            = static_cast<UINT>(_texture->GetArrayLength() / 6);
@@ -304,8 +304,8 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 }
 /****************************************************************************
 *                     CreateRAS
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create raytracing acceleration structure
 
@@ -343,8 +343,8 @@ void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateUAV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create unordered access view
 * 
@@ -364,7 +364,7 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		resourceViewDesc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		switch (_texture->GetResourceType())
 		{
 			case core::ResourceType::Texture1D:
@@ -433,7 +433,7 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 		if (_buffer->GetResourceType() == core::ResourceType::Buffer)
 		{
 			resourceViewDesc.ViewDimension               = D3D12_UAV_DIMENSION_BUFFER;
-			resourceViewDesc.Format                      = EnumConverter::Convert(_buffer->GetMetaData().Format);
+			resourceViewDesc.Format                      = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_buffer->GetMetaData().Format).PlatformFormat;
 			resourceViewDesc.Buffer.CounterOffsetInBytes = 0;
 			resourceViewDesc.Buffer.FirstElement         = 0;
 			resourceViewDesc.Buffer.Flags                = D3D12_BUFFER_UAV_FLAG_NONE;
@@ -461,8 +461,8 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateRTV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create render target view
 * 
@@ -481,7 +481,7 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		desc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		desc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 
 		switch (_texture->GetResourceType())
 		{
@@ -578,8 +578,8 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateDSV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create depth stencil view
 * 
@@ -594,7 +594,7 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 	if (_texture)
 	{
-		desc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		desc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		desc.Flags  = D3D12_DSV_FLAG_NONE;
 		switch (_texture->GetResourceType())
 		{
@@ -649,8 +649,8 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateCBV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create constant buffer view 
 * 
@@ -690,8 +690,8 @@ void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     SelectDescriptorHeap
-*************************************************************************//**
-*  @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+****************************************************************************/
+/* @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
 * 
 *  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap 
 * 
@@ -729,12 +729,12 @@ const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDes
 }
 #pragma endregion Setup view
 #pragma region Property
-D3D12_CPU_DESCRIPTOR_HANDLE GPUResourceView::GetCPUHandler()
+D3D12_CPU_DESCRIPTOR_HANDLE GPUResourceView::GetCPUHandler() const
 {
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetCPUDescHandler(_heapOffset.first, _heapOffset.second);
 }
-D3D12_GPU_DESCRIPTOR_HANDLE GPUResourceView::GetGPUHandler()
+D3D12_GPU_DESCRIPTOR_HANDLE GPUResourceView::GetGPUHandler() const
 {
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetGPUDescHandler(_heapOffset.first, _heapOffset.second);

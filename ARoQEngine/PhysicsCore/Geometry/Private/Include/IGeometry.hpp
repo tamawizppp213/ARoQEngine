@@ -24,8 +24,8 @@ namespace physics::geometry
 {
 	/****************************************************************************
 	*				  			  IGeometry
-	*************************************************************************//**
-	*  @class     IGeometry
+	****************************************************************************/
+	/* @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
 	class IGeometry : public gu::Copyable
@@ -38,7 +38,7 @@ namespace physics::geometry
 		virtual bool IsValid() const = 0; 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		GeometryType GetGeometryType() const { return _geometryType; }
 
@@ -59,7 +59,7 @@ namespace physics::geometry
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		GeometryType _geometryType = GeometryType::Invalid;
 	};

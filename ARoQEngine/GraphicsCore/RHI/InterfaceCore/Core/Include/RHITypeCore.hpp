@@ -33,6 +33,7 @@ namespace rhi::core
 	class RHIRenderPass;
 	class RHIResourceLayout;
 	class RHISwapchain;
+	class RHIQuery;
 
 	class GPUBlendState;
 	class GPUDepthStencilState;
@@ -53,30 +54,31 @@ namespace rhi::core
 	struct GPUTextureMetaData;
 }
 
-using DisplayAdapterPtr     = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
-using CommandAllocatorPtr   = gu::SharedPointer<rhi::core::RHICommandAllocator>;
-using CommandListPtr        = gu::SharedPointer<rhi::core::RHICommandList>;
-using CommandQueuePtr       = gu::SharedPointer<rhi::core::RHICommandQueue>;
-using DescriptorHeapPtr     = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
-using DevicePtr             = gu::SharedPointer<rhi::core::RHIDevice>;
-using FencePtr              = gu::SharedPointer<rhi::core::RHIFence>;
-using FrameBufferPtr        = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
-using InstancePtr           = gu::SharedPointer<rhi::core::RHIInstance>;
-using RenderPassPtr         = gu::SharedPointer<rhi::core::RHIRenderPass>;
-using ResourceLayoutPtr     = gu::SharedPointer<rhi::core::RHIResourceLayout>;
-using SwapchainPtr          = gu::SharedPointer<rhi::core::RHISwapchain>;
+using RHIDisplayAdapterPtr     = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
+using RHICommandAllocatorPtr   = gu::SharedPointer<rhi::core::RHICommandAllocator>;
+using RHICommandListPtr        = gu::SharedPointer<rhi::core::RHICommandList>;
+using RHICommandQueuePtr       = gu::SharedPointer<rhi::core::RHICommandQueue>;
+using RHIDescriptorHeapPtr     = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
+using RHIDevicePtr             = gu::SharedPointer<rhi::core::RHIDevice>;
+using RHIFencePtr              = gu::SharedPointer<rhi::core::RHIFence>;
+using RHIFrameBufferPtr        = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
+using RHIInstancePtr           = gu::SharedPointer<rhi::core::RHIInstance>;
+using RHIRenderPassPtr         = gu::SharedPointer<rhi::core::RHIRenderPass>;
+using RHIResourceLayoutPtr     = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+using RHISwapchainPtr          = gu::SharedPointer<rhi::core::RHISwapchain>;
+using RHIQueryPtr              = gu::SharedPointer<rhi::core::RHIQuery>;
 
-using BlendStatePtr         = gu::SharedPointer<rhi::core::GPUBlendState>;
-using DepthStecilStatePtr   = gu::SharedPointer<rhi::core::GPUDepthStencilState>;
-using InputAssemblyStatePtr = gu::SharedPointer<rhi::core::GPUInputAssemblyState>;
-using PipelineFactoryPtr    = gu::SharedPointer<rhi::core::GPUPipelineFactory>;
-using GraphicsPipelinePtr   = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
-using ComputePipelinePtr    = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
-using RasterizerStatePtr    = gu::SharedPointer<rhi::core::GPURasterizerState>;
-using ShaderStatePtr        = gu::SharedPointer<rhi::core::GPUShaderState>;
-using BufferPtr             = gu::SharedPointer<rhi::core::GPUBuffer>;
-using ResourceCachePtr      = gu::SharedPointer<rhi::core::GPUResourceCache>;
-using ResourceViewPtr       = gu::SharedPointer<rhi::core::GPUResourceView>;
-using SamplerPtr            = gu::SharedPointer<rhi::core::GPUSampler>;
-using TexturePtr            = gu::SharedPointer<rhi::core::GPUTexture>;
+using GPUBlendStatePtr         = gu::SharedPointer<rhi::core::GPUBlendState>;
+using GPUDepthStecilStatePtr   = gu::SharedPointer<rhi::core::GPUDepthStencilState>;
+using GPUInputAssemblyStatePtr = gu::SharedPointer<rhi::core::GPUInputAssemblyState>;
+using GPUPipelineFactoryPtr    = gu::SharedPointer<rhi::core::GPUPipelineFactory>;
+using GPUGraphicsPipelinePtr   = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+using GPUComputePipelinePtr    = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
+using GPURasterizerStatePtr    = gu::SharedPointer<rhi::core::GPURasterizerState>;
+using GPUShaderStatePtr        = gu::SharedPointer<rhi::core::GPUShaderState>;
+using GPUBufferPtr             = gu::SharedPointer<rhi::core::GPUBuffer>;
+using GPUResourceCachePtr      = gu::SharedPointer<rhi::core::GPUResourceCache>;
+using GPUResourceViewPtr       = gu::SharedPointer<rhi::core::GPUResourceView>;
+using GPUSamplerPtr            = gu::SharedPointer<rhi::core::GPUSampler>;
+using GPUTexturePtr            = gu::SharedPointer<rhi::core::GPUTexture>;
 #endif

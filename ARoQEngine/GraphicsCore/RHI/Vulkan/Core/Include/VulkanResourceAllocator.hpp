@@ -31,8 +31,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			 ResourceAllocator
-	*************************************************************************//**
-	*  @class     ResourceAllocator
+	****************************************************************************/
+	/* @class     ResourceAllocator
 	*  @brief     Resource view index management
 	*****************************************************************************/
 	class ResourceAllocator : public gu::NonCopyable
@@ -90,7 +90,7 @@ namespace rhi::vulkan
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline void SetResourceAllocator(const std::uint32_t maxDescriptorCount, const VkDescriptorPool pool)
 		{
@@ -125,7 +125,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkDescriptorPool             _descriptorPool = VK_NULL_HANDLE;
 		

@@ -9,430 +9,281 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/External/MMD/Include/PMDParser.hpp"
-#include "GameUtility/File/Include/UnicodeUtility.hpp"
-#include "GameUtility/File/Include/FileSystem.hpp"
-#include <sstream>
-#include <iomanip>
+#include "Platform/Core/Include/CoreFileSystem.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace pmd;
-using namespace file;
+using namespace engine::file::pmd;
+using namespace platform::core;
+using namespace gu;
+
+namespace
+{
+	gu::tstring ReadString(const gu::SharedPointer<file::IFileHandle>& fileHandle, const gu::uint64 length)
+	{
+		// 文字列が無駄にバッファを使うので
+		gu::DynamicArray<char> byteArray(length, true);
+
+		fileHandle->Read(byteArray.Data(), sizeof(char) * length);
+
+		// 文字列メモリ負荷対策
+		gu::string result(byteArray.Data());
+
+		return StringConverter::ConvertStringToTString(result);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize);
-bool PMDFile::Load(const gu::tstring& filePath)
-{
-	/*-------------------------------------------------------------------
-	-             Open File
-	---------------------------------------------------------------------*/
-	FILE* filePtr = file::FileSystem::OpenFile(std::wstring(filePath.CString()));
-	if (filePtr == nullptr) { return false; }
-	Directory = gu::string(file::FileSystem::GetDirectory(unicode::ToUtf8String(std::wstring(filePath.CString()))).c_str());
-	/*-------------------------------------------------------------------
-	-             Read Data
-	---------------------------------------------------------------------*/
-	Header.Read(filePtr);
-	ReadVertices           (filePtr);
-	ReadIndices            (filePtr);
-	ReadMaterials          (filePtr);
-	ReadBones              (filePtr);
-	ReadBoneIKs            (filePtr);
-	ReadFaceExpressions    (filePtr);
-	ReadBoneDisplayNameList(filePtr);
-	ReadBoneDisplayList    (filePtr);
-	ReadLocalizeData       (filePtr);
-	ReadToonTextures       (filePtr);
-	ReadPhysics            (filePtr);
-
-	return true;
-}
 PMDFile::~PMDFile()
 {
 	Vertices           .Clear(); Vertices           .ShrinkToFit();
 	Indices            .Clear(); Indices            .ShrinkToFit();
 	Materials          .Clear(); Materials          .ShrinkToFit();
 	Bones              .Clear(); Bones              .ShrinkToFit();
-	BoneIKs            .Clear(); BoneIKs            .ShrinkToFit();
+	IKs                .Clear(); IKs                .ShrinkToFit();
 	FaceExpressions    .Clear(); FaceExpressions    .ShrinkToFit();
 	FaceLabelIndices   .Clear(); FaceLabelIndices   .ShrinkToFit();
 	BoneDisplayNameList.Clear(); BoneDisplayNameList.ShrinkToFit();
-	BoneDisplayList    .Clear(); BoneDisplayList    .ShrinkToFit();
+	BoneNameTable      .Clear(); BoneNameTable      .ShrinkToFit();
 	RigidBodies        .Clear(); RigidBodies        .ShrinkToFit();
 	Joints             .Clear(); Joints             .ShrinkToFit();
 	ToonTextureList    .Clear(); ToonTextureList    .ShrinkToFit();
 }
+
 #pragma region PMDFileReadFunction
-void PMDFile::ReadVertices           (FILE* filePtr)
+/*!**********************************************************************
+*  @brief     PMDファイルを読み込む関数
+*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
+*  @return    void
+*************************************************************************/
+bool PMDFile::Read(const gu::tstring& filePath)
 {
-	UINT32 vertexCount = 0;
-	fread_s(&vertexCount, sizeof(vertexCount), sizeof(UINT32), 1, filePtr);
+	/*-------------------------------------------------------------------
+	-             ファイルハンドルの取得
+	---------------------------------------------------------------------*/
+	const auto fileHandle = IFileSystem::Get()->OpenRead(filePath.CString());
 
-	Vertices.Resize(vertexCount);
-	for (auto& vertex : Vertices) { vertex.Read(filePtr); }
-}
-void PMDFile::ReadIndices            (FILE* filePtr)
-{
-	UINT32 count;
-	fread_s(&count, sizeof(count), sizeof(UINT32), 1, filePtr);
-
-	Indices.Resize(count);
-	fread_s(Indices.Data(), Indices.Size() * sizeof(UINT16), sizeof(UINT16), Indices.Size(), filePtr);
-
-}
-void PMDFile::ReadMaterials          (FILE* filePtr)
-{
-	UINT32 count;
-	fread_s(&count, sizeof(count), sizeof(UINT32), 1, filePtr);
-
-	Materials.Resize(count);
-	for (auto& material : Materials)
+	// ファイルが開けなかった場合はfalseを返す
+	if (!fileHandle)
 	{
-		material.Read(filePtr, Directory);
+		return false;
 	}
-}
-void PMDFile::ReadBones              (FILE* filePtr)
-{
-	UINT16 boneCount;
-	fread_s(&boneCount, sizeof(boneCount), sizeof(UINT16), 1, filePtr);
 
-	Bones.Resize(boneCount);
-	for (auto& bone : Bones) { bone.Read(filePtr); }
-}
-void PMDFile::ReadBoneIKs            (FILE* filePtr)
-{
-	UINT16 ikCount;
-	fread_s(&ikCount, sizeof(ikCount), sizeof(UINT16), 1, filePtr);
+	// ディレクトリの取得
+	Directory = IFileSystem::Get()->GetDirectory(filePath.CString());
 
-	BoneIKs.Resize(ikCount);
-	for (auto& ik : BoneIKs) { ik.Read(filePtr); }
-}
-void PMDFile::ReadFaceExpressions    (FILE* filePtr)
-{
-	UINT16 faceCount;
-	fread_s(&faceCount, sizeof(faceCount), sizeof(UINT16), 1, filePtr);
+	/*-------------------------------------------------------------------
+	-            ヘッダ情報の読み込み
+	---------------------------------------------------------------------*/
+	Header.Read(fileHandle);
+	
+	if(!Header.IsValid()) 
+	{
+		throw "Invalid PMD Header";
+	}
+
+	/*-------------------------------------------------------------------
+	-            頂点情報の読み込み
+	---------------------------------------------------------------------*/
+	uint32 vertexCount = 0;
+	fileHandle->Read(&vertexCount, sizeof(uint32));
+
+	Vertices.Reserve(vertexCount); // コンストラクタ呼び出しで処理が重くなるため、Reserveでメモリ確保
+	for (uint32 i = 0; i < vertexCount; ++i)
+	{
+		Vertices.Push(details::PMDVertex(fileHandle));
+	}
+
+	/*-------------------------------------------------------------------
+	-            インデックス情報の読み込み
+	---------------------------------------------------------------------*/
+	uint32 indexCount = 0;
+	fileHandle->Read(&indexCount, sizeof(uint32));
+
+	Indices.Resize(indexCount);
+	fileHandle->Read(Indices.Data(), Indices.Size() * sizeof(uint16));
+
+	/*-------------------------------------------------------------------
+	-            マテリアル情報の読み込み
+	---------------------------------------------------------------------*/
+	uint32 materialCount = 0;
+	fileHandle->Read(&materialCount, sizeof(uint32));
+
+	Materials.Resize(materialCount);
+	for(uint32 i = 0; i < materialCount; ++i)
+	{
+		Materials[i] = (details::PMDMaterial(fileHandle, Directory));
+	}
+
+	/*-------------------------------------------------------------------
+	-            ボーン情報の読み込み
+	---------------------------------------------------------------------*/
+	uint16 boneCount = 0;
+	fileHandle->Read(&boneCount, sizeof(uint16));
+
+	Bones.Resize(boneCount); // ボーンは個数が多くないため, Resizeでメモリ確保 (初期化が特殊な値が含まれていることもあり, このような対応)
+	for (auto& bone : Bones) 
+	{
+		bone.Read(fileHandle); 
+	}
+
+	/*-------------------------------------------------------------------
+	-            ボーンIK情報の読み込み
+	---------------------------------------------------------------------*/
+	uint16 ikCount = 0;
+	fileHandle->Read(&ikCount, sizeof(uint16));
+
+	IKs.Resize(ikCount);
+	for (uint8 i = 0; i < ikCount; ++i)
+	{
+		IKs[i].Read(fileHandle);
+	};
+
+	/*-------------------------------------------------------------------
+	-           　表情の読み込み
+	---------------------------------------------------------------------*/
+	uint16 faceCount = 0;
+	fileHandle->Read(&faceCount, sizeof(uint16));
 
 	FaceExpressions.Resize(faceCount);
-	for (auto& face : FaceExpressions) { face.Read(filePtr); }
+	for (auto& face : FaceExpressions) 
+	{
+		face.Read(fileHandle); 
+	}
 
-	UINT8 faceLabelIndexCount;
-	fread_s(&faceLabelIndexCount, sizeof(faceLabelIndexCount), sizeof(UINT8), 1, filePtr);
+	uint8 faceLabelIndexCount = 0;
+	fileHandle->Read(&faceLabelIndexCount, sizeof(uint8));
 
 	FaceLabelIndices.Resize(faceLabelIndexCount);
-	for (auto& index : FaceLabelIndices)
-	{
-		fread_s(&index, sizeof(index), sizeof(UINT16), 1, filePtr);
-	}
-}
-void PMDFile::ReadBoneDisplayNameList(FILE* filePtr)
-{
-	UINT8 boneDisplayNameCount;
-	fread_s(&boneDisplayNameCount, sizeof(boneDisplayNameCount), sizeof(UINT8), 1, filePtr);
+	fileHandle->Read(FaceLabelIndices.Data(), FaceLabelIndices.Size() * sizeof(uint16));
+
+	/*-------------------------------------------------------------------
+	-           　ボーン表示名の読み込み
+	---------------------------------------------------------------------*/
+	uint8 boneDisplayNameCount = 0;
+	fileHandle->Read(&boneDisplayNameCount, sizeof(uint8));
 
 	BoneDisplayNameList.Resize(boneDisplayNameCount);
-	for (auto& name : BoneDisplayNameList) { name.Read(filePtr); }
-}
-void PMDFile::ReadBoneDisplayList    (FILE* filePtr)
-{
-	UINT32 boneDisplayCount;
-	fread_s(&boneDisplayCount, sizeof(boneDisplayCount), sizeof(UINT32), 1, filePtr);
+	for (auto& name : BoneDisplayNameList) 
+	{
+		name.Read(fileHandle);
+	}
 
-	BoneDisplayList.Resize(boneDisplayCount);
-	for (auto& display : BoneDisplayList) { display.Read(filePtr); }
+	/*-------------------------------------------------------------------
+	-           　ボーン表示リスト
+	---------------------------------------------------------------------*/
+	uint32 boneNameTableCount = 0;
+	fileHandle->Read(&boneNameTableCount, sizeof(uint32));
+
+	BoneNameTable.Resize(boneNameTableCount);
+	for (auto& name : BoneNameTable)
+	{
+		name.Read(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           　ローカライズ
+	---------------------------------------------------------------------*/
+	ReadLocalizeData(fileHandle);
+
+	/*-------------------------------------------------------------------
+	-           　トゥーンテクスチャ
+	---------------------------------------------------------------------*/
+	ReadToonTextures(fileHandle);
+
+	/*-------------------------------------------------------------------
+	-           　剛体
+	---------------------------------------------------------------------*/
+	ReadPhysics(fileHandle);
+
+	return true;
 }
-void PMDFile::ReadLocalizeData       (FILE* filePtr)
+
+
+void PMDFile::ReadLocalizeData(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
 	bool useEnglish; 
-	fread_s(&useEnglish, sizeof(useEnglish), sizeof(bool), 1, filePtr);
+	fileHandle->Read(&useEnglish, sizeof(bool));
 
 	if (!useEnglish) { return; }
 	/*-------------------------------------------------------------------
 	-                        Header
 	---------------------------------------------------------------------*/
-	Header.ReadExtension(filePtr);
+	Header.ReadExtension(fileHandle);
+
 	/*-------------------------------------------------------------------
 	-                        Bone
 	---------------------------------------------------------------------*/
-	for (auto& bone : Bones          ) { bone.ReadExtension(filePtr); }
+	for (auto& bone : Bones)
+	{ 
+		bone.ReadExtension(fileHandle); 
+	}
 	/*-------------------------------------------------------------------
 	-                        FaceExpressions
 	---------------------------------------------------------------------*/
 	for (auto& face : FaceExpressions)
 	{
-		if (face.FaceExpressionType == FacePart::Base) { continue; }
-		face.ReadExtension(filePtr);
+		if (face.Part == details::PMDFacePart::Base) { continue; }
+		face.ReadExtension(fileHandle);
 	}
 	/*-------------------------------------------------------------------
 	-                        DisplayNameList
 	---------------------------------------------------------------------*/
-	for (auto& name : BoneDisplayNameList) { name.ReadExtension(filePtr); }
+	for (auto& name : BoneDisplayNameList) 
+	{
+		name.ReadExtension(fileHandle); 
+	}
 	
 }
-void PMDFile::ReadToonTextures       (FILE* filePtr)
+
+void PMDFile::ReadToonTextures(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
-	size_t toonTextureIndex = 1;
+	if(fileHandle->Tell() == fileHandle->Size()) { return; }
 
 	ToonTextureList.Resize(10);
-	if (feof(filePtr) == NULL)
-	{
-		/*-------------------------------------------------------------------
-		-             Load Toon Texture Names (default Name)
-		---------------------------------------------------------------------*/
-		for (auto& name : ToonTextureList)
-		{
-			std::stringstream stringStream;
-			stringStream << "toon" << std::setfill('0') << std::setw(2) << toonTextureIndex << ".bmp";
 
-			std::string fileName = std::string(Directory.CString()) + "toon/" + stringStream.str();
-			name = gu::string(fileName.c_str());
-			toonTextureIndex++;
-		}
-	}
-	else
+	/*-------------------------------------------------------------------
+	-             Load Toon Texture Names (extended)
+	---------------------------------------------------------------------*/
+	for (auto& toonTextureName : ToonTextureList)
 	{
-		/*-------------------------------------------------------------------
-		-             Load Toon Texture Names (extended)
-		---------------------------------------------------------------------*/
-		for (auto& toonTextureName : ToonTextureList)
-		{
-			char temp[100];
-			fread_s(&temp, sizeof(temp), sizeof(char), sizeof(temp), filePtr);
-
-			std::string filePath = std::string(Directory.CString()) + "/";
-			filePath += std::string(temp, '\0');
-			toonTextureName = gu::string(filePath.c_str());
-		}
+		const auto temp = ReadString(fileHandle, 100);
+		
+		tstring filePath = Directory;
+		filePath += temp;
+		toonTextureName = filePath;
 	}
 	
 }
-void PMDFile::ReadPhysics            (FILE* filePtr)
+void PMDFile::ReadPhysics(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
-	if (feof(filePtr) == NULL) 
-	{
-		RigidBodies.Clear(); RigidBodies.ShrinkToFit(); 
-		Joints.Clear(); Joints.ShrinkToFit();
-		return;
-	}
+	if (fileHandle->Tell() == fileHandle->Size()) { return; }
+
 	/*-------------------------------------------------------------------
 	-             Read RigidBody
 	---------------------------------------------------------------------*/
-	UINT32 rigidBodyCount;
-	fread_s(&rigidBodyCount, sizeof(rigidBodyCount), sizeof(UINT32), 1, filePtr);
+	uint32 rigidBodyCount = 0;
+	fileHandle->Read(&rigidBodyCount, sizeof(uint32));
 
 	RigidBodies.Resize(rigidBodyCount);
-	for (auto& rigidBody : RigidBodies) { rigidBody.Read(filePtr); }
+	for (auto& rigidBody : RigidBodies) 
+	{
+		rigidBody.Read(fileHandle); 
+	}
 	/*-------------------------------------------------------------------
 	-             Read Joints
 	---------------------------------------------------------------------*/
-	UINT32 jointCount;
-	fread_s(&jointCount, sizeof(jointCount), sizeof(UINT32), 1, filePtr);
+	uint32 jointCount = 0;
+	fileHandle->Read(&jointCount, sizeof(uint32));
 
 	Joints.Resize(jointCount);
-	for (auto& joint : Joints) { joint.Read(filePtr); }
+	for (auto& joint : Joints) 
+	{
+		joint.Read(fileHandle);
+	}
 }
 #pragma endregion PMDFileReadFunction
-#pragma region EachReadFunction
-void PMDHeader         ::Read(FILE* filePtr)
-{
-	fread_s(Signature, sizeof(Signature), sizeof(char), _countof(Signature), filePtr);
-	fread_s(&Version , sizeof(Version  ), sizeof(float), 1, filePtr);
-	ReadPMDString(filePtr, &ModelName, 20);
-	ReadPMDString(filePtr, &ModelComment, 256);
-}
-void PMDVertex         ::Read(FILE* filePtr)
-{
-	fread_s(this, sizeof(pmd::PMDVertex), sizeof(pmd::PMDVertex), 1, filePtr);
-}
-void PMDMaterial       ::Read(FILE* filePtr, const gu::string& directory)
-{
-	fread_s(&Diffuse      , sizeof(Diffuse      ), sizeof(Float4), 1, filePtr);
-	fread_s(&SpecularPower, sizeof(SpecularPower), sizeof(float ), 1, filePtr);
-	fread_s(&Specular     , sizeof(Specular     ), sizeof(Float3), 1, filePtr);
-	fread_s(&Ambient      , sizeof(Ambient      ), sizeof(Float3), 1, filePtr);
-	fread_s(&ToonID       , sizeof(ToonID       ), sizeof(UINT8 ), 1, filePtr);
-	fread_s(&EdgeFlag     , sizeof(EdgeFlag     ), sizeof(UINT8 ), 1, filePtr);
-	fread_s(&IndexCount   , sizeof(IndexCount   ), sizeof(UINT32), 1, filePtr);
-	gu::string textureName; ReadPMDString(filePtr, &textureName, 20);
-	ReadTextureName(directory, textureName);
-}
-void PMDBone           ::Read(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &BoneName, 20);
-	fread_s(&ParentBoneID    , sizeof(ParentBoneID)    , sizeof(UINT16)    , 1, filePtr);
-	fread_s(&ChildBoneID     , sizeof(ChildBoneID)     , sizeof(UINT16)    , 1, filePtr);
-	fread_s(&BoneType        , sizeof(BoneType)        , sizeof(UINT8)     , 1, filePtr);
-	fread_s(&IKBoneID        , sizeof(IKBoneID)        , sizeof(UINT16)    , 1, filePtr);
-	fread_s(&BoneHeadPosition, sizeof(BoneHeadPosition), sizeof(gm::Float3), 1, filePtr);
-}
-void PMDBoneIK         ::Read(FILE* filePtr)
-{
-	fread_s(&IKBoneID      , sizeof(IKBoneID)      , sizeof(UINT16), 1, filePtr);
-	fread_s(&IKTargetBoneID, sizeof(IKTargetBoneID), sizeof(UINT16), 1, filePtr);
-	fread_s(&IKChainLength , sizeof(IKChainLength) , sizeof(UINT8) , 1, filePtr);
-	fread_s(&IterationCount, sizeof(IterationCount), sizeof(UINT16), 1, filePtr);
-	fread_s(&AngleLimit    , sizeof(AngleLimit)    , sizeof(float) , 1, filePtr);
-
-	Chains.Resize(IKChainLength);
-	for (auto& chain : Chains)
-	{
-		fread_s(&chain, sizeof(chain), sizeof(UINT16), 1, filePtr);
-	}
-}
-void PMDFaceExpression ::Read(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &FaceExpressionName, 20);
-	fread_s(&VertexNum         , sizeof(VertexNum)         , sizeof(UINT32)       , 1 , filePtr);
-	fread_s(&FaceExpressionType, sizeof(FaceExpressionType), sizeof(pmd::FacePart), 1 , filePtr);
-	Vertices.Resize(VertexNum);
-	Indices .Resize(VertexNum);
-	for (UINT i = 0; i < VertexNum; ++i)
-	{
-		switch (FaceExpressionType)
-		{
-		case pmd::FacePart::Base: // index, vertex Position
-			fread_s(&Vertices[i], sizeof(Vertices[i]), sizeof(Float3), 1, filePtr);
-			fread_s(&Indices [i], sizeof(Indices[i]) , sizeof(UINT32)  , 1, filePtr);
-			break;
-		default: // index => index about FacePart::Base, vertex => offset Position
-			fread_s(&Vertices[i], sizeof(Vertices[i]), sizeof(Float3), 1, filePtr);
-			fread_s(&Indices [i], sizeof(Indices[i] ), sizeof(UINT32)  , 1, filePtr);
-			break;
-		}
-	}
-}
-void PMDBoneDisplayName::Read(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &BoneDisplayName, 50);
-}
-void PMDBoneDisplay    ::Read(FILE* filePtr)
-{
-	fread_s(&BoneIndex, sizeof(BoneIndex), sizeof(UINT16), 1, filePtr);
-	fread_s(&BoneDisplayIndex, sizeof(BoneDisplayIndex), sizeof(UINT8), 1, filePtr);
-}
-void PMDRigidBody      ::Read(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &RigidBodyName, 20);
-	fread_s(&RelationBoneIndex , sizeof(RelationBoneIndex ), sizeof(UINT16), 1, filePtr);
-	fread_s(&GroupIndex        , sizeof(GroupIndex        ), sizeof(UINT8 ), 1, filePtr);
-	fread_s(&GroupTarget       , sizeof(GroupTarget       ), sizeof(UINT16), 1, filePtr);
-	fread_s(&RigidBodyShapeType, sizeof(RigidBodyShapeType), sizeof(UINT8 ), 1, filePtr);
-	fread_s(&BodyShape         , sizeof(BodyShape         ), sizeof(Float3), 1, filePtr);
-	fread_s(&Position          , sizeof(Position          ), sizeof(Float3), 1, filePtr);
-	fread_s(&Rotation          , sizeof(Rotation          ), sizeof(Float3), 1, filePtr);
-	fread_s(&Mass              , sizeof(Mass              ), sizeof(float ), 1, filePtr);
-	fread_s(&DampingTranslate  , sizeof(DampingTranslate  ), sizeof(float ), 1, filePtr);
-	fread_s(&DampingRotation   , sizeof(DampingRotation   ), sizeof(float ), 1, filePtr);
-	fread_s(&Elasticity        , sizeof(Elasticity        ), sizeof(float ), 1, filePtr);
-	fread_s(&Friction          , sizeof(Friction          ), sizeof(float ), 1, filePtr);
-	fread_s(&RigidBodyCalcType , sizeof(RigidBodyCalcType ), sizeof(UINT8 ), 1, filePtr);
-}
-void PMDJoint          ::Read(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &JointName, 20);
-	fread_s(&RigidBodyA, sizeof(RigidBodyA), sizeof(UINT32), 1, filePtr);
-	fread_s(&RigidBodyB, sizeof(RigidBodyB), sizeof(UINT32), 1, filePtr);
-	fread_s(&JointTranslation       , sizeof(JointTranslation       ), sizeof(Float3), 1, filePtr);
-	fread_s(&JointRotation          , sizeof(JointRotation          ), sizeof(Float3), 1, filePtr);
-	fread_s(&TranslationMin         , sizeof(TranslationMin         ), sizeof(Float3), 1, filePtr);
-	fread_s(&TranslationMax         , sizeof(TranslationMax         ), sizeof(Float3), 1, filePtr);
-	fread_s(&RotationMin            , sizeof(RotationMin            ), sizeof(Float3), 1, filePtr);
-	fread_s(&RotationMax            , sizeof(RotationMax            ), sizeof(Float3), 1, filePtr);
-	fread_s(&SpringTranslationFactor, sizeof(SpringTranslationFactor), sizeof(Float3), 1, filePtr);
-	fread_s(&SpringRotationFactor   , sizeof(SpringRotationFactor   ), sizeof(Float3), 1, filePtr);
-}
-void PMDHeader         ::ReadExtension(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &ModelEnglishName   , 20);
-	ReadPMDString(filePtr, &ModelEnglishComment, 256);
-}
-void PMDBone           ::ReadExtension(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &EnglishBoneName, 20);
-}
-void PMDFaceExpression ::ReadExtension(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &FaceExpressionEnglishName, 20);
-}
-void PMDBoneDisplayName::ReadExtension(FILE* filePtr)
-{
-	ReadPMDString(filePtr, &BoneDisplayEnglishName, 50);
-}
-
-void PMDMaterial::ReadTextureName(const gu::string& directory, const gu::string& textureName)
-{
-	const auto stdTextureName = std::string(textureName.CString());
-	if (textureName.Size() != 0) // Whether the file exists or not
-	{
-		/*-------------------------------------------------------------------
-		-             Exist Check Splitter and Get FilePath Name
-		---------------------------------------------------------------------*/
-		/*-------------------------------------------------------------------
-		-             In case existance splitter
-		---------------------------------------------------------------------*/
-		if (std::count(stdTextureName.begin(), stdTextureName.end(), '*') > 0)
-		{
-			auto fileNamePair = FileSystem::Split(stdTextureName);
-			/*-------------------------------------------------------------------
-			-             Get FilePath Name
-			---------------------------------------------------------------------*/
-			if (FileSystem::GetExtension(fileNamePair.first) == "sph")
-			{
-				TextureFileName = directory + gu::string(fileNamePair.second.c_str());
-				SphereFileName  = directory + gu::string(fileNamePair.first.c_str());
-			}
-			else if (FileSystem::GetExtension(fileNamePair.first) == "spa")
-			{
-				TextureFileName = directory  + gu::string(fileNamePair.second.c_str());
-				SphereFileName  = directory  + gu::string(fileNamePair.first.c_str());
-			}
-			else
-			{
-				TextureFileName = directory  + gu::string(fileNamePair.first.c_str());
-				if (FileSystem::GetExtension(fileNamePair.second) == "sph")
-				{
-					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
-				}
-				else if (FileSystem::GetExtension(fileNamePair.second) == "spa")
-				{
-					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
-				}
-				else
-				{
-					::OutputDebugString(L"Couldn't read second textures");
-					return;
-				}
-			}
-		}
-		/*-------------------------------------------------------------------
-		-             In case no-existance splitter
-		---------------------------------------------------------------------*/
-		else
-		{
-			/*-------------------------------------------------------------------
-			-             Get FilePath Name
-			---------------------------------------------------------------------*/
-			if (FileSystem::GetExtension(stdTextureName) == "sph")
-			{
-				SphereFileName  = directory + textureName;
-				TextureFileName = "";
-			}
-			else if (FileSystem::GetExtension(stdTextureName) == "spa")
-			{
-				SphereFileName = directory  + textureName;
-				TextureFileName = "";
-			}
-			else
-			{
-				TextureFileName = directory + textureName;
-			}
-		}
-	}
-}
-#pragma endregion EachReadFunction
-void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize)
-{
-	std::string utf8String(bufferSize, '\0');
-	fread_s(utf8String.data(), sizeof(char8_t) * utf8String.size(), sizeof(char8_t), utf8String.size(), filePtr);
-	*string = gu::string(utf8String.c_str());
-}

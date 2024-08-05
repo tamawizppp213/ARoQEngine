@@ -26,8 +26,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUTexture
-	*************************************************************************//**
-	*  @class     GPUTexture
+	****************************************************************************/
+	/* @class     GPUTexture
 	*  @brief     Texture 
 	*****************************************************************************/
 	class GPUTexture : public core::GPUTexture
@@ -52,7 +52,7 @@ namespace rhi::vulkan
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkImage GetImage() const noexcept     { return _image; }
 		
@@ -63,6 +63,24 @@ namespace rhi::vulkan
 		void SetName(const gu::tstring& name) override;
 		
 		// SetMetaData作った方がよい.
+
+		/*!**********************************************************************
+		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsBuffer() const override { return false; }
+
+		/*!**********************************************************************
+		*  @brief     テクスチャとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsTexture() const override { return true; }
+
+		/*!**********************************************************************
+		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
+		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
+		*  @return    void
+		*************************************************************************/
+		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -84,10 +102,9 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack([[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override{};
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkDeviceMemory _memory    = nullptr;
 

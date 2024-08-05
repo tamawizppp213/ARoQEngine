@@ -29,7 +29,7 @@ namespace rhi::core
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::core
+namespace engine
 {
 	struct GameWorldConstant
 	{
@@ -41,8 +41,8 @@ namespace gc::core
 
 	/****************************************************************************
 	*				  		GameWorldInfo
-	*************************************************************************//**
-	*  @class     GameWorldInfo
+	****************************************************************************/
+	/* @class     GameWorldInfo
 	*  @brief     GameWorld constant buffer (This class can be used for both individual drawings and instancing drawings. )
 	*             When you would like to change the contents in the buffer, you should use GetBuffer function.
 	*****************************************************************************/
@@ -61,7 +61,7 @@ namespace gc::core
 		void Bind(const GraphicsCommandListPtr& commandList, const std::uint32_t index);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return max instance count for instance drawing. */
 		std::uint64_t GetMaxInsntanceCount() const { return _maxInstanceCount; }
@@ -84,7 +84,7 @@ namespace gc::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

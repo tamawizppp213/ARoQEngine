@@ -21,15 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::basepass;
+using namespace engine;
 using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const gu::tstring& addName)
-	: gc::rendering::GBuffer(engine, desc, addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, const gu::tstring& addName)
+	: GBufferBase(engine, desc, addName)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
@@ -84,8 +84,8 @@ void GBuffer::Draw(const GPUResourceViewPtr& scene)
 #pragma region Set up Function
 /****************************************************************************
 *                          PreparePipelineState
-*************************************************************************//**
-*  @fn        void GBuffer::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GBuffer::PreparePipelineState(const gu::tstring& name)
 *
 *  @brief     Prepare pipeline state
 *
@@ -111,7 +111,7 @@ void GBuffer::PreparePipelineState(const gu::tstring& name)
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map
 			ResourceLayoutElement(DescriptorHeapType::SRV, 2), // Normal map
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0) }
 	);
 
 	/*-------------------------------------------------------------------
@@ -119,8 +119,8 @@ void GBuffer::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("VSMain"),  { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("PSMain"),  { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
@@ -143,8 +143,8 @@ void GBuffer::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *                          PrepareFrameBuffers
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
@@ -178,7 +178,7 @@ void GBuffer::PrepareFrameBuffers(const gu::tstring& name)
 	{
 		auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
 		auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
-		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		renderInfo.Usage = (TextureCreateFlags::UnorderedAccess | TextureCreateFlags::RenderTargetable);
 		gu::DynamicArray<TexturePtr> renderTexture(_desc.BufferCount);
 		for (size_t j = 0; j < _desc.BufferCount; ++j)
 		{

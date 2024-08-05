@@ -25,8 +25,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUGraphicsPipelineState
-	*************************************************************************//**
-	*  @class     GPUGraphicsPipelineState
+	****************************************************************************/
+	/* @class     GPUGraphicsPipelineState
 	*  @brief     Graphics Pipeline State
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public rhi::core::GPUGraphicsPipelineState
@@ -35,10 +35,10 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override;
+		void CompleteSetting(const gu::tstring& name) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
@@ -62,7 +62,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::DynamicArray<VkDynamicState> _dynamicStates = {};
 
@@ -72,8 +72,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUComputePipelineState
-	*************************************************************************//**
-	*  @class     GPUComputePipelineState
+	****************************************************************************/
+	/* @class     GPUComputePipelineState
 	*  @brief     Compute pipeline state
 	*****************************************************************************/
 	class GPUComputePipelineState : public rhi::core::GPUComputePipelineState
@@ -82,10 +82,10 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override;
+		void CompleteSetting(const gu::tstring& name) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetName(const gu::tstring& name) override;
 		
@@ -106,7 +106,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipeline _pipeline = nullptr;
 	

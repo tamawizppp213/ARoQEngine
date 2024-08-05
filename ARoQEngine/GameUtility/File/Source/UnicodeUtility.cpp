@@ -47,8 +47,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ToWString
-	*************************************************************************//**
-	*  @fn        std::wstring ToWString(const std::string& utf8String)
+	****************************************************************************/
+	/* @fn        std::wstring ToWString(const std::string& utf8String)
 	*  @brief     utf8 -> wstring
 	*  @param[in] const std::string& utf8String
 	*  @return 　　std::wstring
@@ -65,8 +65,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ToUtf8String
-	*************************************************************************//**
-	*  @fn        std::string ToUtf8String(const std::wstring& wString)
+	****************************************************************************/
+	/* @fn        std::string ToUtf8String(const std::wstring& wString)
 	*  @brief     wstring -> utf8
 	*  @param[in] const std::wString& wString
 	*  @return 　　std::string
@@ -83,8 +83,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            TryToWString
-	*************************************************************************//**
-	*  @fn         bool TryToWString(const std::string& utf8String, std::wstring& wString)
+	****************************************************************************/
+	/* @fn         bool TryToWString(const std::string& utf8String, std::wstring& wString)
 	*  @brief      utf8 -> wstring check
 	*  @param[in]  const std::string& utf8String
 	*  @param[out] std::wstring&      wString
@@ -126,8 +126,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            TryToUtf8String
-	*************************************************************************//**
-	*  @fn         bool TryToUtf8String(const std::wstring& wString, std::string& utf8String)
+	****************************************************************************/
+	/* @fn         bool TryToUtf8String(const std::wstring& wString, std::string& utf8String)
 	*  @brief      wstring -> utf8 check
 	*  @param[in]  wString
 	*  @param[out] utf8String
@@ -166,8 +166,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU8ToU16
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU8ToU16(const gu::StaticArray<char, 4>& u8Char, gu::StaticArray<char16_t, 2>& u16Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU8ToU16(const gu::StaticArray<char, 4>& u8Char, gu::StaticArray<char16_t, 2>& u16Char)
 	*  @brief      convert char U8 to U16
 	*  @param[in]  const gu::StaticArray<char, 4>& u8Char
 	*  @param[out] gu::StaticArray<char16_t, 2>& u16Char
@@ -183,8 +183,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU8ToU32
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU8ToU32(const gu::StaticArray<char, 4>& u8Char, char32_t& u32Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU8ToU32(const gu::StaticArray<char, 4>& u8Char, char32_t& u32Char)
 	*  @brief      convert char U8 to U32
 	*  @param[in]  const gu::StaticArray<char, 4>& u8Char
 	*  @param[out] char32_t& u32Char
@@ -268,8 +268,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU16ToU8
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU16ToU8(const gu::StaticArray<char16_t, 2>& u16Char, gu::StaticArray<char, 4>& u8Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU16ToU8(const gu::StaticArray<char16_t, 2>& u16Char, gu::StaticArray<char, 4>& u8Char)
 	*  @brief      convert char U16 to U8
 	*  @param[in]  const gu::StaticArray<char16_t, 2>& u16Char
 	*  @param[out] gu::StaticArray<char, 4>& u8Char
@@ -285,8 +285,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU16ToU32
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU16ToU32(const gu::StaticArray<char16_t, 2>& u16Char, char32_t& u32Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU16ToU32(const gu::StaticArray<char16_t, 2>& u16Char, char32_t& u32Char)
 	*  @brief      convert char U16 to U32
 	*  @param[in]  const gu::StaticArray<char16_t, 2>& u16Char
 	*  @param[out] char32_t& u32Char
@@ -315,8 +315,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU32ToU8
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU32ToU8(const char32_t u32Char, gu::StaticArray<char, 4>& u8Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU32ToU8(const char32_t u32Char, gu::StaticArray<char, 4>& u8Char)
 	*  @brief      convert char U32 to U8
 	*  @param[in]  const char32_t u32Char
 	*  @param[out] gu::StaticArray<char, 4>& u8Char
@@ -363,8 +363,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU32ToU16
-	*************************************************************************//**
-	*  @fn         bool ConvertCharU32ToU16(const char32_t u32Char, gu::StaticArray<char16_t, 2>& u16Char)
+	****************************************************************************/
+	/* @fn         bool ConvertCharU32ToU16(const char32_t u32Char, gu::StaticArray<char16_t, 2>& u16Char)
 	*  @brief      convert char U32 to U16
 	*  @param[in]  const char32_t u32Char
 	*  @param[out] gu::StaticArray<char16_t, 2>& u16Char
@@ -393,8 +393,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU8ToU16
-	*************************************************************************//**
-	*  @fn         bool ConvertU8ToU16(const std::string& u8String, std::u16string& u16String)
+	****************************************************************************/
+	/* @fn         bool ConvertU8ToU16(const std::string& u8String, std::u16string& u16String)
 	*  @brief      convert char U8 to U16
 	*  @param[in]  const std::string& u8String
 	*  @param[out] std::u16string& u16String
@@ -430,8 +430,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU8ToU32
-	*************************************************************************//**
-	*  @fn         bool ConvertU8ToU32(const std::string& u8String, std::u32string& u32String)
+	****************************************************************************/
+	/* @fn         bool ConvertU8ToU32(const std::string& u8String, std::u32string& u32String)
 	*  @brief      convert char U8 to U32
 	*  @param[in]  const std::string& u8String
 	*  @param[out] std::u32string& u32String
@@ -463,8 +463,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU16ToU8
-	*************************************************************************//**
-	*  @fn         bool ConvertU16ToU8(const std::u16string& u16String, std::string& u8String)
+	****************************************************************************/
+	/* @fn         bool ConvertU16ToU8(const std::u16string& u16String, std::string& u8String)
 	*  @brief      convert char U16 to U8
 	*  @param[in]  const std::u16string& u16String
 	*  @param[out] std::string& u8String
@@ -500,8 +500,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU16ToU32
-	*************************************************************************//**
-	*  @fn         bool ConvertU16ToU32(const std::u16string& u16String, std::u32string& u32String)
+	****************************************************************************/
+	/* @fn         bool ConvertU16ToU32(const std::u16string& u16String, std::u32string& u32String)
 	*  @brief      convert char U16 to U32
 	*  @param[in]  const std::u16string& u16String
 	*  @param[out] std::u32string& u32String
@@ -534,8 +534,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU32ToU8
-	*************************************************************************//**
-	*  @fn         bool ConvertU32ToU8(const std::u32string& u32String, std::string& u8String)
+	****************************************************************************/
+	/* @fn         bool ConvertU32ToU8(const std::u32string& u32String, std::string& u8String)
 	*  @brief      convert char U32 to U8
 	*  @param[in]  const std::u32string& u32String,
 	*  @param[out] std::string& u8String
@@ -558,8 +558,8 @@ namespace unicode
 
 	/****************************************************************************
 	*                            ConvertCharU32ToU16
-	*************************************************************************//**
-	*  @fn         bool ConvertU32ToU16(const std::u32string& u32String, std::u16string& u16String)
+	****************************************************************************/
+	/* @fn         bool ConvertU32ToU16(const std::u32string& u32String, std::u16string& u16String)
 	*  @brief      convert char U32 to U8
 	*  @param[in]  const std::u32string& u32String,
 	*  @param[out] std::u16string& u16String

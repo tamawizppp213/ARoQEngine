@@ -93,8 +93,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializePropertyExtensions
-	*************************************************************************//**
-	*  @fn        void SerializePropertyExtensions(const GLTFDocument& document, const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializePropertyExtensions(const GLTFDocument& document, const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize extension
 	*  @param[in] GLTFDocument& document
 	*  @param[in] GLTFProperty& property
@@ -153,8 +153,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeExtras
-	*************************************************************************//**
-	*  @fn        void SerializePropertyExtras(const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType)
+	****************************************************************************/
+	/* @fn        void SerializePropertyExtras(const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType)
 	*  @brief     Serialize extra
 	*  @param[in] GLTFProperty& property
 	*  @param[in,out] rapidjson::Value& propertyValue,
@@ -173,8 +173,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeProperty
-	*************************************************************************//**
-	*  @fn        void SerializeProperty(const GLTFDocument& document, const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeProperty(const GLTFDocument& document, const GLTFProperty& property, rapidjson::Value& propertyValue, rapidjson::Document::AllocatorType& allocatorType, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize extra property
 	*  @param[in] GLTFDocument& document
 	*  @param[in] GLTFProperty& property
@@ -190,8 +190,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeTextureInfo
-	*************************************************************************//**
-	*  @fn        void SerializeTextureInfo(const GLTFDocument& document, const GLTFTextureInfo& textureInfo, rapidjson::Value& textureValue, rapidjson::Document::AllocatorType& allocatorType, const IndexedContainer<const GLTFTexture>& textures, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeTextureInfo(const GLTFDocument& document, const GLTFTextureInfo& textureInfo, rapidjson::Value& textureValue, rapidjson::Document::AllocatorType& allocatorType, const IndexedContainer<const GLTFTexture>& textures, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Texture infomation
 	*  @param[in] GLTFDocument& document
 	*  @param[in] GLTFTextureInfo& textureInfomation
@@ -212,8 +212,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeAsset
-	*************************************************************************//**
-	*  @fn        void SerializeAsset(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeAsset(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Asset
 	*  @param[in] GLTFDocument& document
 	*  @param[in,out] rapidjson::Document
@@ -236,8 +236,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeDefaultScene
-	*************************************************************************//**
-	*  @fn        void SerializeDefaultScene(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeDefaultScene(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize DefaultScene
 	*  @param[in] GLTFDocument& document
 	*  @param[in,out] rapidjson::Document
@@ -254,8 +254,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeAccessor
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeAccessor(const GLTFAccessor& accessor, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeAccessor(const GLTFAccessor& accessor, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Accessor
 	*  @param[in] GLTFAccessor
 	*  @param[in] GLTFDocument& document
@@ -350,8 +350,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeAnimation
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeAnimation(const GLTFAnimation& accessor, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeAnimation(const GLTFAnimation& accessor, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Animation
 	*  @param[in] GLTFAnimation
 	*  @param[in] GLTFDocument& document
@@ -410,8 +410,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeBufferView
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeBufferView(const GLTFBufferView& bufferView, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeBufferView(const GLTFBufferView& bufferView, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Buffer View
 	*  @param[in] GLTFBufferView
 	*  @param[in] GLTFDocument& document
@@ -447,8 +447,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeBuffer
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeBuffer(const GLTFBuffer& buffer, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeBuffer(const GLTFBuffer& buffer, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Buffer View
 	*  @param[in] GLTFBuffer
 	*  @param[in] GLTFDocument& document
@@ -470,8 +470,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeImage
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeImage(const GLTFImage& image, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeImage(const GLTFImage& image, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Image
 	*  @param[in] GLTFImage
 	*  @param[in] GLTFDocument& document
@@ -507,8 +507,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeMaterial
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeMaterial(const GLTFMaterial& material, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeMaterial(const GLTFMaterial& material, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Material
 	*  @param[in] GLTFMaterial
 	*  @param[in] GLTFDocument& document
@@ -640,8 +640,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeTarget
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeTarget(const GLTFMorphTarget& target, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeTarget(const GLTFMorphTarget& target, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Target
 	*  @param[in] GLTFMorphTarget
 	*  @param[in] GLTFDocument& document
@@ -662,8 +662,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeMaterial
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeMaterial(const GLTFMeshPrimitive primitive, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeMaterial(const GLTFMeshPrimitive primitive, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Material
 	*  @param[in] GLTFMeshPrimitve
 	*  @param[in,out] rapidjson::Value& primitiveValue
@@ -687,8 +687,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeMesh
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeMesh(const GLTFMesh& mesh, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeMesh(const GLTFMesh& mesh, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Mesh
 	*  @param[in] GLTFMesh
 	*  @param[in] GLTFDocument& document
@@ -740,8 +740,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeNode
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeNode(const GLTFNode& node, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeNode(const GLTFNode& node, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Node
 	*  @param[in] GLTFNode
 	*  @param[in] GLTFDocument& document
@@ -815,8 +815,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeCamera
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeCamera(const GLTFCamera& camera, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeCamera(const GLTFCamera& camera, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Camera
 	*  @param[in] GLTFCamera
 	*  @param[in] GLTFDocument& document
@@ -886,8 +886,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeSampler
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeSampler(const GLTFSampler& sampler, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeSampler(const GLTFSampler& sampler, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Sampler
 	*  @param[in] GLTFSampler
 	*  @param[in] GLTFDocument& document
@@ -930,8 +930,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeScene
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeScene(const GLTFScene& scene, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeScene(const GLTFScene& scene, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Scene
 	*  @param[in] GLTFScene
 	*  @param[in] GLTFDocument& document
@@ -962,8 +962,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeSkin
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeSkin(const GLTFSkin& skin, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeSkin(const GLTFSkin& skin, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Skin
 	*  @param[in] GLTFSkin
 	*  @param[in] GLTFDocument& document
@@ -999,8 +999,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeTexture
-	*************************************************************************//**
-	*  @fn        rapidjson::Value SerializeTexture(const GLTFTexture& texture, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Value SerializeTexture(const GLTFTexture& texture, const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Texture
 	*  @param[in] GLTFTexture
 	*  @param[in] GLTFDocument& document
@@ -1023,8 +1023,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeExtensions
-	*************************************************************************//**
-	*  @fn        void SerializeExtensions(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeExtensions(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize Camera
 	*  @param[in] GLTFDocument& document
 	*  @param[in,out] rapidjson::Document
@@ -1046,8 +1046,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeStringSet
-	*************************************************************************//**
-	*  @fn        void SerializeStringSet(const std::string& key, const std::unordered_set<std::string> set, rapidjson::Document& document)
+	****************************************************************************/
+	/* @fn        void SerializeStringSet(const std::string& key, const std::unordered_set<std::string> set, rapidjson::Document& document)
 	*  @brief     Serialize Camera
 	*  @param[in] std::string key
 	*  @param[in] std::unordered_set<std::string> set
@@ -1069,8 +1069,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeExtensionsUsed
-	*************************************************************************//**
-	*  @fn        void SerializeExtensionsUsed(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeExtensionsUsed(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize ExtensionUsed
 	*  @param[in] GLTFDocument& document
 	*  @param[in,out] rapidjson::Document
@@ -1083,8 +1083,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       SerializeExtensionsIs
-	*************************************************************************//**
-	*  @fn        void SerializeExtensionsUsed(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        void SerializeExtensionsUsed(const GLTFDocument& gltfDocument, rapidjson::Document& jsonDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Serialize ExtensionRequired
 	*  @param[in] GLTFDocument& document
 	*  @param[in,out] rapidjson::Document
@@ -1105,8 +1105,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       CreateJsonDocument
-	*************************************************************************//**
-	*  @fn        rapidjson::Document CreateJsonDocument(const GLTFDocument& gltfDocument, const ExtensionSerializer& extensionSerializer)
+	****************************************************************************/
+	/* @fn        rapidjson::Document CreateJsonDocument(const GLTFDocument& gltfDocument, const ExtensionSerializer& extensionSerializer)
 	*  @brief     Create json document
 	*  @param[in] GLTFDocument& document
 	*  @param[in] ExtensionSerializer& extensionSerializer

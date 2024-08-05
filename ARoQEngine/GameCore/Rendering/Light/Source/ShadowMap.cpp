@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/ShadowMap.hpp"
 #include "../../Model/Include/GameModel.hpp"
-#include "../../Effect/Include/Blur.hpp"
+#include "../../PostProcess/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
@@ -21,8 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 using namespace rhi::core;
 using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +51,7 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	PrepareRenderResource(width, height, name);
 	PreparePipelineState(name);
 
-	_gaussianBlur = gu::MakeShared<gc::GaussianBlur>(_engine, width, height, false);
+	_gaussianBlur = gu::MakeShared<GaussianBlur>(_engine, width, height, false);
 }
 
 ShadowMap::~ShadowMap()
@@ -66,8 +65,8 @@ ShadowMap::~ShadowMap()
 #pragma region Main Function
 /****************************************************************************
 *                     Draw
-*************************************************************************//**
-*  @fn        void ShadowMap::Draw(const ResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void ShadowMap::Draw(const ResourceViewPtr& scene)
 *
 *  @brief     Draw the shadow map to the frame buffer. 
 *             In addition, we apply the gaussian blur for the VSM method.
@@ -76,7 +75,7 @@ ShadowMap::~ShadowMap()
 *
 *  @return @@void
 *****************************************************************************/
-void ShadowMap::Draw(const ResourceViewPtr& scene)
+void ShadowMap::Draw(const GPUResourceViewPtr& scene)
 {
 	/*-------------------------------------------------------------------
 	-               Set variables
@@ -112,8 +111,8 @@ void ShadowMap::Draw(const ResourceViewPtr& scene)
 
 /****************************************************************************
 *							Add
-*************************************************************************//**
-*  @fn        void ShadowMap::Add(const GameModelPtr& gameModel)
+****************************************************************************/
+/* @fn        void ShadowMap::Add(const GameModelPtr& gameModel)
 *
 *  @brief     Add game models for the rendering shadow
 *
@@ -132,8 +131,8 @@ void ShadowMap::Add(const GameModelPtr& gameModel)
 #pragma region Set Up Function
 /****************************************************************************
 *                     PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare the vertex and index buffers. These buffers were created for the frame count.
 *
@@ -169,26 +168,26 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer 
 		---------------------------------------------------------------------*/
-		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer((gu::uint32)vertexByteSize, (gu::uint32)vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(name + SP("VB"));
-		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+		_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer((gu::uint32)indexByteSize, (gu::uint32)indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(name + SP("IB"));
-		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+		_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 
 	}
 }
 
 /****************************************************************************
 *                     PrepareRenderResource
-*************************************************************************//**
-*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 *
 *  @brief     Prepare the renderPass and frame buffer
 *
@@ -227,8 +226,8 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 
 /****************************************************************************
 *                     PreparePipelineState
-*************************************************************************//**
-*  @fn        void ShadowMap::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare the vertex and index buffers. These buffers we
 *
@@ -260,13 +259,13 @@ void ShadowMap::PreparePipelineState(const gu::tstring& name)
 	
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, defaultPath, SP("VSMain"), 6.4f , {SP("Shader\\Core")});
-	ps->Compile(ShaderType::Pixel , defaultPath, SP("PSMain"), 6.4f,  {SP("Shader\\Core")});
+	vs->Compile({ ShaderType::Vertex, defaultPath, SP("VSMain"), {SP("Shader\\Core")} });
+	ps->Compile({ ShaderType::Pixel , defaultPath, SP("PSMain"), {SP("Shader\\Core")} });
 
 	/*-------------------------------------------------------------------
 	-			Create graphics pipeline
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite())); // not use alpha blend
 	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

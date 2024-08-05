@@ -45,7 +45,7 @@ GPUGraphicsPipelineState::~GPUGraphicsPipelineState()
 	_dynamicStates.Clear(); _dynamicStates.ShrinkToFit();
 }
 
-void GPUGraphicsPipelineState::CompleteSetting()
+void GPUGraphicsPipelineState::CompleteSetting(const gu::tstring& name)
 {
 	/*-------------------------------------------------------------------
 	-           Set vk resources 
@@ -149,6 +149,8 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	{
 		throw std::runtime_error("failed to create graphics pipeline (vulkan api)");
 	}
+
+	SetName(name);
 }
 
 void GPUGraphicsPipelineState::SetName(const gu::tstring& name)
@@ -159,7 +161,7 @@ void GPUGraphicsPipelineState::SetName(const gu::tstring& name)
 #pragma endregion Graphcis Pipeline State
 
 #pragma region Compute Pipeline State
-void GPUComputePipelineState::CompleteSetting()
+void GPUComputePipelineState::CompleteSetting(const gu::tstring& name)
 {
 	if (!_computeShaderState) { OutputDebugStringA("compute shader state is set nullptr\n");  return; }
 
@@ -187,6 +189,8 @@ void GPUComputePipelineState::CompleteSetting()
 	{
 		throw std::runtime_error("failed to create compute pipeline (vulkan api)");
 	}
+
+	SetName(name);
 }
 
 void GPUComputePipelineState::SetName(const gu::tstring& name)

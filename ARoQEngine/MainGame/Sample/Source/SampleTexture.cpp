@@ -17,7 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
-using namespace gc::ui;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,8 +34,8 @@ SampleTexture::~SampleTexture()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleEmpty::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleEmpty::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -46,8 +46,8 @@ void SampleTexture::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& g
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleEmpty::Update()
+****************************************************************************/
+/* @fn        void SampleEmpty::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -61,8 +61,8 @@ void SampleTexture::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleEmpty::Draw()
+****************************************************************************/
+/* @fn        void SampleEmpty::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -76,8 +76,8 @@ void SampleTexture::Draw()
 	---------------------------------------------------------------------*/
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
+		rhi::core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_renderer->Draw();
 
@@ -85,8 +85,8 @@ void SampleTexture::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleEmpty::Terminate()
+****************************************************************************/
+/* @fn        void SampleEmpty::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -102,8 +102,8 @@ void SampleTexture::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleEmpty::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleEmpty::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -133,7 +133,7 @@ void SampleTexture::LoadMaterials()
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
-	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -146,8 +146,8 @@ void SampleTexture::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -158,8 +158,8 @@ void SampleTexture::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -170,8 +170,8 @@ void SampleTexture::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleEmpty::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleEmpty::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -182,8 +182,8 @@ void SampleTexture::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleEmpty::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleEmpty::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void

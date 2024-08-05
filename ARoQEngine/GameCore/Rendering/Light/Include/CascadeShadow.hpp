@@ -22,19 +22,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
 class GameTimer;
-namespace gc
+
+namespace engine
 {
 	class Camera;
-}
-namespace gc::core
-{
 	class GameModel;
 	class GameWorldInfo;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::rendering
+namespace engine
 {
 	class ShadowMap;
 
@@ -55,18 +53,18 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*				  			    Class
-	*************************************************************************//**
-	*  @class     CascadeShadow
+	****************************************************************************/
+	/* @class     CascadeShadow
 	*  @brief     Cascade shadow map + soft shadow
 	*****************************************************************************/
 	class CascadeShadow : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
-		using CameraPtr                 = gu::SharedPointer<gc::Camera>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
+		using CameraPtr                 = gu::SharedPointer<Camera>;
 		using ShadowMapPtr              = gu::SharedPointer<ShadowMap>;
-		using GameWorldInfoPtr          = gu::SharedPointer<gc::core::GameWorldInfo>;
+		using GameWorldInfoPtr          = gu::SharedPointer<GameWorldInfo>;
 
 	public:
 
@@ -80,9 +78,9 @@ namespace gc::rendering
 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		ResourceViewPtr GetShadowInfoView() const noexcept { return _shadowInfoView; }
+		GPUResourceViewPtr GetShadowInfoView() const noexcept { return _shadowInfoView; }
 
 
 
@@ -102,16 +100,16 @@ namespace gc::rendering
 		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// GPU binding resource
-		ResourceLayoutPtr   _resourceLayout = nullptr;
-		GraphicsPipelinePtr _pipeline       = nullptr;
-		ResourceViewPtr     _shadowInfoView = nullptr;
+		RHIResourceLayoutPtr   _resourceLayout = nullptr;
+		GPUGraphicsPipelinePtr _pipeline       = nullptr;
+		GPUResourceViewPtr     _shadowInfoView = nullptr;
 
 		// Camera game world position
 		CameraPtr        _lightCamera   = nullptr;

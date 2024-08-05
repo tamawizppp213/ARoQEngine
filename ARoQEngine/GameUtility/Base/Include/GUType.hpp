@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUType.hpp
-///             @brief  primitive‚ÈŒ^‚Ì’è‹`‚Å‚·
-///             @author Toide Yutaro
-///             @date   2023_11_08
+///  @file   GUType.hpp
+///  @brief  primitive‚ÈŒ^‚Ì’è‹`‚Å‚·
+///  @author Toide Yutaro
+///  @date   2023_11_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_TYPE
@@ -29,7 +29,7 @@ namespace gu
 	using uint16 = unsigned short int;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
-	using char8    = char;
+	using char8    = char8_t;  // literal "u8"
 	using char16   = char16_t; // literal "u"
 	using char32   = char32_t; // literal "U"
 	using wchar    = wchar_t;  // literal "L"
@@ -55,10 +55,16 @@ namespace gu
 	-----------------------------------------------------------------*/
 	#define MAX_FLOAT32 (3.402823466e+38F)
 	#define MIN_FLOAT32 (1.175494351e-38F)
+	#define MIN_DOUBLE64 (2.2250738585072014e-308)
+	#define MAX_DOUBLE64 (1.7976931348623158e+308)
 	#define MIN_INT8    (-127i8 - 1)
 	#define MIN_INT16   (-32767i16 - 1)
 	#define MIN_INT32   (-2147483647i32 - 1)
 	#define MIN_INT64   (-9223372036854775807i64 - 1)
+	#define MIN_UINT8        (0x00)
+	#define MIN_UINT16       (0x0000)
+	#define MIN_UINT32       (0x00000000)
+	#define MIN_UINT64       (0x0000000000000000)
 	#define MAX_INT8         (127i8)
 	#define MAX_INT16        (32767i16)
 	#define MAX_INT32        (2147483647i32)

@@ -43,8 +43,8 @@ Socket::Socket(const SOCKET socket, const SocketType socketType, const ProtocolT
 #pragma region Main Function
 /****************************************************************************
 *                     Connect
-*************************************************************************//**
-*  @fn        void Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
+****************************************************************************/
+/* @fn        void Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
 *
 *  @brief     Establish a connection to the specified server socket 
 *
@@ -84,8 +84,8 @@ bool Socket::Connect(const IPAddress& ipAddress, const std::uint16_t port)
 
 /****************************************************************************
 *                     Accept
-*************************************************************************//**
-*  @fn        Socket Socket::Accept()
+****************************************************************************/
+/* @fn        Socket Socket::Accept()
 *
 *  @brief     Accepts connection requests from TCP clients. Return new Socket
 *
@@ -126,8 +126,8 @@ Socket Socket::Accept()
 
 /****************************************************************************
 *                     Bind
-*************************************************************************//**
-*  @fn        void Socket::Bind(const std::string& ipAddress, const std::uint32_t port)
+****************************************************************************/
+/* @fn        void Socket::Bind(const std::string& ipAddress, const std::uint32_t port)
 *
 *  @brief     Associate a local address with a socket.
 *
@@ -162,8 +162,8 @@ void Socket::Bind(const IPAddress& ipAddress, const std::uint16_t port)
 
 /****************************************************************************
 *                     Listen
-*************************************************************************//**
-*  @fn        void Socket::Listen(const std::int32_t backlog)
+****************************************************************************/
+/* @fn        void Socket::Listen(const std::int32_t backlog)
 *
 *  @brief     Ready to wait for connection requestes form TCP clients
 *
@@ -192,8 +192,8 @@ void Socket::Listen(const std::int32_t backlog)
 
 /****************************************************************************
 *                     Close
-*************************************************************************//**
-*  @fn        void Socket::Close()
+****************************************************************************/
+/* @fn        void Socket::Close()
 *
 *  @brief     Close existing sockets
 * 
@@ -221,8 +221,8 @@ void Socket::Close()
 
 /****************************************************************************
 *                     Poll
-*************************************************************************//**
-*  @fn        void Socket::Poll(const std::int32_t waitMicroSeconds)
+****************************************************************************/
+/* @fn        void Socket::Poll(const std::int32_t waitMicroSeconds)
 *
 *  @brief     Close the status of socket. 
 *
@@ -272,8 +272,8 @@ bool Socket::Poll(const SelectMode selectMode, const std::int32_t waitMicroSecon
 
 /****************************************************************************
 *                     Receive
-*************************************************************************//**
-*  @fn        std::vector<std::uint8_t> Socket::Receive(const std::uint64_t byteSize, const SocketFlags socketFlags)
+****************************************************************************/
+/* @fn        std::vector<std::uint8_t> Socket::Receive(const std::uint64_t byteSize, const SocketFlags socketFlags)
 *
 *  @brief     Receive data from the connected socket
 *
@@ -302,8 +302,8 @@ std::vector<std::uint8_t> Socket::Receive(const std::uint64_t byteSize, const So
 
 /****************************************************************************
 *                     Receive
-*************************************************************************//**
-*  @fn        void Socket::Receive(std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count, const SocketFlags socketFlags = SocketFlags::None)
+****************************************************************************/
+/* @fn        void Socket::Receive(std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count, const SocketFlags socketFlags = SocketFlags::None)
 *
 *  @brief     Receive data from the connected socket
 *
@@ -336,8 +336,8 @@ std::int32_t Socket::Receive(std::vector<std::uint8_t>& buffer, const std::uint6
 
 /****************************************************************************
 *                     Send
-*************************************************************************//**
-*  @fn        void Socket::Send(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t size, const SocketFlags socketFlags)
+****************************************************************************/
+/* @fn        void Socket::Send(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t size, const SocketFlags socketFlags)
 *
 *  @brief     Send data on the connected socket
 *
@@ -370,8 +370,8 @@ void Socket::Send(const std::vector<std::uint8_t>& buffer, const std::uint64_t o
 
 /****************************************************************************
 *                     Shutdown
-*************************************************************************//**
-*  @fn        void Socket::Shutdown()
+****************************************************************************/
+/* @fn        void Socket::Shutdown()
 *
 *  @brief     Disconnects the currently established communication session
 *

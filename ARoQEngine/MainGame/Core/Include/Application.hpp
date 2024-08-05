@@ -26,8 +26,8 @@
 
 /****************************************************************************
 *				  			Application
-*************************************************************************//**
-*  @class     Application
+****************************************************************************/
+/* @class     Application
 *  @brief     Create Main Window Class
 *****************************************************************************/
 class Application final : public gu::NonCopyAndMove
@@ -41,7 +41,7 @@ public:
 	void ShutDown();
 
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	
 	/******************************************** ********************************
@@ -61,11 +61,11 @@ private:
 	~Application() = default;
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	GameInput& _gameInput             = GameInput::Instance();
 	GameManager& _gameManager         = GameManager::Instance();
-	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::DirectX12;
+	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::DirectX12;
 	bool _isApplicationPaused = false;
 };
 #endif

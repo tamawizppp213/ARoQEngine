@@ -48,8 +48,8 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, c
 #pragma region Property
 /****************************************************************************
 *							GetVkClearValues
-*************************************************************************//**
-*  @fn        gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+****************************************************************************/
+/* @fn        gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
 *
 *  @brief     Return clear value array including each render target and depth stencil buffer
 *
@@ -67,18 +67,18 @@ gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() co
 	{
 		for (size_t i = 0; i < clearValues.Size(); ++i)
 		{
-			clearValues[i].color.float32[0] = _colorClearValues[i].Color[core::ClearValue::Red];
-			clearValues[i].color.float32[1] = _colorClearValues[i].Color[core::ClearValue::Green];
-			clearValues[i].color.float32[2] = _colorClearValues[i].Color[core::ClearValue::Blue];
-			clearValues[i].color.float32[3] = _colorClearValues[i].Color[core::ClearValue::Alpha];
+			clearValues[i].color.float32[0] = _colorClearValues[i].Type.Color[core::ClearValue::Red];
+			clearValues[i].color.float32[1] = _colorClearValues[i].Type.Color[core::ClearValue::Green];
+			clearValues[i].color.float32[2] = _colorClearValues[i].Type.Color[core::ClearValue::Blue];
+			clearValues[i].color.float32[3] = _colorClearValues[i].Type.Color[core::ClearValue::Alpha];
 		}
 	}
 	// depth stencil
 	if (_depthClearValue.HasValue())
 	{
 		VkClearValue clearValue = {};
-		clearValue.depthStencil.depth   = _depthClearValue->Depth;
-		clearValue.depthStencil.stencil = _depthClearValue->Stencil;
+		clearValue.depthStencil.depth   = _depthClearValue->Type.DSV.Depth;
+		clearValue.depthStencil.stencil = _depthClearValue->Type.DSV.Stencil;
 		clearValues.Push(clearValue);
 	}
 

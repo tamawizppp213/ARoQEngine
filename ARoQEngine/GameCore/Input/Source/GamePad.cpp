@@ -56,8 +56,8 @@ GamePad::GamePad()
 }
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        bool GamePad::Initialize()
+****************************************************************************/
+/* @fn        bool GamePad::Initialize()
 *  @brief     GamePad Initialize
 *  @param[in] void
 *  @return 　　bool
@@ -90,8 +90,8 @@ bool GamePad::Initialize()
 
 /****************************************************************************
 *							Update
-*************************************************************************//**
-*  @fn        bool GamePad::Update()
+****************************************************************************/
+/* @fn        bool GamePad::Update()
 *  @brief     GamePad Check Input
 *  @param[in] void
 *  @return 　　void
@@ -107,8 +107,8 @@ void GamePad::Update()
 
 /****************************************************************************
 *							Finalize
-*************************************************************************//**
-*  @fn        bool GamePad::Finalize()
+****************************************************************************/
+/* @fn        bool GamePad::Finalize()
 *  @brief     GamePad Finalize
 *  @param[in] void
 *  @return 　　void
@@ -122,8 +122,8 @@ void GamePad::Finalize()
 
 /****************************************************************************
 *							IsEnabledXInput
-*************************************************************************//**
-*  @fn        void GamePad::IsEnabledXInput(bool isEnabled)
+****************************************************************************/
+/* @fn        void GamePad::IsEnabledXInput(bool isEnabled)
 *  @brief     Enable XInput (for vibration)
 *  @param[in] bool isEnabled
 *  @return 　　void
@@ -135,8 +135,8 @@ void GamePad::EnableXInput(bool isEnabled)
 
 /****************************************************************************
 *							IsPressButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressButton(GamePadInput button, int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressButton(GamePadInput button, int gamePadId)
 *  @brief     Detect pressing button
 *  @param[in] int button
 *  @param[in] int gamePadId (Max 4 people)
@@ -152,8 +152,8 @@ bool GamePad::IsPressButton(GamePadInput button, int gamePadId)
 
 /****************************************************************************
 *							IsTriggerButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsTriggerButton(GamePadInput button, int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsTriggerButton(GamePadInput button, int gamePadId)
 *  @brief     Detect trigger button
 *  @param[in] int button
 *  @param[in] int gamePadId (Max 4 people)
@@ -174,8 +174,8 @@ bool GamePad::IsTriggerButton(GamePadInput button, int gamePadId)
 
 /****************************************************************************
 *							IsReleaseButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsReleaseButton(GamePadInput button, int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsReleaseButton(GamePadInput button, int gamePadId)
 *  @brief     Detect release button
 *  @param[in] int button
 *  @param[in] int gamePadId (Max 4 people)
@@ -196,8 +196,8 @@ bool GamePad::IsReleaseButton(GamePadInput button, int gamePadId)
 
 /****************************************************************************
 *							IsPressLeftButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressLeftButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressLeftButton(int gamePadId)
 *  @brief     Detect press Left button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -213,8 +213,8 @@ bool GamePad::IsPressLeftButton(int gamePadId)
 
 /****************************************************************************
 *							IsTriggerLeftButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsTriggerLeftButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsTriggerLeftButton(int gamePadId)
 *  @brief     Detect trigger Left button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -238,8 +238,8 @@ bool GamePad::IsTriggerLeftButton(int gamePadId)
 
 /****************************************************************************
 *							IsReleaseLeftButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsReleaseLeftButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsReleaseLeftButton(int gamePadId)
 *  @brief     Detect release Left button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -263,8 +263,8 @@ bool GamePad::IsReleaseLeftButton(int gamePadId)
 
 /****************************************************************************
 *							IsPressRightButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressRightButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressRightButton(int gamePadId)
 *  @brief     Detect press Right button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -280,8 +280,8 @@ bool GamePad::IsPressRightButton(int gamePadId)
 
 /****************************************************************************
 *							IsTriggerRightButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsTriggerRightButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsTriggerRightButton(int gamePadId)
 *  @brief     Detect trigger Right button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -305,8 +305,8 @@ bool GamePad::IsTriggerRightButton(int gamePadId)
 
 /****************************************************************************
 *							IsReleaseRightButton
-*************************************************************************//**
-*  @fn        bool GamePad::IsReleaseRightButton(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsReleaseRightButton(int gamePadId)
 *  @brief     Detect release Right button
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -330,8 +330,8 @@ bool GamePad::IsReleaseRightButton(int gamePadId)
 
 /****************************************************************************
 *							LeftButtonValue
-*************************************************************************//**
-*  @fn        bool GamePad::LeftButtonValue(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::LeftButtonValue(int gamePadId)
 *  @brief     Return Left Button Value(Threshold ～ 100) : not pressing 0
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -352,8 +352,8 @@ int GamePad::LeftButtonValue(int gamePadId)
 
 /****************************************************************************
 *							RightButtonValue
-*************************************************************************//**
-*  @fn        bool GamePad::RightButtonValue(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::RightButtonValue(int gamePadId)
 *  @brief     Return Right Button Value(Threshold ～ 100) : not pressing 0
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -374,8 +374,8 @@ int GamePad::RightButtonValue(int gamePadId)
 
 /****************************************************************************
 *							IsPressLStick
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressLStick(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressLStick(int gamePadId)
 *  @brief     Detect press LStick
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -405,8 +405,8 @@ bool GamePad::IsPressLStick(int gamePadId)
 
 /****************************************************************************
 *							IsPressRStick
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressRStick(int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressRStick(int gamePadId)
 *  @brief     Detect press RStick
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　bool
@@ -436,8 +436,8 @@ bool GamePad::IsPressRStick(int gamePadId)
 
 /****************************************************************************
 *							IsPressLStick
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressLStick(float threshold, int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressLStick(float threshold, int gamePadId)
 *  @brief     Detect press LStick
 *  @param[in] float threshold(0.0～100.0f)
 *  @param[in] int gamePadId (Max 4 people)
@@ -467,8 +467,8 @@ bool GamePad::IsPressLStick(float threshold, int gamePadId)
 
 /****************************************************************************
 *							IsPressRStick
-*************************************************************************//**
-*  @fn        bool GamePad::IsPressRStick(int threshold, int gamePadId)
+****************************************************************************/
+/* @fn        bool GamePad::IsPressRStick(int threshold, int gamePadId)
 *  @brief     Detect press RStick
 *  @param[in] float threshold(0.0～100.0f)
 *  @param[in] int gamePadId (Max 4 people)
@@ -497,8 +497,8 @@ bool GamePad::IsPressRStick(float threshold, int gamePadId)
 
 /****************************************************************************
 *							LStick_X
-*************************************************************************//**
-*  @fn        float GamePad::LStick_X(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::LStick_X(int gamePadId)
 *  @brief     Return LStick_X Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -516,8 +516,8 @@ float GamePad::LStick_X(int gamePadId)
 
 /****************************************************************************
 *							LStick_Y
-*************************************************************************//**
-*  @fn        float GamePad::LStick_Y(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::LStick_Y(int gamePadId)
 *  @brief     Return LStick_Y Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -535,8 +535,8 @@ float GamePad::LStick_Y(int gamePadId)
 
 /****************************************************************************
 *							RStick_X
-*************************************************************************//**
-*  @fn        float GamePad::RStick_X(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::RStick_X(int gamePadId)
 *  @brief     Return RStick_X Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -554,8 +554,8 @@ float GamePad::RStick_X(int gamePadId)
 
 /****************************************************************************
 *							RStick_Y
-*************************************************************************//**
-*  @fn        float GamePad::RStick_Y(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::RStick_Y(int gamePadId)
 *  @brief     Return RStick_Y Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　float
@@ -573,8 +573,8 @@ float GamePad::RStick_Y(int gamePadId)
 
 /****************************************************************************
 *							LStick
-*************************************************************************//**
-*  @fn        float GamePad::LStick(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::LStick(int gamePadId)
 *  @brief     Return LStick Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　StickValue
@@ -591,8 +591,8 @@ StickValue GamePad::LStick(int gamePadId)
 
 /****************************************************************************
 *							RStick
-*************************************************************************//**
-*  @fn        float GamePad::RStick(int gamePadId)
+****************************************************************************/
+/* @fn        float GamePad::RStick(int gamePadId)
 *  @brief     Return RStick Value (0.0f ～ 100.0f)
 *  @param[in] int gamePadId (Max 4 people)
 *  @return 　　StickValue
@@ -609,8 +609,8 @@ StickValue GamePad::RStick(int gamePadId)
 
 /****************************************************************************
 *							SetVibration
-*************************************************************************//**
-*  @fn        void GamePad::SetVibration(float leftMotor, float rightMotor, int gamePadId)
+****************************************************************************/
+/* @fn        void GamePad::SetVibration(float leftMotor, float rightMotor, int gamePadId)
 *  @brief     Set Motor Vibration(0.0f ～ 1.0f)
 *  @param[in] leftMoter (0.0f ～ 1.0f)
 *  @param[in] rightMoter(0.0f ～ 1.0f)

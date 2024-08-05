@@ -29,7 +29,7 @@ namespace rhi::core
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::basepass
+namespace engine
 {
 	class ZPrepass;
 	
@@ -49,8 +49,8 @@ namespace gc::basepass
 
 	/****************************************************************************
 	*				  		LightCulling 
-	*************************************************************************//**
-	*  @class     LightCulling
+	****************************************************************************/
+	/* @class     LightCulling
 	*  @brief     Spot light and point light culling
 	*****************************************************************************/
 	class LightCulling : public gu::NonCopyable
@@ -72,7 +72,7 @@ namespace gc::basepass
 		void Execute(const ResourceViewPtr& scene, const ResourceViewPtr& light);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ResourceViewPtr GetLightIDList(const CullingLightType type) { return _lightIDLists[type]; }
 		
@@ -92,7 +92,7 @@ namespace gc::basepass
 		void PreparePipelineState();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : 0 -> PointLight, 1 -> SpotLight, ¡Œã’Ç‰Á‚³‚ê‚é‰Â”\«‚ ‚è*/
 		gu::DynamicArray<ResourceViewPtr> _lightIDLists = {};

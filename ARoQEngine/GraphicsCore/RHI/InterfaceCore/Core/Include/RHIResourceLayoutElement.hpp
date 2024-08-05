@@ -26,8 +26,8 @@ namespace rhi::core
 	class GPUSampler;
 	/****************************************************************************
 	*				  			ResourceLayoutElement
-	*************************************************************************//**
-	*  @class     ResourceLayoutElement
+	****************************************************************************/
+	/* @class     ResourceLayoutElement
 	*  @brief     Layout element
 	*****************************************************************************/
 	struct ResourceLayoutElement
@@ -39,33 +39,33 @@ namespace rhi::core
 		static constexpr gu::int32 GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE = 1;
 		static constexpr gu::int32 LOCAL_ROOT_SIGNATURE_REGISTER_SPACE  = 2;
 
-		static ResourceLayoutElement GlobalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		static ResourceLayoutElement GlobalRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
 		}
 
-		static ResourceLayoutElement LocalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = LOCAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		static ResourceLayoutElement LocalRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = LOCAL_ROOT_SIGNATURE_REGISTER_SPACE)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
 		}
 
-		static ResourceLayoutElement GraphicsRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		static ResourceLayoutElement GraphicsRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding, const gu::uint32 registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, flag);
 		}
 
-		static ResourceLayoutElement ComputeRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		static ResourceLayoutElement ComputeRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding, const gu::uint32 registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, flag);
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag  Visibility     = ShaderVisibleFlag::All;    // Specify the shaders that can access the contents of the root signature slot.
 		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;  // Descriptor type
-		size_t             Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
-		size_t             RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
+		gu::uint32         Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
+		gu::uint32         RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
 		                                                              // register space how to: https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/resource-binding-in-hlsl
 
 		/****************************************************************************
@@ -73,7 +73,7 @@ namespace rhi::core
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
 
-		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
+		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type), Visibility(visibility)
 		{
 		};
@@ -81,8 +81,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			SamplerLayoutElement
-	*************************************************************************//**
-	*  @class     SamplerLayoutElement
+	****************************************************************************/
+	/* @class     SamplerLayoutElement
 	*  @brief     Sampler Layout element
 	*****************************************************************************/
 	struct SamplerLayoutElement
@@ -93,11 +93,11 @@ namespace rhi::core
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
-		size_t           Binding        = 0;
-		size_t           RegisterSpace  = 0;
+		gu::uint32            Binding        = 0;
+		gu::uint32           RegisterSpace  = 0;
 		gu::SharedPointer<GPUSampler> Sampler;
 
 		/****************************************************************************
@@ -105,7 +105,7 @@ namespace rhi::core
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
 
-		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
+		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const gu::uint32 binding = 0, const gu::uint32 space = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
 		};
@@ -113,33 +113,46 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			InputLayoutElement
-	*************************************************************************//**
-	*  @class     InputLayoutElement
-	*  @brief     Input Layout element
+	****************************************************************************/
+	/* @brief    頂点データの入力において, 個々のデータがどのような構成であるかを指定します. @n
+	*            具体的には, POSITION, 0, R32G32B32 (32bitのfloatでx,y,zを設定), PerVertexなどのように使用します.
 	*****************************************************************************/
 	struct InputLayoutElement
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		InputFormat         Format         = InputFormat::Unknown;
+		#pragma region Public Property
+		/*! @brief シェーダーパイプラインに対してパラメータの使用目的に関する情報を伝達するための文字列です. 
+		           Semantic名は以下の参考資料をご覧ください. https://learn.microsoft.com/ja-jp/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics*/
+		gu::string SemanticName = "";
+
+		/*! @brief 同じセマンティック名を使用する場合において互いのセマンティックを区別する場合に使用します. */
+		gu::uint8  SemanticIndex = 0;
+
+		/*! @brief 入力スロット番号を指定します. 現在有効値は0～15です. 複数の頂点バッファが必要な時に指定してください. 
+		    https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc*/
+		gu::uint8 Slot = 0;
+
+		/*! @brief 一要素の構成データ形式を設定します. 複数のデータ形式が必要なのであれば, DynamicArrayでInputLayoutElementを複数設定します*/
+		PixelFormat Format = PixelFormat::Unknown;
+
+		/*! @brief 入力レイアウトが頂点ごとに設定されるものか, インスタンスごとに設定されるものかを指定します*/
 		InputClassification Classification = InputClassification::PerVertex;
-		size_t              Slot           = 0;
-		gu::string          SemanticName   = "";
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+		
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		InputLayoutElement() = default;
 
+		/*! @brief デストラクタ*/
 		~InputLayoutElement() = default;
 
-		explicit InputLayoutElement(const gu::string& name, const InputFormat format, const InputClassification classification = InputClassification::PerVertex,  const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
+		/*! @brief 入力レイアウトの種類を定義するコンストラクタです.*/
+		explicit InputLayoutElement(const gu::string& name, const PixelFormat format, const InputClassification classification = InputClassification::PerVertex, const gu::uint8 semanticIndex = 0, const gu::uint8 slot = 0) : Format(format), SemanticName(name), Classification(classification), SemanticIndex(semanticIndex), Slot(slot) {};
+		#pragma endregion 
 	};
 
 	struct Value32Bit
@@ -148,7 +161,7 @@ namespace rhi::core
 		{
 			gu::uint32 UInt;
 			gu::int32  Int;
-			float         Float;
+			float      Float;
 		};
 		Value32Bit() = default;
 
@@ -161,8 +174,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			SamplerLayoutElement
-	*************************************************************************//**
-	*  @class     SamplerLayoutElement
+	****************************************************************************/
+	/* @class     SamplerLayoutElement
 	*  @brief     Sampler Layout element
 	*****************************************************************************/
 	struct Constant32Bits
@@ -173,12 +186,12 @@ namespace rhi::core
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
-		size_t           Binding        = 0; // リソースレイアウト上でバインドするIndex
-		size_t           RegisterSpace  = 0; // レジスタ空間
-		size_t           Count          = 1; // 32 bitの定数を割り当てる数
+		gu::uint32        Binding        = 0; // リソースレイアウト上でバインドするIndex
+		gu::uint32        RegisterSpace  = 0; // レジスタ空間
+		gu::uint32        Count          = 1; // 32 bitの定数を割り当てる数
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -187,9 +200,9 @@ namespace rhi::core
 
 		explicit Constant32Bits
 		(
-			const size_t count, 
-			const size_t binding = 0, 
-			const size_t space   = 0, 
+			const gu::uint32 count, 
+			const gu::uint32 binding = 0, 
+			const gu::uint32 space   = 0, 
 			const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Count(count)
 		{

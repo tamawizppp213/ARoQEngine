@@ -27,8 +27,8 @@ namespace gm::simd::sse3
 {
 	/****************************************************************************
 	*				  			   GMSimdMatrix128SSE
-	*************************************************************************//**
-	*  @class     GMSimdMatrix128SSE
+	****************************************************************************/
+	/* @class     GMSimdMatrix128SSE
 	*  @brief     temp
 	*****************************************************************************/
 	class Quaternion128Utility : public gm::simd::sse2::Quaternion128Utility
@@ -40,17 +40,17 @@ namespace gm::simd::sse3
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出します. 通常のベクトル同様, 互いのベクトルのなす角度を導出したいときに使用します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static float SIMD_CALL_CONVENTION Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static float SIMD_CALL_CONVENTION Length(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : クォータニオンの正規化を行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Quaternion128 SIMD_CALL_CONVENTION Normalize(ConstQuaternion128 quaternion) noexcept;
 	protected:
 		/****************************************************************************
@@ -58,7 +58,7 @@ namespace gm::simd::sse3
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 
@@ -66,8 +66,8 @@ namespace gm::simd::sse3
 	#pragma region Math
 	/****************************************************************************
 	*                       Dot
-	*************************************************************************//**
-	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
+	****************************************************************************/
+	/* @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
 	*
 	*  @brief      内積を算出します. 通常のベクトル同様, 互いのベクトルのなす角度を導出したいときに使用します
 	*
@@ -82,8 +82,8 @@ namespace gm::simd::sse3
 
 	/****************************************************************************
 	*                       Length
-	*************************************************************************//**
-	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
+	****************************************************************************/
+	/* @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -98,8 +98,8 @@ namespace gm::simd::sse3
 
 	/****************************************************************************
 	*                       Normalize
-	*************************************************************************//**
-	*  @fn        Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Normalize(ConstQuaternion128 quaternion) noexcept
+	****************************************************************************/
+	/* @fn        Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Normalize(ConstQuaternion128 quaternion) noexcept
 	*
 	*  @brief      クォータニオンの正規化を行います
 	*

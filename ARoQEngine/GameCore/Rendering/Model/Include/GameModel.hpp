@@ -13,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameActor.hpp"
 #include "PrimitiveMesh.hpp"
-#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,18 +21,18 @@ class LowLevelGraphicsEngine;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::core
+namespace engine
 {
 	class Mesh;
 	class Material;
 	class GameWorldInfo;
 	/****************************************************************************
 	*				  			Model
-	*************************************************************************//**
-	*  @class     Model
+	****************************************************************************/
+	/* @class     Model
 	*  @brief     This class doesn't have the skin mesh. If you use skin mesh, you should use SkinModel class.
 	*****************************************************************************/
-	class GameModel : public gc::core::GameActor
+	class GameModel : public GameActor
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using MeshPtr          = gu::SharedPointer<Mesh>; // single mesh pointer
@@ -57,7 +56,7 @@ namespace gc::core
 		virtual void Draw(const bool isDrawingEachMaterial = true, const std::uint32_t materialOffsetID = 2);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		MeshPtr GetTotalMesh() const noexcept { return _totalMesh; }
 
@@ -89,7 +88,7 @@ namespace gc::core
 		virtual void DrawWithoutMaterial();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : world position matrix. When you use the instancing drawing,  you should set the custom game world information.  */
 		GameWorldInfoPtr _gameWorld = nullptr;

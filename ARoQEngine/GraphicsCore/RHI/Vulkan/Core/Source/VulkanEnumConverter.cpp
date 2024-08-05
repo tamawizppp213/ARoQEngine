@@ -43,16 +43,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
 	}
 }
-VkIndexType EnumConverter::Convert(const rhi::core::IndexType indexFormat)
-{
-	switch (indexFormat)
-	{
-		case core::IndexType::UInt32: return VkIndexType::VK_INDEX_TYPE_UINT32;
-		case core::IndexType::UInt16: return VkIndexType::VK_INDEX_TYPE_UINT16;
-		default:
-			throw std::runtime_error("not supported Index Format type (vulkan api)");
-	}
-}
+
 #pragma region Shader Stage
 VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 {
@@ -93,7 +84,7 @@ VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibleFlag 
 ---------------------------------------------------------------------*/
 VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
 {
-	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
+	if (filter == core::FilterOption::AnisotropicLinear) { return VkFilter::VK_FILTER_LINEAR; }
 
 	// this equation indicates that the true value shows the filter has linear sampling option, 
 	// and the false value has point sampling option.  
@@ -106,7 +97,7 @@ VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi:
 ---------------------------------------------------------------------*/
 VkSamplerMipmapMode EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
-	if (filter == core::FilterOption::Anisotropy) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	if (filter == core::FilterOption::AnisotropicLinear) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	return (static_cast<std::uint8_t>(filter) & 1) != 0 ?
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
@@ -322,48 +313,35 @@ VkVertexInputRate EnumConverter::Convert(const rhi::core::InputClassification cl
 	}
 }
 
-VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
-{
-	switch (inputFormat)
-	{
-		case core::InputFormat::R32G32_FLOAT      : return VkFormat::VK_FORMAT_R32G32_SFLOAT;
-		case core::InputFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
-		case core::InputFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
-		case core::InputFormat::R32G32B32A32_INT  : return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
-		case core::InputFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
-		default:
-			throw std::runtime_error("not supported input layout format type (vulkan api)");
-	}
-}
 #pragma endregion      Input Layout
 #pragma region GPUResource
 /*-------------------------------------------------------------------
 -                      Resource Usage type
 ---------------------------------------------------------------------*/
-EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUsage usage)
+EnumConverter::VulkanBufferUsageFlags EnumConverter::Convert(const core::BufferCreateFlags usage)
 {
-	static std::vector<core::ResourceUsage> sourcePool =
+	static std::vector<core::BufferCreateFlags> sourcePool =
 	{
-		core::ResourceUsage::None,
-		core::ResourceUsage::VertexBuffer,
-		core::ResourceUsage::IndexBuffer,
-		core::ResourceUsage::ConstantBuffer,
-		core::ResourceUsage::RenderTarget,
-		core::ResourceUsage::DepthStencil,
-		core::ResourceUsage::UnorderedAccess,
+		core::BufferCreateFlags::None,
+		core::BufferCreateFlags::VertexBuffer,
+		core::BufferCreateFlags::IndexBuffer,
+		core::BufferCreateFlags::ConstantBuffer,
+		core::BufferCreateFlags::RenderTarget,
+		core::BufferCreateFlags::DepthStencil,
+		core::BufferCreateFlags::UnorderedAccess,
 	};
 
-	static std::vector<VulkanResourceUsage> targetPool = {
-		VulkanResourceUsage(0, 0) ,
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
+	static std::vector<VulkanBufferUsageFlags> targetPool = {
+		VulkanBufferUsageFlags(0, 0) ,
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
+		VulkanBufferUsageFlags(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
 	};
 
-	auto result = VulkanResourceUsage(0, 0);
+	auto result = VulkanBufferUsageFlags(0, 0);
 	for (size_t i = 0; i < sourcePool.size(); ++i)
 	{
 		if (gu::HasAnyFlags(usage, sourcePool[i]))
@@ -385,9 +363,9 @@ VkImageType EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	switch (dimension)
 	{
-		case core::ResourceDimension::Dimension1D: return VkImageType::VK_IMAGE_TYPE_1D;
-		case core::ResourceDimension::Dimension2D: return VkImageType::VK_IMAGE_TYPE_2D;
-		case core::ResourceDimension::Dimension3D: return VkImageType::VK_IMAGE_TYPE_3D;
+		case core::ResourceDimension::Texture1D: return VkImageType::VK_IMAGE_TYPE_1D;
+		case core::ResourceDimension::Texture2D: return VkImageType::VK_IMAGE_TYPE_2D;
+		case core::ResourceDimension::Texture3D: return VkImageType::VK_IMAGE_TYPE_3D;
 		default:
 			throw std::runtime_error("not supported resource dimension (vulkan api) ");
 	}
@@ -429,11 +407,11 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heap
 /*-------------------------------------------------------------------
 -                        Resource Usage type
 ---------------------------------------------------------------------*/
-VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage)
+VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::BufferCreateFlags usage)
 {
-	if (gu::HasAnyFlags(usage, core::ResourceUsage::DepthStencil))
+	if (gu::HasAnyFlags(usage, core::BufferCreateFlags::DepthStencil))
 	{
-		if (core::PixelFormatSizeOf::IsDepthOnly(format)) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
+		if (core::PixelFormatInfo::GetConst(format).IsDepthStencil()) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
 		return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT | VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
 	return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
@@ -445,13 +423,13 @@ VkImageViewType EnumConverter::Convert(const rhi::core::ResourceDimension dimens
 {
 	switch (dimension)
 	{
-		case core::ResourceDimension::Dimension1D: return length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
-		case core::ResourceDimension::Dimension2D:
+		case core::ResourceDimension::Texture1D: return length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+		case core::ResourceDimension::Texture2D:
 		{
 			return  usage == core::ResourceType::TextureCube ? (length > 6 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE) :
 				(length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_2D : VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY);
 		}
-		case core::ResourceDimension::Dimension3D: return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
+		case core::ResourceDimension::Texture3D: return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
 		default:
 			throw std::runtime_error("not support image view type");
 	}

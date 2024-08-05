@@ -25,8 +25,8 @@ namespace rhi::directX12
 {
 	/****************************************************************************
 	*				  			BLASBuffer
-	*************************************************************************//**
-	*  @struct    BLASBuffer
+	****************************************************************************/
+	/* @struct    BLASBuffer
 	*  @brief     Bottom Level Acceleration Structure Buffer
 	*****************************************************************************/
 	class BLASBuffer : public core::BLASBuffer
@@ -37,7 +37,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		void Build(const gu::SharedPointer<core::RHICommandList>& commandList) override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress() const noexcept { return _rayTracingASDesc.DestAccelerationStructureData; }
 		/****************************************************************************
@@ -54,7 +54,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC _rayTracingASDesc = {};
 	};

@@ -63,51 +63,113 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIDevice
-	*************************************************************************//**
-	*  @class     RHIDevice 
-	*  @brief     Logical Device interface. Device : GPU resources generator.
+	****************************************************************************/
+	/* @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
 	class RHIDevice : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		virtual void Destroy() = 0; // shared_ptrでデストラクタが呼ばれないため. 
-
-		/*-------------------------------------------------------------------
-		-               Create Objects for Logical Device
-		---------------------------------------------------------------------*/
-		bool IsDiscreteGPU() const;
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief     論理デバイスを破棄する.
+		*  @note      この関数を呼ばないとSharedPointerでデストラクタが呼ばれない可能性があったため.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		virtual void Destroy() = 0; 
 		
-#pragma region Create Resource
-		virtual void                                        SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
+		#pragma region Create Resource
+		/*!**********************************************************************
+		*  @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
+		*  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
+		*************************************************************************/
+		virtual void SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		/*!**********************************************************************
+		*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスを作成します
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& : レンダーパス
+		*  @param[in] const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& : レンダーターゲット
+		*  @param[in] const gu::SharedPointer<core::GPUTexture>& : デプスステンシル
+		*  @return    gu::SharedPointer<core::RHIFrameBuffer> フレームバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIFrameBuffer> CreateFrameBuffer(
+			const gu::SharedPointer<RHIRenderPass>& renderPass, 
+			const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, 
+			const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		/*!**********************************************************************
+		*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスを作成します
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& : レンダーパス
+		*  @param[in] const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& : レンダーターゲット
+		*  @param[in] const gu::SharedPointer<core::GPUTexture>& : デプスステンシル
+		*  @return    gu::SharedPointer<core::RHIFrameBuffer> フレームバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIFrameBuffer> CreateFrameBuffer(
+			const gu::SharedPointer<RHIRenderPass>& renderPass, 
+			const gu::SharedPointer<GPUTexture>& renderTarget, 
+			const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
+		virtual gu::SharedPointer<RHIFence> CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
+		virtual gu::SharedPointer<RHICommandList> CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const gu::tstring& name = SP("CommandQueue")) = 0;
+		/*!**********************************************************************
+		*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信するコマンドキューを作成します
+		*  @param[in] const core::CommandListType : コマンドリストの種類
+		*  @param[in] const gu::tstring : デバッグ名
+		*  @return    gu::SharedPointer<core::RHICommandQueue> コマンドキューのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHICommandQueue> CreateCommandQueue(const core::CommandListType type, const gu::tstring& name = SP("CommandQueue")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name = SP("CommandAllocator")) = 0;
+		/*!**********************************************************************
+		*  @brief     コマンドリストのメモリを格納するために使用されるコマンドアロケータを作成します
+		*  @param[in] const core::CommandListType : コマンドリストの種類
+		*  @param[in] const gu::tstring : デバッグ名
+		*  @return    gu::SharedPointer<core::RHICommandAllocator> コマンドアロケータのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHICommandAllocator> CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name = SP("CommandAllocator")) = 0;
 		
-		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) = 0;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const gu::SharedPointer<core::RHICommandQueue> : コマンドキュー
+		*  @param[in] const core::WindowInfo : ウィンドウ情報
+		*  @param[in] const core::PixelFormat : ピクセルフォーマット
+		*  @param[in] const gu::uint8 : フレームバッファの数
+		*  @param[in] const gu::uint8 : Vsyncの設定
+		*  @param[in] const bool : HDRの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain>
+		*************************************************************************/
+		virtual gu::SharedPointer<RHISwapchain> CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 2, const gu::uint8 vsync = 0, const bool isValidHDR = true) = 0;
 		
-		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const core::SwapchainDesc : スワップチェインの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain> スワップチェインのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHISwapchain> CreateSwapchain(const SwapchainDesc& desc) = 0;
 
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトを作成します. (リソースレイアウトはGPUリソースのバインドを管理します.)
+		*  @param[in] const gu::DynamicArray<ResourceLayoutElement>, 
+		*  @param[in] const gu::DynamicArray<SamplerLayoutElement>, 
+		*  @param[in] const gu::Optional<Constant32Bits>, 
+		*  @param[in] const gu::tstring
+		*  @return    gu::SharedPointer<RHIResourceLayout>
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIResourceLayout> CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
-		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
+		/*!**********************************************************************
+		*  @brief     各Pipelineステージを作成するためのFactoryクラスを作成します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUPipelineFactory> : パイプラインファクトリのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<GPUPipelineFactory> CreatePipelineFactory() = 0;
 		
-		virtual gu::SharedPointer<GPUGraphicsPipelineState>   CreateGraphicPipelineState(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
+		virtual gu::SharedPointer<GPUGraphicsPipelineState> CreateGraphicPipelineState(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
 		virtual gu::SharedPointer<GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
@@ -121,7 +183,13 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
+		/*!**********************************************************************
+		*  @brief     GPUで確保するバッファを作成します. (頂点データやインデックスデータの確保などに使用します.)
+		*  @param[in] const core::GPUBufferMetaData& : バッファを作る際に必要な情報をまとめた構造体
+		*  @param[in] const gu::tstring& : デバッグ名
+		*  @return    gu::SharedPointer<GPUBuffer> : GPUバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<GPUBuffer> CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
 		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
@@ -142,31 +210,51 @@ namespace rhi::core
 		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
 		
 		virtual gu::SharedPointer<RHIQuery> CreateQuery(const core::QueryHeapType heapType) = 0;
-#pragma endregion Create Resource
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma endregion Create Resource
+		#pragma endregion 
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief      論理デバイス側でデフォルト(SetupDefaultHeap)で用意したディスクリプタヒープを取得します.
+		*  @param[in]  const core::DescriptorHeapType DescriptorHeapの種類
+		*  @return     gu::SharedPointer<RHIDescriptorHeap> ディスクリプタヒープ
+		*************************************************************************/
 		virtual gu::SharedPointer<RHIDescriptorHeap> GetDefaultHeap(const core::DescriptorHeapType heapType) = 0;
 		
 		virtual gu::uint32 GetShadingRateImageTileSize() const = 0;
 		
+		/*!**********************************************************************
+		*  @brief  物理デバイスのポインタを渡します.
+		*  @return gu::SharedPointer<core::RHIDisplayAdapter> 物理デバイス
+		*************************************************************************/
 		gu::SharedPointer<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief : Deviceを使用するときにどのGPUを使用するかのビットマスクを取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  GPUを指定するマスクです. 
+		*************************************************************************/
 		      RHIMultiGPUMask& GetGPUMask()       { return _gpuMask; }
-
 		const RHIMultiGPUMask& GetGPUMask() const { return _gpuMask; }
 
+		/*!**********************************************************************
+		*  @brief  デバッグ名を設定します. 
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
-		virtual bool IsSupportedDxr                () const = 0; // Ray Tracing 
+		/*!**********************************************************************
+		*  @brief     DirectX Ray Tracingが使えるかどうかを返します.
+		*  @param[in] void
+		*  @return    bool Ray Tracingが使えるかどうか
+		*************************************************************************/
+		virtual bool IsSupportedDxr() const = 0; // Ray Tracing 
 
-		virtual bool IsSupportedHDR                () const = 0; // HDR check ()
+		/*!**********************************************************************
+		*  @brief     HDRが使えるかどうかを返します.
+		*  @param[in] void
+		*  @return    bool HDRが使えるかどうか
+		*************************************************************************/
+		virtual bool IsSupportedHDR() const = 0; // HDR check ()
 
 		virtual bool IsSupportedVariableRateShading() const = 0;
 
@@ -178,8 +266,9 @@ namespace rhi::core
 
 		virtual bool IsSupportedRenderPass         () const = 0;
 
-		/* @brief : This function tests whether the depth value is within the specified range and runs the pixel shader 
-		*if it is within the range, and prematurely dismisses the corresponding pixel if it is outside the range.*/
+		/*!**********************************************************************
+		*  @brief  ピクセル描画の最小, 最大範囲を適用する機能が使えるか (DepthBoundsTest)
+		*************************************************************************/
 		virtual bool IsSupportedDepthBoundsTest    () const = 0;
 
 		virtual bool IsSupportedSamplerFeedback    () const = 0;
@@ -192,18 +281,27 @@ namespace rhi::core
 
 		virtual bool IsSupportedAtomicOperation() const = 0;
 
+		/*!**********************************************************************
+		*  @brief  ディスクリートGPUかどうか. @n
+		*          外部GPU(xGPU)はtrueと判定され, 統合GPU(iGPU)のみfalseと判定されます.
+		*************************************************************************/
+		bool IsDiscreteGPU() const;
 
+		#pragma endregion
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		/*! @brief 論理デバイスのデフォルトコンストラクタ*/
 		RHIDevice()  = default;
 
+		/*! @brief デストラクタ*/
 		virtual ~RHIDevice()
 		{ 
 			_adapter.Reset(); 
 		}
 
+		/*! @brief 物理アダプタとGPUを指定するインデックスを使って作成するコンストラクタ*/
 		RHIDevice(const gu::SharedPointer<RHIDisplayAdapter>& adapter, const RHIMultiGPUMask& mask = RHIMultiGPUMask::SingleGPU()) 
 			: _adapter(adapter), _gpuMask(mask) {};
 
@@ -212,7 +310,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : Use Display Apapter (GPU)*/
 		gu::SharedPointer<RHIDisplayAdapter> _adapter = nullptr;

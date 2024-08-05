@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 
@@ -24,149 +25,199 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
-{
-	class RHIInstance;
-	//class RHIDevice;
-	class RHIDisplayAdapter;
-	//class RHICommandList;
-	class RHICommandQueue;
-	class RHISwapchain;
-	class RHIFence;
-	class RHIDescriptorHeap;
-	class RHIRenderPass;
-	class RHIFrameBuffer;
-	class RHIQuery;
-}
+
 /****************************************************************************
 *				  			LowLevelGraphicsEngine
-*************************************************************************//**
-*  @class     LowLevelGraphicsEngine
+****************************************************************************/
+/* @class     LowLevelGraphicsEngine
 *  @brief     LowLevelGraphicsEngine
 *****************************************************************************/
-class LowLevelGraphicsEngine final : public gu::NonCopyable
+class LowLevelGraphicsEngine final : public gu::NonCopyAndMove
 {
-protected:
-	using InstancePtr     = gu::SharedPointer<rhi::core::RHIInstance>;
-	using AdapterPtr      = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
-	using DevicePtr       = gu::SharedPointer<rhi::core::RHIDevice>;
-	using CommandListPtr  = gu::SharedPointer<rhi::core::RHICommandList>;
-	using CommandQueuePtr = gu::SharedPointer<rhi::core::RHICommandQueue>;
-
 public:
-	/****************************************************************************
-	**                Static Configuration
-	*****************************************************************************/
+	#pragma region Static Const
 	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
 
-	static constexpr gu::uint32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr gu::uint32 VSYNC = 1; // 0: don't wait, 1:wait(60fps)
+	#pragma endregion
 
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
-	/* @brief : Rendering engine start function.*/
-	void StartUp(rhi::core::APIVersion apiVersion, void* hwnd, void* hInstance);
+	#pragma region Public Function
+	/*!**********************************************************************
+	*  @brief     Graphics Engineを起動し, 描画フレームをスタートします. 
+	*  @param[in] const rhi::core::GraphicsAPI 
+	*  @param[in] void* window handle
+	*  @param[in] void* instance Handle
+	*  @return    void
+	*************************************************************************/
+	void StartUp(const rhi::core::GraphicsAPI apiVersion, void* hwnd, void* hInstance);
 
-	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
+	/*!**********************************************************************
+	*  @brief     CommandListを開き, 描画フレームをスタートします.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void BeginDrawFrame();
 
-	/* @brief : Draw back buffer render pass*/
+	/*!**********************************************************************
+	*  @brief     バックバッファに書き込むためのRenderPassを開始します.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void BeginSwapchainRenderPass();
 	
-	/* @brief : Call at the end of the Draw function to execute the command list and Flip the Swapchain. */
-	void EndDrawFrame();   // call at end draw frame
+	/*!**********************************************************************
+	*  @brief     CommandListを閉じ, 描画フレームを終了し, バックバッファを切り替えます.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
+	void EndDrawFrame();
 	
-	/* @brief : Resize swapchain*/
-	void OnResize(const size_t newWidth, const size_t newHeight);
-	
-	/* @brief : Release all render resources*/
+	/*!**********************************************************************
+	*  @brief     グラフィクスエンジンを終了します. 
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void ShutDown();
 
+	/*!**********************************************************************
+	*  @brief     Swapchainをリサイズします.
+	*  @param[in] const gu::uint32 新しい幅
+	*  @param[in] const gu::uint32 新しい高さ
+	*  @return    void
+	*************************************************************************/
+	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
 
-	/* @brief : Execute command queue. Return fence signal value */
-	std::uint64_t FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
+	/*!**********************************************************************
+	*  @brief     対象のコマンドリストを実行し, フェンスのシグナル値を返します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @param[in] const bool まだフレーム中かどうか
+	*  @return    gu::uint64 フェンスのシグナル値
+	*************************************************************************/
+	gu::uint64 FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
 
-	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
-	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
-	/* @brief : Device (Create GPU Resource Function List)*/
-	DevicePtr GetDevice() const noexcept { return _device; }
-
-	/* @brief : CommandList (Regist GPU Commands) */
-	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
+	/*!**********************************************************************
+	*  @brief     コマンドキューを呼び出して前までの処理が完了するまでGPUを待機します. 必要に応じてCPUも待機します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @param[in] const gu::uint64 待機するフェンスの値
+	*  @param[in] const bool CPUも待機するかどうか
+	*  @return    void
+	*************************************************************************/
+	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const gu::uint64 waitValue, const bool stopCPU);
 	
-	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
+	#pragma endregion
 
-	/* @brief : Default RenderPass*/
-	gu::SharedPointer<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	#pragma region Public Property
+	/*!**********************************************************************
+	*  @brief     論理デバイスを取得します. 
+	*  @param[in] void
+	*  @return    DevicePtr : 論理デバイスのSharedPointer
+	*************************************************************************/
+	__forceinline RHIDevicePtr GetDevice() const noexcept { return _device; }
 
-	/* @brief : Non clear render pass*/
-	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
+	/*!**********************************************************************
+	*  @brief     ComandListを取得します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    CommandListPtr : CommandListのSharedPointer
+	*************************************************************************/
+	__forceinline RHICommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
+	
+	/*!**********************************************************************
+	*  @brief     ComandQueueを取得します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
+	*************************************************************************/
+	__forceinline RHICommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
 
-	/* @brief : Frame buffer*/
-	gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
+	/*!**********************************************************************
+	*  @brief     デフォルトのRenderPassの取得. レンダーパス開始時に, 画面のクリアを行います.  
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    gu::SharedPointer<rhi::core::RHIRenderPass>
+	*************************************************************************/
+	__forceinline gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawClearRenderPass() const noexcept { return _renderPass; }
 
-	/* @brief : Return Current Frame Index*/
-	gu::uint32 GetCurrentFrameIndex() const { return _currentFrameIndex; }
+	/*!**********************************************************************
+	*  @brief     RenderPassの取得. レンダーパス開始時に, 画面のクリアは行いません.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    gu::SharedPointer<rhi::core::RHIRenderPass>
+	*************************************************************************/
+	__forceinline gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
 
-	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
+	/*!**********************************************************************
+	*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスです.
+	*  @param[in] const gu::uint32 Frameのインデックス
+	*  @return    gu::SharedPointer<rhi::core::RHIFrameBuffer>
+	*************************************************************************/
+	__forceinline gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const gu::uint32 frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 
-	/*----------------------------------------------------------------------
-	*  @brief :  描画バッファを毎フレーム交換するためのSwapchainのポインタを返します
-	*----------------------------------------------------------------------*/
-	__forceinline gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept 
+	/*!**********************************************************************
+	*  @brief     現在書き込み中のフレーム番号を取得します. 
+	*  @param[in] void
+	*  @return    gu::uint32 フレーム番号
+	*************************************************************************/
+	__forceinline gu::uint32 GetCurrentFrameIndex() const { return _currentFrameIndex; }
+
+	/*!**********************************************************************
+	*  @brief     バックバッファのピクセルフォーマットを取得します
+	*  @param[in] void
+	*  @return    rhi::core::PixelFormat
+	*************************************************************************/
+	__forceinline rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
+
+	/*!**********************************************************************
+	*  @brief     描画バッファを毎フレーム交換するためのSwapchainのポインタを返します
+	*  @param[in] void
+	*  @return    RHISwapchainPtr
+	*************************************************************************/
+	__forceinline RHISwapchainPtr GetSwapchain() const noexcept 
 	{
 		return _swapchain; 
 	}
 	
-	/*----------------------------------------------------------------------
-	*  @brief : GPU計測のQueryHeapを返します
-	*----------------------------------------------------------------------*/
-	__forceinline gu::SharedPointer<rhi::core::RHIQuery> GetQuery(const rhi::core::QueryHeapType queryType) 
+	/*!**********************************************************************
+	*  @brief     GPU計測のQueryHeapを返します
+	*  @param[in] const rhi::core::QueryHeapType QueryHeapの種類
+	*  @return    RHIQueryPtr
+	*************************************************************************/
+	__forceinline RHIQueryPtr GetQuery(const rhi::core::QueryHeapType queryType) 
 	{
 		return _queryHeaps.At(queryType); 
 	}
+	#pragma endregion
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
+	#pragma region Public Constructor and Destructor
+	/*! @brief デフォルトコンストラクタ*/
 	LowLevelGraphicsEngine() = default;
 
+	/*! @brief デストラクタ*/
 	~LowLevelGraphicsEngine();
 
+	#pragma endregion
+
 protected:
-	/****************************************************************************
-	**                Private Function
-	*****************************************************************************/
+	#pragma region Protected Function
 	void SetFrameBuffers(const int width, const int height, 
 		const rhi::core::ClearValue& clearColor = rhi::core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f),
 		const rhi::core::ClearValue& clearDepthColor = rhi::core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+	#pragma endregion 
 
-#pragma region SetUp
-
-#pragma endregion SetUp
-	/****************************************************************************
-	**                Private Member Variables
-	*****************************************************************************/
-	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
-	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Unknown;
+	#pragma region Protected Property
+	/*! @brief Graphics API バージョン (現在はDirectX12 or Vulkan)*/
+	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;
 
 	/* @brief : graphics API instance (select graphics api)*/
-	InstancePtr _instance = nullptr;
+	RHIInstancePtr _instance = nullptr;
 
 	/* @brief : gpu display adapter (basically discrete gpu adapter)*/
-	AdapterPtr _adapter = nullptr;
+	RHIDisplayAdapterPtr _adapter = nullptr;
 
 	/* @brief : Logical Device*/
-	DevicePtr  _device = nullptr;
+	RHIDevicePtr  _device = nullptr;
 
 	/* @ brief : Command queue (graphics, compute, transfer)*/
-	gu::SortedMap<rhi::core::CommandListType, gu::SharedPointer<rhi::core::RHICommandQueue>> _commandQueues;
+	gu::SortedMap<rhi::core::CommandListType, RHICommandQueuePtr> _commandQueues;
 
 	/* @brief : Command List*/
-	gu::SortedMap<rhi::core::CommandListType, CommandListPtr> _commandLists;
+	gu::SortedMap<rhi::core::CommandListType, RHICommandListPtr> _commandLists;
 	
 	/* @brief : Default rendering pass*/
 	gu::SharedPointer<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
@@ -175,6 +226,12 @@ protected:
 	
 	/* @brief : current frame index*/
 	gu::uint32 _currentFrameIndex = 0;
+
+	/*! @brief TimeStamp*/
+	rhi::core::GPUTimingCalibrationTimestamp _beginDrawFrameTimeStamp = {};
+	rhi::core::GPUTimingCalibrationTimestamp _endDrawFrameTimeStamp = {};
+	gu::double64 _gpuTimer = 0.0;
+	gu::double64 _cpuTimer = 0.0;
 
 #pragma region Rendering Variables
 	/*----------------------------------------------------------------------
@@ -214,8 +271,8 @@ protected:
 	/*----------------------------------------------------------------------
 	*  @brief : スクリーンの縦横
 	*----------------------------------------------------------------------*/
-	gu::int32 _width  = 0;
-	gu::int32 _height = 0;
+	gu::uint32 _width  = 0;
+	gu::uint32 _height = 0;
 
 #pragma endregion Rendering Variables
 
@@ -239,11 +296,15 @@ protected:
 	static constexpr int SRV_DESC_COUNT = 1024 * 10;
 	static constexpr int MAX_SAMPLER_STATE = 16;
 
+	#pragma endregion 
+
 private:
+	#pragma region Private Function
 	void SetUpRenderResource();
 	void SetUpHeap();
 	void SetUpFence();
 	void SetUpQuery();
+	#pragma endregion
 
 };
 

@@ -146,9 +146,11 @@
       <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>6.4</ShaderModel>
-      <EntryPointName>VSMain</EntryPointName>
+      <ShaderModel>6.6</ShaderModel>
+      <EntryPointName>MainPS</EntryPointName>
       <EnableDebuggingInformation>false</EnableDebuggingInformation>
+      <AssemblerOutput>AssemblyCode</AssemblerOutput>
+      <AssemblerOutputFile>$(OutDir)Assembly\%(Filename).asm</AssemblerOutputFile>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -176,10 +178,10 @@
       <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <EntryPointName>VSMain</EntryPointName>
+      <EntryPointName>MainPS</EntryPointName>
     </FxCompile>
     <FxCompile>
-      <ShaderModel>6.4</ShaderModel>
+      <ShaderModel>6.6</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -200,10 +202,18 @@
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource.hpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Core\Include\BaseObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
+    <ClInclude Include="GameCore\Core\Include\SceneObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\GameWorldInfo.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
@@ -213,29 +223,97 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ScreenSpaceReflection.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\WhiteBalance.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMDSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMXSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\ExternalSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\Model\Include\BaseMesh.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFMaterial.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFMesh.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFScene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFSceneNode.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFTexture.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\GaussianBlur.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\SceneDownSample.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ScreenSpaceReflection.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Vignette.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\WhiteBalance.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffect.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffectStruct.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\FullScreenEffector.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Mosaic.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ParticleEffect.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ParticleEffectStruct.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Sobel.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\SSAO.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\ShadowMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Public\Include\GLTFModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Private\Include\PMDDefines.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Private\Include\PMXDefines.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Private\Include\VMDDefines.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUAtomic.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUCommandLine.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUCharacterCodeConverter.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -243,7 +321,15 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUHash.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUStringConverter.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -252,6 +338,15 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUTypeTraits.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUUnicodeConverter.hpp" />
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUAscii.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUCharacterCode.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -268,6 +363,26 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Private\Base\Include\GUTypeTraitsStruct.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUShiftJIS.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUUTF32.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUUTF8.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUUTF16.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\CharacterCode\Include\GUWindowsCodePage.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -324,6 +439,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUHashMap.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUInitializerList.hpp">
       <SubType>
       </SubType>
@@ -364,6 +483,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\HashMap\Include\GUHashMapElement.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\HashMap\Include\GUHashMapIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUConstIterator.hpp">
       <SubType>
       </SubType>
@@ -389,6 +516,62 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUParse.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Include\Json.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonReader.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueArray.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueBoolean.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueNull.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueNumber.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueString.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonCommon.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValue.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonWriter.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMVectorInt.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -512,6 +695,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector2i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector3i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector4d.hpp">
       <SubType>
       </SubType>
@@ -529,6 +720,14 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector3d.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector4i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Memory\Include\GUAlignment.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -552,10 +751,10 @@
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\RenderPipeline.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Bloom.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Bloom.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Blur.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ColorChange.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\DepthOfField.hpp" />
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProfiler.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\LightType.hpp" />
@@ -597,7 +796,7 @@
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\MeshOld.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\GameModel.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
@@ -649,12 +848,11 @@
     <ClInclude Include="GameUtility\File\External\rapidjson\writer.h" />
     <ClInclude Include="GameUtility\File\Include\Csv.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
-    <ClInclude Include="GameUtility\File\Include\Json.hpp" />
+    <ClInclude Include="GameUtility\File\Include\JsonOld.hpp" />
     <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMHash.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMathConstants.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
@@ -674,7 +872,27 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUPipelineStateCache.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUBarrierBatcher.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUDiagnosticBuffer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMacro.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIPixelFormat.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -682,21 +900,101 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUShaderCompiler.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResourceLocation.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreAtomicOperator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreCriticalSection.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreFileSystem.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreHardware.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreOS.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformCommand.hpp">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreProcess.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindowMessageHandler.hpp" />
+    <ClInclude Include="Platform\Core\Private\File\Include\CoreFileCommonState.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Private\File\Include\CoreFileHandle.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Private\Process\Include\CoreProcessSetting.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsAtomicOperator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsCommonState.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsCriticalSection.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsFileSystem.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsHardware.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsOS.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Include\WindowsPlatformCommand.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Platform\Windows\Include\WindowsWindowsMessageHandler.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsProcess.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsMessage.hpp" />
+    <ClInclude Include="Platform\Windows\Private\File\Include\WindowsFileHandleWithBuffering.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Private\File\Include\WindowsFileHandle.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Private\Include\WindowsDeferredMessage.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsCursor.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsError.hpp" />
@@ -871,22 +1169,87 @@
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ScreenSpaceReflection.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\WhiteBalance.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMDSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMXSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Private\Model\Source\BaseMesh.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\ExternalSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\FullScreenEffector.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Mosaic.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ParticleEffect.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\SceneDownSample.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ScreenSpaceReflection.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Sobel.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\SSAO.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Vignette.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\WhiteBalance.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\ShadowMap.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Public\Source\GLTFModelConverter.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Private\Source\PMDDefines.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Private\Source\PMXDefines.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Private\Source\VMDDefines.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUUnicodeConverter.cpp" />
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUAscii.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUWindowsCodePage.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUCharacterCode.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUShiftJIS.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUUTF16.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUUTF32.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUUTF8.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUCharacterCodeConverter.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUCommandLine.cpp">
       <SubType>
       </SubType>
@@ -896,6 +1259,14 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUAssert.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUHash.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUStringConverter.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUTimeSpan.cpp">
       <SubType>
       </SubType>
@@ -905,6 +1276,42 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUParse.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonObject.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonReader.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueArray.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueBoolean.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueNumber.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueObject.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueString.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValue.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Source\Json.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -954,10 +1361,10 @@
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\RenderingPipeline.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Bloom.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Bloom.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Blur.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ColorChange.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\DepthOfField.cpp" />
     <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\External\Source\IESProfiler.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFAnimationUtils.cpp" />
@@ -983,7 +1390,7 @@
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\MeshOld.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\GameModel.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />
@@ -993,7 +1400,7 @@
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
-    <ClCompile Include="GameUtility\File\Source\Json.cpp" />
+    <ClCompile Include="GameUtility\File\Source\JsonOld.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
@@ -1005,17 +1412,65 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUBarrierBatcher.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIPixelFormat.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Core\Source\CoreFileSystem.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Core\Source\CorePlatformApplication.cpp" />
+    <ClCompile Include="Platform\Core\Source\CoreProcess.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Core\Source\CoreWindow.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindowMessageHandler.cpp" />
+    <ClCompile Include="Platform\Windows\Private\File\Source\WindowsFileHandleWithBuffering.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Private\File\Source\WindowsFileHandle.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsAtomicOperator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsCriticalSection.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsCursor.cpp" />
     <ClCompile Include="Platform\Windows\Source\WIndowsError.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsFileSystem.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsHardware.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsOS.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformApplication.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformCommand.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsProcess.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -1120,16 +1575,18 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
-    <ClCompile Include="Platform\Windows\Source\WindowsWindowMessageHandler.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsMessage.cpp" />
     <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shader\BasePass\DefferedRenderingSettings.hlsli" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
+    <None Include="Shader\Core\ShaderMath.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
-    <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
+    <None Include="Shader\PostProcess\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
     <None Include="Shader\Lighting\ShaderLightType.hlsli" />
     <None Include="Shader\Lighting\ShaderShadow.hlsli" />
@@ -1138,21 +1595,50 @@
     <ResourceCompile Include="MenuResource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shader\BasePass\DefferedRendering.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MainPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderScreenPass.hlsl">
+      <SubType>
+      </SubType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainVS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MainVS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\Core\ShaderTemplate.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainPS</EntryPointName>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shader\PostProcess\ShaderColorChange.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMonochrome</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMonochrome</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderDepthOfField.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1164,7 +1650,20 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VerticalBlur</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VerticalBlur</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderDownSample.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MainPS</EntryPointName>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AssemblyCode</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).d3dasm</AssemblerOutputFile>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shader\PostProcess\ShaderGaussianBlur.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1176,7 +1675,7 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteBlur</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteBlur</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderBloom.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderBloom.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1188,13 +1687,15 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SamplingLuminance</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SamplingLuminance</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    <FxCompile Include="Shader\PostProcess\ShaderMosaic.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderSobel.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderSobel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1206,25 +1707,37 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteSobel</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteSobel</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderSSR.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderSSR.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderTonemap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderVignette.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    <FxCompile Include="Shader\PostProcess\ShaderVignette.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderWhiteBalance.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderWeightedFilter.hlsl">
+      <SubType>
+      </SubType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\PostProcess\ShaderWhiteBalance.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -1237,6 +1750,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -1251,6 +1766,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderTileBasedLightCulling.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
@@ -1269,12 +1786,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Sprite\ShaderRayTracingTest.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Library</ShaderType>
@@ -1313,6 +1834,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUStringBase.hpp
-///             @brief  動的な文字列クラスです. std::stringと同等に扱えるクラス
-///             @author toide
-///             @date   2023/11/08 0:50:57
+/// @file   GUStringBase.hpp
+/// @brief  動的な文字列クラスです. std::stringと同等に扱えるクラス
+/// @author toide
+/// @date   2023/11/08 0:50:57
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_STRING_BASE_HPP
@@ -13,6 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Private/Base/Include/GUStringUtility.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUHash.hpp"
+#include <stdio.h> // platformStringに変更できるようにする
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,122 +27,208 @@ namespace gu::details::string
 {
 	/****************************************************************************
 	*				  			   string
-	*************************************************************************//**
-	*  @class     string
-	*  @brief     プリミティブな型であるという判断の下, 特例でgu::uint32のように小文字スタートで行うことにいたしました.
+	****************************************************************************/
+	/*!  @brief     プリミティブな型であるという判断の下, 特例でgu::uint32のように小文字スタートで行うことにいたしました.
 	*****************************************************************************/
 	template<class Char, int CharByte = 1>
 	class StringBase : public Copyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を連結します
-		/*----------------------------------------------------------------------*/
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief     文字列を連結して返します.
+		*  @param[in] const StringBase<Char, CharByte> : 左から連結する文字列
+		*  @param[in] const StringBase<Char, CharByte> : 右から連結する文字列
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		static StringBase<Char, CharByte> Concat(const StringBase<Char, CharByte>& left, const StringBase<Char, CharByte>& right);
+
+		/*!**********************************************************************
+		*  @brief     文字列を連結して返します.
+		*  @param[in] const Char* : 左から連結する生の文字列
+		*  @param[in] const Char* : 右から連結する生の文字列
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		static StringBase<Char, CharByte> Concat(const Char* left, const Char* right);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を代入します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を関数から明示的に文字列クラスに代入します. (基本的にはOperator演算子で適用することが望まれます)
+		*  @param[in] const Char* : 割り当てる生の文字列
+		*  @return    void
+		*************************************************************************/
 		void Assign(const Char* string);
+
+		/*!**********************************************************************
+		*  @brief     文字列を関数から明示的に文字列クラスに代入します. (基本的にはOperator演算子で適用することが望まれます)
+		*  @param[in] const Char*  : 割り当てる生の文字列
+		*  @param[in] const uint64 : 文字列長 
+		*  @return    void
+		*************************************************************************/
 		void Assign(const Char* string, const uint64 length) noexcept;
+
+		/*!**********************************************************************
+		*  @brief     文字列を関数から明示的に文字列クラスに代入します. (基本的にはOperator演算子で適用することが望まれます)
+		*  @param[in] const StringBase<Char, CharByte> : 割り当てる文字列
+		*  @return    void
+		*************************************************************************/
 		void Assign(const StringBase<Char, CharByte>& string) { Assign(string.CString(), string.Size()); }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を追加します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を右に追加, 連結します
+		*  @param[in] Char* 生の文字列
+		*  @return    void
+		*************************************************************************/
 		void Append(const Char* string);
+
+		/*!**********************************************************************
+		*  @brief     文字列を右に追加, 連結します
+		*  @param[in] Char*        : 生の文字列
+		*  @param[in] const uint64 : 文字列の長さ
+		*  @return    void
+		*************************************************************************/
 		void Append(const Char* string, const uint64 length);
+
+		/*!**********************************************************************
+		*  @brief     文字列を右に追加, 連結します
+		*  @param[in] const StringBase<Char, CharByte>& 文字列
+		*  @return    void
+		*************************************************************************/
 		void Append(const StringBase<Char, CharByte>& string);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Capacityやメモリは特に破棄せず、文字列の先頭のみを終端文字に変更します.
-		*            また、SSOなどのモード切替も行いません.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Capacityやメモリは特に破棄せず、文字列の先頭のみを終端文字に変更します. また、SSOなどのモード切替も行いません.
+		*  @return    void
+		*************************************************************************/
 		void Clear();
 
-		/*----------------------------------------------------------------------
-		*  @brief :  初期化状態まで戻します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     初期化状態まで戻します
+		*  @return    void
+		*************************************************************************/
 		void ClearAll()
 		{
 			Release(); Initialize();
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  メモリを事前に確保します. (NonSSOのときかつcapacity以上であれば確保します)
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     CapacityをコンテナのSizeまで切り詰める @n
+		*             capacityが0のとき, capacity以上にsizeがある時は処理を行いません.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		void ShrinkToFit();
+
+		/*!**********************************************************************
+		*  @brief     メモリを事前に確保します. (NonSSOのときかつcapacity以上であれば確保します)
+		*  @param[in] const uint64 メモリを確保する文字列長
+		*  @return    void
+		*************************************************************************/
 		void Reserve(const uint64 length);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を置換します
-		*
-		*  @param[in] const Char* from 置換される文字列
-		*  @param[in] const Char* to   置換する文字列
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Stringクラスの中から指定の文字列を探し出し, 最初に一致する文字列を置き換えます. 
+		*  @param[in] const Char* 置換される文字列
+		*  @param[in] const Char* 置換したい文字列
+		*  @param[in] const bool  大文字小文字を区別するかどうか
+		*  @return    void
+		*************************************************************************/
 		StringBase<Char, CharByte> Replace(const Char* from, const Char* to, const bool useCaseSensitivity);
+
+		/*!**********************************************************************
+		*  @brief     Stringクラスの中から指定の文字列を探し出し, 最初に一致する文字列を置き換えます.
+		*  @param[in] const StringBase<Char, CharByte> 置換される文字列
+		*  @param[in] const StringBase<Char, CharByte> 置換したい文字列
+		*  @param[in] const bool  大文字小文字を区別するかどうか
+		*  @return    void
+		*************************************************************************/
 		StringBase<Char, CharByte> Replace(const StringBase<Char, CharByte>& from, const StringBase<Char, CharByte>& to, const bool useCaseSensitivity);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
-		*  
-		*  @param[in] : const Char* string              検索文字列
-		*  @param[in] : const bool  useCaseSensitivity  大文字と小文字の区別 
-		* 
-		*  @return    : 文字列が存在すればtrue, stringが空文字列である場合はtrueとなる
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     指定した文字列がこの文字列内に存在するかを判断します.
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    文字列が存在すればtrue, stringが空文字列である場合もtrueとなる
+		*************************************************************************/
 		__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 		{
-			return Find(string, 0, useCaseSensitivity) >= 0;
+			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
+
+		/*!**********************************************************************
+		*  @brief     指定した文字列がこの文字列内に存在するかを判断します.
+		*  @param[in] const StringBase<Char, CharByte>& 検索文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    文字列が存在すればtrue, stringが空文字列である場合もtrueとなる
+		*************************************************************************/
 		__forceinline bool Contains(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity) const
 		{
-			return Find(string, 0, useCaseSensitivity) >= 0;
+			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します.
-		*            見つからなかった場合は-1, stringが空文字列である場合は0
-		*  
-		*  @param[in] : const Char* 検索文字列
-		*  @param[in] : const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
-		*  @param[in] : const bool 大文字と小文字の区別
-		* 
-		*  @return 見つからなかったらNPOS, stringが空文字列である場合は0
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を左から検索し, 見つかった最初の文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 Find(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
+
+		/*!**********************************************************************
+		*  @brief     文字列を左から検索し, 見つかった最初の文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 Find(const StringBase<Char, CharByte>& string, const uint64 startIndex = 0, const bool useCaseSensititivity = true) const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を検索し, 最後に見つかったの文字のインデックスを返します.
-		*            見つからなかった場合は-1, stringが空文字列である場合は0
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を右から検索し, 最後に見つかったの文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は右から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 ReverseFind(const Char* string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
+		
+		/*!**********************************************************************
+		*  @brief     文字列を右から検索し, 最後に見つかったの文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const StringBase<Char, CharByte> 検索する生の文字列
+		*  @param[in] const uint64                     検索を開始するインデックス (省略した場合は右から検索します)
+		*  @param[in] const bool                       大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 ReverseFind(const StringBase<Char, CharByte>& string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭が指定した文字列と一致するかを判断します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭が指定した文字列と一致するかを判断します
+		*  @param[in] const Char* 生の文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    bool
+		*************************************************************************/
 		__forceinline bool IsFirstMatch(const Char* string, const bool useCaseSensitivity = true)
 		{
 			return StringUtility::IsFirstMatch(CString(), Size(), string, StringUtility::Length(string), useCaseSensitivity);
 		}
+
+		/*!**********************************************************************
+		*  @brief     文字列の先頭が指定した文字列と一致するかを判断します
+		*  @param[in] const Char* 文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    bool
+		*************************************************************************/
 		__forceinline bool IsFirstMatch(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity = true)
 		{
 			return StringUtility::IsFirstMatch(CString(), Size(), string.CString(), string.Size(), useCaseSensitivity);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の部分文字列を抽出します
-		* 
-		*  @param[in] const uint64 startIndex 検索を開始するインデックス
-		*  @param[in] const uint64 count      文字数(NPOSの場合, 末尾まで抽出する)
-		* 
-		*  @param[in] 抽出された文字列
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の部分文字列を抽出します
+		*  @param[in] const uint64 検索を開始するインデックス
+		*  @param[in] const uint64 文字数(NPOSの場合, 末尾まで抽出する)
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		__forceinline StringBase<Char, CharByte> SubString(const uint64 startIndex, const uint64 count = NPOS) const
 		{
 			const Char* begin = nullptr;
@@ -149,9 +237,11 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭から指定した文字数を抽出します. 
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭から指定した文字数を抽出します. 
+		*  @param[in] const uint64 文字数
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		__forceinline StringBase<Char, CharByte> Left(const uint64 count) const
 		{
 			const Char* begin = nullptr;
@@ -160,9 +250,11 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の末尾から指定した文字数を抽出します.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の末尾から指定した文字数を抽出します.
+		*  @param[in] const uint64 文字数
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> Right(const uint64 count) const
 		{
 			const Char* begin = nullptr;
@@ -171,19 +263,22 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  小文字を全て大文字に変換した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     小文字を全て大文字に変換した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> ToUpper() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  大文字を全て小文字に変換した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     大文字を全て小文字に変換した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> ToLower() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭と末尾の空白を全て削除した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭と末尾の空白を全て削除した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> Trim() const
 		{
 			Char*  begin  = nullptr;
@@ -192,7 +287,16 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, length);
 		}
 
-#pragma region Convert number
+		/*!**********************************************************************
+		*  @brief     HashMap用にハッシュ値を取得して渡します
+		*  @return    gu::uint64
+		*************************************************************************/
+		gu::uint64 GetTypedHash() const 
+		{
+			return gu::Hash::XX_64(CString(), CharByte * Size());
+		}
+
+		#pragma region Convert number
 		int8   ToInt8(const uint64 radix = 0) const;
 		int16  ToInt16(const uint64 radix = 0) const;
 		int32  ToInt32(const uint64 radix = 0) const;
@@ -201,6 +305,8 @@ namespace gu::details::string
 		uint16 ToUInt16(const uint64 radix = 0) const;
 		uint32 ToUInt32(const uint64 radix = 0) const;
 		uint64 ToUInt64(const uint64 radix = 0) const;
+		float  ToFloat() const;
+		double ToDouble() const;
 
 		bool TryToInt8  (int8* outValue, const uint64 radix = 0) const;
 		bool TryToInt16 (int16* outValue, const uint64 radix = 0) const;
@@ -210,56 +316,93 @@ namespace gu::details::string
 		bool TryToUInt16(uint16* outValue, const uint64 radix = 0) const;
 		bool TryToUInt32(uint32* outValue, const uint64 radix = 0) const;
 		bool TryToUInt64(uint64* outValue, const uint64 radix = 0) const;
-#pragma endregion Convert number
+		#pragma endregion Convert number
+
+		#pragma region From number
+		static StringBase<Char, CharByte> FromNumber(const int32  value);
+		static StringBase<Char, CharByte> FromNumber(const int64  value);
+		static StringBase<Char, CharByte> FromNumber(const uint32 value);
+		static StringBase<Char, CharByte> FromNumber(const uint64 value);
+		static StringBase<Char, CharByte> FromNumber(const float  value);
+		static StringBase<Char, CharByte> FromNumber(const double value);
+		#pragma endregion From number
+
+		#pragma endregion 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
-#pragma region Property
-		/*----------------------------------------------------------------------
-		*  @brief :  範囲チェック付きの要素アクセス
-		/*----------------------------------------------------------------------*/
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     範囲チェック付きの要素アクセス
+		*  @param[in] 要素のインデックス
+		*  @return    文字の参照
+		*************************************************************************/
 		__forceinline Char& At(const uint64 index)
 		{
 			Check(0 <= index && index <= Size());
 			return GetBuffer()[index];
 		}
+		/*!**********************************************************************
+		*  @brief     範囲チェック付きの要素アクセス
+		*  @param[in] 要素のインデックス
+		*  @return    文字の参照
+		*************************************************************************/
 		__forceinline const Char& At(const uint64 index) const noexcept
 		{
 			Check(0 <= index && index <= Size());
 			return GetBuffer()[index];
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列が空かどうかを判定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列が空かどうかを判定します
+		*  @return    空であればtrueを返します
+		*************************************************************************/
 		bool IsEmpty() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  C言語としての生の文字列表現を取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     C言語としての生の文字列表現を取得します
+		*  @return    文字列ポインタ
+		*************************************************************************/
+		Char* CString() noexcept;
+
+		/*!**********************************************************************
+		*  @brief     C言語としての生の文字列表現を取得します
+		*  @return    文字列ポインタ
+		*************************************************************************/
 		const Char* CString() const noexcept;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の長さを取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の長さを取得します
+		*  @return    gu::uint64 : 文字列の長さ
+		*************************************************************************/
 		uint64 Size() const noexcept { return IsSSOMode() ? _data.SSO.Size >> 1 : _data.NonSSO.Size >> 1; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  メモリを再確保せずに格納できる最大の要素数を取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     メモリを再確保せずに格納できる最大の要素数を取得します
+		*  @return    gu::uint64 : 要素数
+		*************************************************************************/
 		uint64 Capacity() const noexcept { return IsSSOMode() ? SSO_CAPACITY : _data.NonSSO.Capacity; }
-#pragma endregion Property
+		#pragma endregion Public Property
 
-#pragma region Operator Function
-		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) { Assign(right); return *this; }
-		StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
+		#pragma region Public Operator Function
+		/*! @brief StringBaseクラスを用いてコピー*/
+		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) 
+		{
+			Assign(right); 
+			return *this; 
+		}
+		StringBase<Char, CharByte>& operator=(const Char* right) 
+		{
+			Assign(right); 
+			return *this;
+		}
 		StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
 
 		StringBase<Char, CharByte>& operator+=(const StringBase<Char, CharByte>& right)
 		{
-			Append(right.CString(), right.Size());
+			Append(right);
 			return *this;
 		}
 		StringBase<Char, CharByte>& operator+=(const Char* right)
@@ -310,44 +453,80 @@ namespace gu::details::string
 		{
 			return Concat(this->CString(), right);
 		}
-#pragma endregion Operator Function
+		#pragma endregion Operator Function
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-#pragma region Constructor and Destructor
-		StringBase() { Initialize(); }
-
-		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
-
-		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>() { Assign(string, length); }
-
-		StringBase(const StringBase<Char, CharByte>& string, const uint64 beginIndex) : StringBase<Char, CharByte>()
+		#pragma region Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
+		StringBase() 
 		{
-			Assign(string.CString() + beginIndex, string.Size());
+			Initialize(); 
 		}
 
+		/*! @brief 文字列長だけのメモリを事前確保だけ行うコンストラクタ.
+		           CString()を使って無理やりコピーする用に強制的に実サイズも更新するフラグも用意しました.(trueは危険)*/
+		StringBase(const gu::uint64 size, const bool forceChangeSize = false) : StringBase<Char, CharByte>() 
+		{
+			Reserve(size); 
+
+			if (forceChangeSize && size > SSO_CAPACITY)
+			{
+				SetNonSSOLength(size);
+			}
+			else if(forceChangeSize && size <= SSO_CAPACITY)
+			{
+				SetSSOLength(size);
+			}
+
+			if (size > SSO_CAPACITY)
+			{
+				SetNonSSOMode();
+			}
+			else
+			{
+				SetSSOMode();
+			}
+		}
+
+		/*! @brief 生の文字列を使って初期化するコンストラクタ*/
+		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
+
+		/*! @brief 生の文字配列と長さで初期化*/
+		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>()
+		{ 
+			Assign(string, length); 
+		}
+
+		/*! @brief 文字列とコピーを開始する初期インデックスで初期化*/
+		StringBase(const StringBase<Char, CharByte>& string, const uint64 beginIndex) : StringBase<Char, CharByte>()
+		{
+			Assign(string.CString() + beginIndex, string.Size() - beginIndex);
+		}
+
+		/*! @brief 文字配列の初期文字と終端文字で初期化*/
 		StringBase(const Char* begin, const Char* end) : StringBase<Char, CharByte>()
 		{
 			Assign(begin, static_cast<uint64>(end - begin));
 		}
 
+		/*! @brief 文字列のコピーコンストラクタ*/
 		StringBase(const StringBase<Char, CharByte>& string) : StringBase<Char, CharByte>()
 		{
 			CopyFrom(string);
 		}
 
+		/*! @brief 文字列のムーブコンストラクタ*/
 		explicit StringBase(StringBase<Char, CharByte>&& string) noexcept : StringBase<Char, CharByte>()
 		{
 			Move(std::move(string));
 		}
 
+		/*! @brief デストラクタ*/
 		~StringBase() 
 		{
 			Release(); 
 		}
 
-#pragma endregion Constructor and Destructor
+		#pragma endregion Constructor and Destructor
 
 
 	private:
@@ -359,7 +538,7 @@ namespace gu::details::string
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief :  文字数が少ないときはnewをさせないために行うSmall String Optimization
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		struct SSOString
 		{
 			// @brief : 文字列長
@@ -371,7 +550,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字数が少ないときはnewをさせないために行うSmall String Optimization
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		struct NonSSOString
 		{
 			// @brief : 文字数
@@ -386,7 +565,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列情報
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		union StringData
 		{
 			SSOString    SSO;
@@ -396,39 +575,54 @@ namespace gu::details::string
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-#pragma region Utility
+		#pragma region Utility
+		/*!**********************************************************************
+		*  @brief     小数点以下の桁数の近似を算出 (小数点第6位まで)
+		*  @param[in] double
+		*  @return    int32
+		*************************************************************************/
+		static int32 CountDecimalPlace(const double value);
+		static int32 CountDecimalPlace(const float value);
+		#pragma endregion Utility
 
-#pragma endregion Utility
-
-#pragma region Memory
-		/*----------------------------------------------------------------------
-		*  @brief :  空の配列による初期状態の作成
-		/*----------------------------------------------------------------------*/
+		#pragma region Memory
+		/*!**********************************************************************
+		*  @brief     空の配列による初期状態を作成します. 
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void Initialize() noexcept
 		{
 			_data.SSO.Size = 0;
 			SetSSOMode();
+
+			// NonSSOの初期化も含んでいる.
 			Memory::Zero(_data.SSO.Buffer, (SSO_CAPACITY + 1) * sizeof(Char));
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  NonSSOの状態であるならメモリを破棄する
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     NonSSOの状態であるならメモリの破棄を行い, その後SSOの状態に戻します.　@n
+		              SSOの状態の場合は初期化だけ行われます
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		void Release() noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列のコピー
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void CopyFrom(const StringBase<Char, CharByte>& source);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  メモリを移動する
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     メモリを移動します. (ポインタの付け替えくらいです.)
+		*  @param[in] StringBase<Char, CharByte>&& source : 移動元の文字列
+		*  @return    void
+		*************************************************************************/
 		void Move(StringBase<Char, CharByte>&& source) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列の長さ取得
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline uint64 CStringLength(const Char* string)
 		{
 			const Char* temp = nullptr;
@@ -438,21 +632,25 @@ namespace gu::details::string
 
 		__forceinline       Char* GetBuffer()                { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
 		__forceinline const Char* GetBuffer() const noexcept { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
-#pragma endregion Memory
-#pragma region SSO operation
-		/*----------------------------------------------------------------------
-		*  @brief :  SSOを使用する (既存の文字配列を使用する)モードに設定します
-		/*----------------------------------------------------------------------*/
+		#pragma endregion Memory
+		#pragma region SSO operation
+		/*!**********************************************************************
+		*  @brief     SSOを使用する (16文字以内の静的な文字配列を使用する)モードに設定します. 2^0のフラグをoffにします.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void SetSSOMode() { _data.SSO.Size &= ~(0x1);}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  SSOを使用しない (newで領域を確保する)モードに設定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     SSOを使用しない (newで領域を確保する)モードに設定します. 2^0のフラグをonにします.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void SetNonSSOMode() { _data.SSO.Size |= 0x1;}
 
 		/*----------------------------------------------------------------------
 		*  @brief :  末尾のビットを使ってSSOを使う文字列化を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		bool IsSSOMode() const noexcept 
 		{
 			return  !(static_cast<uint8>(_data.SSO.Size) & 0x1);
@@ -460,7 +658,7 @@ namespace gu::details::string
 
 		/*----------------------------------------------------------------------
 		*  @brief :  SSOを使わない文字列かを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		bool IsNonSSOMode() const noexcept 
 		{ 
 			return (static_cast<uint8>(_data.SSO.Size) & 0x1); 
@@ -469,12 +667,12 @@ namespace gu::details::string
 		/*----------------------------------------------------------------------
 		*  @brief :  SSO構造体における文字列長を返します. 
 		*            Size構造体は, ---xxxxy : x = size, y:ssoFlag (0:sso, 1:nonSSO)として扱うため, 右シフトを加えています. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline uint64 GetSSOLength() const noexcept { return _data.SSO.Size >> 1; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  SSOの文字長を設定します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void SetSSOLength(const uint64 length)
 		{
 			_data.SSO.Size = (length & 0x7F) << 1;
@@ -485,10 +683,11 @@ namespace gu::details::string
 			_data.NonSSO.Size = length << 1;
 			_data.NonSSO.Pointer[length] = '\0';
 		}
-#pragma endregion SSO operation
+		#pragma endregion SSO operation
+
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		union StringData _data;
 	};
@@ -537,7 +736,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を追加します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Append(const Char* string, const uint64 length)
 	{
@@ -559,10 +758,10 @@ namespace gu::details::string
 			else 
 			{
 				auto temp = new Char[totalLength + 1];
-				_data.NonSSO.Capacity = totalLength;
 				Memory::Copy(&temp[0], this->_data.SSO.Buffer, firstLength * sizeof(Char));
 				Memory::Copy(&temp[firstLength], string, length * sizeof(Char));
-				_data.NonSSO.Pointer = temp;
+				_data.NonSSO.Pointer  = temp;
+				_data.NonSSO.Capacity = totalLength;
 			}
 		}
 		/*-------------------------------------------------------------------
@@ -607,7 +806,7 @@ namespace gu::details::string
 	/*----------------------------------------------------------------------
 	*  @brief :  Capacityやメモリは特に破棄せず、文字列の先頭のみを終端文字に変更します. 
 	*            また、SSOなどのモード切替も行いません. 
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Clear()
 	{
@@ -623,12 +822,52 @@ namespace gu::details::string
 		}
 	}
 
+	/*!**********************************************************************
+	*  @brief     CapacityをコンテナのSizeまで切り詰める @n
+	*             capacityが0のとき, capacity以上にsizeがある時は処理を行いません.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
+	template<class Char, int CharByte>
+	void StringBase<Char, CharByte>::ShrinkToFit()
+	{
+		/*-------------------------------------------------------------------
+		-       SSOモードの場合は, 事前に静的な配列として確保していることから何もしない
+		---------------------------------------------------------------------*/
+		if (IsSSOMode()) { return; }
+
+		/*-------------------------------------------------------------------
+		-       文字列が空の場合, メモリを解放して終了
+		---------------------------------------------------------------------*/
+		if (Size() == 0)
+		{
+			Release();
+			_data.NonSSO.Pointer = nullptr;
+			_data.NonSSO.Capacity = 0;
+			return;
+		}
+
+		/*-------------------------------------------------------------------
+		-       文字列がCapacityよりも小さい場合, CapacityをSizeに合わせる
+		---------------------------------------------------------------------*/
+		if (Size() < _data.NonSSO.Capacity)
+		{
+			auto temp = new Char[Size() + 1];
+			Memory::Copy(temp, this->_data.NonSSO.Pointer, CharByte * Size());
+			Release();
+			_data.NonSSO.Pointer = temp;
+			_data.NonSSO.Capacity = Size();
+		}
+	
+	}
+
 	/*----------------------------------------------------------------------
 	*  @brief :  メモリを事前に確保します. (capacity以上であればメモリ確保します. 暗にNonSSOモードに使用します)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Reserve(const uint64 length)
 	{
+		// ここでSSOModeのチェックも入っています.
 		if (length <= Capacity()) { return; }
 
 		auto temp = new Char[length + 1];
@@ -648,7 +887,7 @@ namespace gu::details::string
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します.
 	*            見つからなかった場合は-1(npos), stringが空文字列である場合は0
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	uint64 StringBase<Char, CharByte>::Find(const Char* string, const uint64 startIndex, const bool useCaseSensitivity) const
 	{
@@ -664,7 +903,7 @@ namespace gu::details::string
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を検索し, 最後に見つかったの文字のインデックスを返します.
 	*            見つからなかった場合は-1, stringが空文字列である場合は0
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	uint64 StringBase<Char, CharByte>::ReverseFind(const Char* string, const uint64 startIndex, const uint64 count, const bool useCaseSensitivity) const
 	{
@@ -679,7 +918,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  小文字を全て大文字に変換した文字列を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::ToUpper() const
 	{
@@ -693,7 +932,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  大文字を全て小文字に変換した文字列を返します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::ToLower() const
 	{
@@ -707,7 +946,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を連結します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::Concat(const StringBase<Char, CharByte>& left, const StringBase<Char, CharByte>& right)
 	{
@@ -720,7 +959,7 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列を連結します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::Concat(const Char* left, const Char* right)
 	{
@@ -740,7 +979,7 @@ namespace gu::details::string
 	*
 	*  @param[in] const Char* from 置換される文字列
 	*  @param[in] const Char* to   置換する文字列
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::Replace(const Char* from, const Char* to, const bool useCaseSensitivity)
 	{
@@ -882,6 +1121,54 @@ namespace gu::details::string
 	}
 
 	template<class Char, int CharByte>
+	float StringBase<Char, CharByte>::ToFloat() const
+	{
+		const  Char* begin = nullptr; 
+		const  Char* end   = nullptr; 
+		uint64 length = 0;
+		NumberConversionResult result = NumberConversionResult::Success;
+		StringUtility::Trim(CString(), Size(), &begin, &length);    
+		const auto num = StringUtility::ToFloat(begin, length, &end, &result);
+		if (result == NumberConversionResult::ArgumentsError)
+		{  
+			Ensure(0); 
+		} 
+		if (result == NumberConversionResult::FormatError)
+		{ 
+			Ensure(0);
+		} 
+		if (result == NumberConversionResult::Overflow)
+		{ 
+			Ensure(0); 
+		}
+		return static_cast<float>(num);
+	}
+
+	template<class Char, int CharByte>
+	double StringBase<Char, CharByte>::ToDouble() const
+	{
+		const  Char* begin = nullptr;
+		const  Char* end = nullptr;
+		uint64 length = 0;
+		NumberConversionResult result = NumberConversionResult::Success;
+		StringUtility::Trim(CString(), Size(), &begin, &length);
+		const auto num = StringUtility::ToDouble(begin, length, &end, &result);
+		if (result == NumberConversionResult::ArgumentsError)
+		{
+			Ensure(0);
+		}
+		if (result == NumberConversionResult::FormatError)
+		{
+			Ensure(0);
+		}
+		if (result == NumberConversionResult::Overflow)
+		{
+			Ensure(0);
+		}
+		return num;
+	}
+
+	template<class Char, int CharByte>
 	bool StringBase<Char, CharByte>::TryToInt8(int8* outValue, const uint64 radix) const
 	{
 		TRY_TO_INT_DEF(int8, ToInt8);
@@ -929,11 +1216,118 @@ namespace gu::details::string
 		TRY_TO_INT_DEF(uint64, ToUInt64);
 	}
 #pragma endregion Convert Number
+#pragma region From Number
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int32 value)
+	{
+		return FromNumber(static_cast<int64>(value));
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int64  value)
+	{
+		char source[64] = {};
+		const auto length = sprintf_s(source, "%lld", value);
+
+		Char destination[64] = {};
+		for (int32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint32 value)
+	{
+		return FromNumber(static_cast<uint64>(value));
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint64 value)
+	{
+		char source[64] = {};
+		const auto length = sprintf_s(source, "%llu", value);
+
+		Char destination[64] = {};
+		for (int32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const float value)
+	{
+		int32 decimalPlace = CountDecimalPlace(value);
+
+		char format[8] = {};
+		sprintf_s(format, "%%.%df", decimalPlace);
+
+		char source[64]   = {};
+		const auto length = sprintf_s(source, format, value);
+		
+		Char destination[64] = {};
+		for (int32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const double value)
+	{
+		int32 decimalPlace = CountDecimalPlace(value);
+
+		char format[16] = {};
+		sprintf_s(format, "%%.%df", decimalPlace);
+
+		char source[64] = {};
+		const auto length = sprintf_s(source, format, value);
+
+		Char destination[64] = {};
+		for (int32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<class Char, int CharByte>
+	int32 StringBase<Char, CharByte>::CountDecimalPlace(const double value)
+	{
+		// 精度は15桁まで
+		const auto precision = 0.000000000000001;
+		int32 count = 0;
+		double temp = value;
+		while (temp - static_cast<uint64>(temp) > precision && count < 15) {
+			temp *= 10;
+			++count;
+		}
+		return count;
+	}
+
+	template<class Char, int CharByte>
+	int32 StringBase<Char, CharByte>::CountDecimalPlace(const float value)
+	{
+		const auto precision = 0.000001f;
+		int32 count = 0;
+		float temp = value;
+		while (temp - static_cast<uint32>(temp) > precision && count < 6) {
+			temp *= 10;
+			++count;
+		}
+		return count;
+	}
+
+#pragma endregion From Number
 #pragma endregion Main Function
 #pragma region Property
 	/*----------------------------------------------------------------------
 	*  @brief :  文字列が空かどうかを判定します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	bool StringBase<Char, CharByte>::IsEmpty() const
 	{
@@ -949,7 +1343,16 @@ namespace gu::details::string
 
 	/*----------------------------------------------------------------------
 	*  @brief :  C言語としての生の文字列表現を取得します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
+	template<class Char, int CharByte>
+	Char* StringBase<Char, CharByte>::CString() noexcept
+	{
+		return IsSSOMode() ? &_data.SSO.Buffer[0] : _data.NonSSO.Pointer;
+	}
+
+	/*----------------------------------------------------------------------
+	*  @brief :  C言語としての生の文字列表現を取得します
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	const Char* StringBase<Char, CharByte>::CString() const noexcept
 	{
@@ -959,7 +1362,7 @@ namespace gu::details::string
 #pragma region Memory
 	/*----------------------------------------------------------------------
 	*  @brief :  メモリをコピーする
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::CopyFrom(const StringBase<Char, CharByte>& source)
 	{
@@ -981,27 +1384,33 @@ namespace gu::details::string
 		}
 	}
 
-	/*----------------------------------------------------------------------
-	*  @brief :  メモリをコピーする
-	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Move(StringBase<Char, CharByte>&& source) noexcept
 	{
-		Memory::Copy(this, &source, sizeof(source));
+		if (source.IsSSOMode())
+		{
+			this->_data.SSO.Size   = source._data.SSO.Size;
+			gu::Memory::Copy(this->_data.SSO.Buffer, source._data.SSO.Buffer, sizeof(Char) * Size());
+		}
+		else
+		{
+			this->_data.NonSSO.Size     = source._data.NonSSO.Size;
+			this->_data.NonSSO.Pointer  = source._data.NonSSO.Pointer;
+			this->_data.NonSSO.Capacity = source._data.NonSSO.Capacity;
+		}
+
 		source.Initialize();
 	}
 
-	/*----------------------------------------------------------------------
-	*  @brief :  NonSSOの状態であるならメモリを破棄する.
-	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Release() noexcept
 	{
-		if (!IsNonSSOMode()) { return; }
-		if (_data.NonSSO.Pointer)
+		if (IsNonSSOMode() && _data.NonSSO.Pointer)
 		{
 			delete[] (_data.NonSSO.Pointer); // もしかしたらdeleteでOKかも
 		}
+
+		Initialize();
 	}
 
 #pragma endregion Memory

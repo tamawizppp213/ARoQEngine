@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12DepthStencilState.cpp
-///             @brief  DepthStencil State
-///             @author Toide Yutaro
-///             @date   2022_06_30
+///  @file   GPUDepthStencilState.cpp
+///  @brief  ピクセルに対して深度テストやステンシルテストを行うための設定項目を記述するクラスです.
+///  @author Toide Yutaro
+///  @date   2024_07_11
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,32 +24,30 @@ GPUDepthStencilState::GPUDepthStencilState(const gu::SharedPointer<rhi::core::RH
 ) :
 	core::GPUDepthStencilState(device, depthStencilProperty)
 {
-	_depthStencilDesc.DepthEnable      = _property.UseDepthTest || _property.DepthOperator != rhi::core::CompareOperator::Always;
-	_depthStencilDesc.DepthWriteMask   = _property.DepthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO; // left: writable, right: not write
-	_depthStencilDesc.DepthFunc        = EnumConverter::Convert(_property.DepthOperator);
-	_depthStencilDesc.StencilEnable    = _property.StenciWriteEnable;
-	_depthStencilDesc.StencilReadMask  = D3D12_DEFAULT_STENCIL_READ_MASK;
-	_depthStencilDesc.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
-	_depthStencilDesc.FrontFace.StencilFunc        = EnumConverter::Convert(_property.Front.CompareOperator);
-	_depthStencilDesc.FrontFace.StencilDepthFailOp = EnumConverter::Convert(_property.Front.DepthFailOperator);
-	_depthStencilDesc.FrontFace.StencilPassOp      = EnumConverter::Convert(_property.Front.PassOperator);
-	_depthStencilDesc.FrontFace.StencilFailOp      = EnumConverter::Convert(_property.Front.FailOperator);
-	_depthStencilDesc.BackFace.StencilFunc         = EnumConverter::Convert(_property.Back.CompareOperator);
-	_depthStencilDesc.BackFace.StencilDepthFailOp  = EnumConverter::Convert(_property.Back.DepthFailOperator);
-	_depthStencilDesc.BackFace.StencilPassOp       = EnumConverter::Convert(_property.Back.PassOperator);
-	_depthStencilDesc.BackFace.StencilFailOp       = EnumConverter::Convert(_property.Back.FailOperator);
+	// Depth
+	_depthStencilDesc.Desc0.DepthEnable      = UseDepthTest();
+	_depthStencilDesc.Desc0.DepthWriteMask   = _property.DepthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO; // left: writable, right: not write
+	_depthStencilDesc.Desc0.DepthFunc        = EnumConverter::Convert(_property.DepthOperator);
+
+	// Stencil
+	_depthStencilDesc.Desc0.StencilEnable    = _property.StencilWriteEnable;
+	_depthStencilDesc.Desc0.StencilReadMask  = D3D12_DEFAULT_STENCIL_READ_MASK;
+	_depthStencilDesc.Desc0.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+
+	// Front surface stencil
+	_depthStencilDesc.Desc0.FrontFace.StencilFunc        = EnumConverter::Convert(_property.Front.CompareOperator);
+	_depthStencilDesc.Desc0.FrontFace.StencilDepthFailOp = EnumConverter::Convert(_property.Front.DepthFailOperator);
+	_depthStencilDesc.Desc0.FrontFace.StencilPassOp      = EnumConverter::Convert(_property.Front.PassOperator);
+	_depthStencilDesc.Desc0.FrontFace.StencilFailOp      = EnumConverter::Convert(_property.Front.FailOperator);
+
+	// Back surface stencil
+	_depthStencilDesc.Desc0.BackFace.StencilFunc         = EnumConverter::Convert(_property.Back.CompareOperator);
+	_depthStencilDesc.Desc0.BackFace.StencilDepthFailOp  = EnumConverter::Convert(_property.Back.DepthFailOperator);
+	_depthStencilDesc.Desc0.BackFace.StencilPassOp       = EnumConverter::Convert(_property.Back.PassOperator);
+	_depthStencilDesc.Desc0.BackFace.StencilFailOp       = EnumConverter::Convert(_property.Back.FailOperator);
 	
-	// なぜ継承じゃないんだ... d3d12
-	_depthStencilDesc1.DepthEnable      = _depthStencilDesc.DepthEnable;
-	_depthStencilDesc1.DepthWriteMask   = _depthStencilDesc.DepthWriteMask;
-	_depthStencilDesc1.DepthFunc        = _depthStencilDesc.DepthFunc;
-	_depthStencilDesc1.StencilEnable    = _depthStencilDesc.StencilEnable;
-	_depthStencilDesc1.StencilReadMask  = _depthStencilDesc.StencilReadMask;
-	_depthStencilDesc1.StencilWriteMask = _depthStencilDesc.StencilWriteMask;
-	_depthStencilDesc1.FrontFace        = _depthStencilDesc.FrontFace;
-	_depthStencilDesc1.BackFace         = _depthStencilDesc.BackFace;
 #if PLATFORM_OS_WINDOWS
-	_depthStencilDesc1.DepthBoundsTestEnable = _property.UseDepthBoundsTest;
+	_depthStencilDesc.Desc1.DepthBoundsTestEnable = _property.UseDepthBoundsTest;
 #endif
 
 }

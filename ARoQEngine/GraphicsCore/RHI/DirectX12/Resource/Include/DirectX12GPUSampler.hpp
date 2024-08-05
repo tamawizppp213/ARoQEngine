@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUBuffer.hpp
-///             @brief  GPU Buffer 
-///             @author Toide Yutaro
-///             @date   2022_07_08
+///  @file   DirectX12GPUSampler.hpp
+///  @brief  テクスチャサンプリングの方法の設定項目を記述するクラスです.
+///  @author Toide Yutaro
+///  @date   2024_07_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_SAMPLER_HPP
@@ -24,47 +24,57 @@
 namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			GPUBuffer
-	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*				  			GPUSampler
+	****************************************************************************/
+	/* @brief  テクスチャサンプリングの方法の設定項目を記述するクラスです.
 	*****************************************************************************/
 	class GPUSampler : public core::GPUSampler
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc(){ return _samplerDesc; }
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     DirectX12のサンプラー情報を返します.
+		*  @param[in] void
+		*  @return    D3D12_STATIC_SAMPLER_DESC サンプラー情報
+		*************************************************************************/
+		__forceinline D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() { return _samplerDesc; }
+		/*!**********************************************************************
+	    *  @brief     DirectX12のサンプラー情報を返します.
+	    *  @param[in] void
+	    *  @return    const D3D12_STATIC_SAMPLER_DESC サンプラー情報
+	    *************************************************************************/
+		__forceinline const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
 
-		const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
+		#pragma endregion
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+		
+		/*! @brief デフォルトコンストラクタ*/
 		GPUSampler() = default;
 
+		/*! @brief デストラクタ*/
 		~GPUSampler() = default;
 
+		/*! @brief 論理デバイスとサンプラー情報で初期化*/
 		explicit GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+
+		#pragma endregion
 	
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Property
+
+		/*! @brief サンプラー情報*/
 		D3D12_STATIC_SAMPLER_DESC _samplerDesc = {};
+		#pragma endregion	
 	};
 }
 #endif

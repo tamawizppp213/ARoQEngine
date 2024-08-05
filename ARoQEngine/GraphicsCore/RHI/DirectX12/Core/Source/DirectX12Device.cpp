@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12Device.cpp
-///             @brief  Logical Device : to use for create GPU resources 
-///             @author Toide Yutaro
-///             @date   2022_06_21
+///  @file   DirectX12Device.cpp
+///  @brief  Logical Device : to use for create GPU resources 
+///  @author Toide Yutaro
+///  @date   2022_06_21
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +21,7 @@
 #include "../Include/DirectX12FrameBuffer.hpp"
 #include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12Query.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIPixelFormat.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -32,8 +33,9 @@
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingBLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingTLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
+#include "Platform/Core/Include/CoreOS.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
-#include "GameUtility/File/Include/UnicodeUtility.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -67,7 +69,10 @@ RHIDevice::RHIDevice()
 
 RHIDevice::~RHIDevice()
 {
-	if (_device) { Destroy(); }
+	if (_device) 
+	{
+		Destroy(); 
+	}
 }
 
 RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask) :
@@ -79,12 +84,12 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(D3D12CreateDevice(
 		gu::StaticPointerCast<RHIDisplayAdapter>(_adapter)->GetAdapter().Get(),      // default adapter
-		D3D_FEATURE_LEVEL_12_0, // minimum feature level
+		_minSupportedFeatureLevel,
 		IID_PPV_ARGS(&_device)));
 
 	const auto& gpuName    = adapter->GetName();
-	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
-	_device->SetName(deviceName.c_str());
+	const gu::tstring deviceName = gu::tstring(SP("Device::")) + gu::StringConverter::ConvertStringToTString(gpuName.CString());
+	_device->SetName(deviceName.CString());
 
 	/*-------------------------------------------------------------------
 	-                 Set gpu debug break
@@ -92,7 +97,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	SetGPUDebugBreak();
 
 	/*-------------------------------------------------------------------
-	-                   Find Highest support model
+	-          Find Highest support feature and shader model
 	---------------------------------------------------------------------*/
 	FindHighestFeatureLevel();
 	FindHighestShaderModel();
@@ -101,10 +106,11 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	-                   Device node count
 	---------------------------------------------------------------------*/
 	_deviceNodeCount = _device->GetNodeCount();
-
+	
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/
+	SetupPlatformPixelFormats();
 	CheckDXRSupport();
 	CheckVRSSupport();
 	CheckRenderPassSupport();
@@ -112,37 +118,32 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
+	CheckAdditionalUAVType();
 	CheckMaxHeapSize();
 	CheckBindlessSupport();
 	CheckStencilReferenceFromPixelShaderSupport();
 	CheckSamplerFeedbackSupport();
 	CheckAllowTearingSupport();
-	CheckMaxRootSignatureVersion();
+	CheckHighestRootSignatureVersion();
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
-
-#if USE_INTEL_EXTENSION
-	CreateIntelExtensionContext();
-#endif
 	CheckAtomicOperation();
+	
+#if USE_PIX
+	_pixDLLHandle = platform::core::OS::GetDLLHandle(L"WinPixEventRuntime.dll");
+#endif
 }
 
 #pragma endregion Constructor and Destructor
 
 #pragma region Set up and Destroy
 
-/****************************************************************************
-*                     SetUpDefaultHeap
-*************************************************************************//**
-*  @fn        void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
-*
-*  @brief     Set up default descriptor heap
-*
-*  @param[in] const core::DefaultHeapCount& heapCount
-*
+/*!**********************************************************************
+*  @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
+*  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 {
 	/*-------------------------------------------------------------------
@@ -156,7 +157,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
-	gu::SortedMap<core::DescriptorHeapType, size_t> heapInfoList;
+	gu::SortedMap<core::DescriptorHeapType, uint64> heapInfoList;
 	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
 	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
 	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
@@ -171,17 +172,12 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 
 }
 
-/****************************************************************************
-*                     Destoy
-*************************************************************************//**
-*  @fn        void RHIDevice::Destroy()
-*
-*  @brief     Release command resource and device
-*
+/*!**********************************************************************
+*  @brief     論理デバイスを破棄する.
+*  @note      この関数を呼ばないとSharedPointerでデストラクタが呼ばれない可能性があったため.
 *  @param[in] void
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHIDevice::Destroy()
 {
 #if USE_INTEL_EXTENSION
@@ -202,6 +198,16 @@ void RHIDevice::Destroy()
 
 	if (_drawIndexedIndirectCommandSignature) { _drawIndexedIndirectCommandSignature.Reset(); }
 
+	/*-------------------------------------------------------------------
+	-             PIXを未使用状態にしておく
+	---------------------------------------------------------------------*/
+#if USE_PIX
+	if (_pixDLLHandle)
+	{
+		platform::core::OS::FreeDLLHandle(_pixDLLHandle);
+		_pixDLLHandle = nullptr;
+	}
+#endif
 
 	/*-------------------------------------------------------------------
 	-              Clear device
@@ -254,7 +260,7 @@ gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(c
 	return dxPointer;
 }
 
-gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const gu::uint32 vsync, const bool isValidHDR )
+gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount, const gu::uint8 vsync, const bool isValidHDR )
 {
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
@@ -370,39 +376,44 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 	return gu::StaticPointerCast<core::RHIQuery>(gu::MakeShared<directX12::RHIQuery>(SharedFromThis(), heapType));
 }
 
-/****************************************************************************
-*                     CreateCommittedResource
-*************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,const D3D12_RESOURCE_DESC& resourceDesc,const D3D12_HEAP_PROPERTIES& heapProps,const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
-*
-*  @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
-*             参考はD3D12Resources.cpp(UE5)
-*
-*  @param[in] const ResourceComPtr&  resource, 
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
-* 
-*  @return 　　HRESULT
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
+*  @note      本関数はDirectX12専用の関数です. Heapの最低Alignmentは64kBです. 
+*  @param[out] const ResourceComPtr&        :これからメモリを確保したいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
 HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	const D3D12_RESOURCE_DESC& resourceDesc,
 	const D3D12_HEAP_PROPERTIES& heapProps,
-	const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+	const D3D12_RESOURCE_STATES initialState, 
+	const D3D12_CLEAR_VALUE* clearValue)
 {
-	// Stateの初期化が必要かどうか
-	const bool requireInitialize = (resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf()) 
+	{
+		return E_POINTER; 
+	}
+
+	// clearValueを使って初期化が必要かどうか
+	// レンダーターゲットとDepthStencilは初期化が必要です. 
+	const bool requireInitialize = (resourceDesc.Flags & 
+		(D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
 	
 	/*-------------------------------------------------------------------
-	-            Heap flagの設定
+	-        ヒープの作成フラグとGPUResourceを作成するときのフラグを作成
 	---------------------------------------------------------------------*/
 	D3D12_HEAP_FLAGS heapFlags = (_isSupportedHeapNotZero && !requireInitialize)
 		? D3D12_HEAP_FLAG_CREATE_NOT_ZEROED : D3D12_HEAP_FLAG_NONE;
 
-	auto localDesc = resourceDesc;
+	// resourceDescのコピーを取る.
+	// これにより, 設定にミスがあった時の自動補正を以下で行えるようにする
+	D3D12_RESOURCE_DESC localDesc = resourceDesc;
 
-	// 共有リソース
+	// 共有リソースである場合はFlag_Sharedを追加する.
 	if (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS)
 	{
 		heapFlags |= D3D12_HEAP_FLAG_SHARED;
@@ -414,7 +425,7 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 		}
 	}
 
-	// RayTracingのAcceleration Structureを使用する場合
+	// RayTracingのAcceleration Structureを使用する場合, UNORDERED_ACCESSは使用可能にしておく
 	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
 	{
 		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
@@ -423,76 +434,217 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	/*-------------------------------------------------------------------
 	-            ヒープ領域の確保とGPUにメモリを確保する
 	---------------------------------------------------------------------*/
-	// 今後の方針としては, uncompressed uavを使用するときは処理を分岐する
-	return _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));;
+	HRESULT result = S_OK;
+
+	// Intel拡張を使用する場合は独自の関数を使用する
+#if USE_INTEL_EXTENSION
+	if (IsSupportedIntelEmulatedAtomic64())
+	{
+		INTC_D3D12_RESOURCE_DESC_0001 intelLocalDesc{};
+		intelLocalDesc.pD3D12Desc = &localDesc;
+		intelLocalDesc.EmulatedTyped64bitAtomics = true;
+
+		result = INTC_D3D12_CreateCommittedResource(_intelExtensionContext, &heapProps, heapFlags, &intelLocalDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+#endif
+
+	// 非圧縮のUAVを使用
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (localDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = localDesc.Dimension,
+			.Alignment                = localDesc.Alignment,
+			.Width                    = localDesc.Width,
+			.Height                   = localDesc.Height,
+			.DepthOrArraySize         = localDesc.DepthOrArraySize,
+			.MipLevels                = localDesc.MipLevels,
+			.Format                   = localDesc.Format,
+			.SampleDesc               = localDesc.SampleDesc,
+			.Layout                   = localDesc.Layout,
+			.Flags                    = localDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER 
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		ID3D12ProtectedResourceSession* protectedSession = nullptr;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreateCommittedResource3(&heapProps, heapFlags, &localDesc1, barrierInitialLayout, clearValue,
+			protectedSession, static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
-/****************************************************************************
-*                     CreateReservedResource
-*************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
-*
-*  @brief     Heap内にまだマップまでは行わない予約済みのリソースを作成
-*
-*  @param[in] const ResourceComPtr&  resource,
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
-*
-*  @return 　　HRESULT
-*****************************************************************************/
-HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+/*!**********************************************************************
+*  @brief      Heap内にまだマップまでは行わない予約済みのリソースを作成. 要は初期化を行わずにメモリ領域だけ確保している状態のこと.
+*  @note       本関数はDirectX12専用の関数です.
+*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
+HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
 {
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf())
+	{
+		return E_POINTER;
+	}
+
 	/*-------------------------------------------------------------------
 	-            Flagの設定
 	---------------------------------------------------------------------*/
-	auto localDesc   = resourceDesc;
+	D3D12_RESOURCE_DESC localDesc   = resourceDesc;
 	localDesc.Layout = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
+
+	// RayTracingのAcceleration Structureを使用する場合, UNORDERED_ACCESSは使用可能にしておく
+	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
+	{
+		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
 
 	/*-------------------------------------------------------------------
 	-            Heap内にまだマップまでは行わない予約済みのリソースを作成
 	---------------------------------------------------------------------*/
-	return _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	HRESULT result = S_OK;
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (localDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = localDesc.Dimension,
+			.Alignment                = localDesc.Alignment,
+			.Width                    = localDesc.Width,
+			.Height                   = localDesc.Height,
+			.DepthOrArraySize         = localDesc.DepthOrArraySize,
+			.MipLevels                = localDesc.MipLevels,
+			.Format                   = localDesc.Format,
+			.SampleDesc               = localDesc.SampleDesc,
+			.Layout                   = localDesc.Layout,
+			.Flags                    = localDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER 
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		ID3D12ProtectedResourceSession* protectedSession = nullptr;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreateReservedResource2(&localDesc, barrierInitialLayout, clearValue,
+			protectedSession, static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
-/****************************************************************************
-*                     CreatePlacedResource
-*************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap,const gu::uint64 heapOffset,const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue = nullptr)
-*
-*  @brief     既に作成済みのヒープに配置されるリソースを作成する.
-*             Committed, Reserved, Placedの中では最も高速に動作する
-*
-*  @param[in] const ResourceComPtr&  resource,
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] const HeapComPtr& ヒープ
-* 　@param[in] const gu::uint64 heapのoffsetバイト数
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
-*
-*  @return 　　HRESULT
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief      既に作成済みのヒープに配置されるリソースを作成する.  Committed, Reserved, Placedの中では最も高速に動作する
+*  @note       本関数はDirectX12専用の関数です.
+*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const HeapComPtr&            : 既に確保済みのGPUヒープ領域
+*  @param[in]  const gu::uint64             : 確保するヒープのオフセット
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
 HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap, const gu::uint64 heapOffset, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue )
 {
-	return _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf())
+	{
+		return E_POINTER;
+	}
+
+	// Heapの存在を確認する
+	if (heap == nullptr || heap.GetAddressOf() || heap.Get())
+	{
+		return E_POINTER;
+	}
+
+	/*-------------------------------------------------------------------
+	-            ヒープ領域の確保とGPUにメモリを確保する
+	---------------------------------------------------------------------*/
+	HRESULT result = S_OK;
+
+	// Intel拡張を使用する場合は独自の関数を使用する
+#if USE_INTEL_EXTENSION
+	if (IsSupportedIntelEmulatedAtomic64())
+	{
+		D3D12_RESOURCE_DESC localDesc = resourceDesc;
+		INTC_D3D12_RESOURCE_DESC_0001 intelLocalDesc{};
+		intelLocalDesc.pD3D12Desc = &localDesc;
+		intelLocalDesc.EmulatedTyped64bitAtomics = true;
+
+		result = INTC_D3D12_CreatePlacedResource(_intelExtensionContext, heap.Get(), heapOffset, &intelLocalDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+#endif
+	// 非圧縮のUAVを使用
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = resourceDesc.Dimension,
+			.Alignment                = resourceDesc.Alignment,
+			.Width                    = resourceDesc.Width,
+			.Height                   = resourceDesc.Height,
+			.DepthOrArraySize         = resourceDesc.DepthOrArraySize,
+			.MipLevels                = resourceDesc.MipLevels,
+			.Format                   = resourceDesc.Format,
+			.SampleDesc               = resourceDesc.SampleDesc,
+			.Layout                   = resourceDesc.Layout,
+			.Flags                    = resourceDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreatePlacedResource2(heap.Get(), heapOffset, &localDesc1, barrierInitialLayout, clearValue,
+			static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
 #pragma endregion           Create Resource Function
 
 #pragma region Debug Function
 
-/****************************************************************************
-*                     ReportLiveObjects
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
-* 
-*  @brief     ReportLiveObjects
-* 
+/*!**********************************************************************
+*  @brief     出力の場所にDirectX12のエラーが生じた場合に報告する機能をデバッグモードのみ追加する
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::ReportLiveObjects()
 {
 #ifdef _DEBUG
@@ -510,10 +662,10 @@ void RHIDevice::ReportLiveObjects()
 #pragma region Device Support Function
 /****************************************************************************
 *						CheckDXRSupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckDXRSupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckDXRSupport()
 * 
-*  @brief     Check DXRSupport
+/* @brief     Check DXRSupport
 * 
 *  @param[in] void
 * 
@@ -543,10 +695,10 @@ void RHIDevice::CheckDXRSupport()
 
 /****************************************************************************
 *						CheckRenderPassSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckRenderPassSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckRenderPassSupport()
 *
-*  @brief     Check render pass support
+/* @brief     Check render pass support
 *
 *  @param[in] void
 *
@@ -567,16 +719,16 @@ void RHIDevice::CheckRenderPassSupport()
 		return;
 	}
 
-	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
+	_isSupportedRenderPass = options.RenderPassesTier > D3D12_RENDER_PASS_TIER_0;
 	_renderPassTier        = options.RenderPassesTier;
 }
 
 /****************************************************************************
 *						CheckSamplerFeedbackSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckSamplerFeedbackSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckSamplerFeedbackSupport()
 *
-*  @brief     Check sampelr feedback support
+/* @brief     Check sampelr feedback support
 *
 *  @param[in] void
 *
@@ -606,10 +758,10 @@ void RHIDevice::CheckSamplerFeedbackSupport()
 
 /****************************************************************************
 *						CheckBindlessSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckBindlessSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckBindlessSupport()
 *
-*  @brief     Check bindless support
+/* @brief     Check bindless support
 *
 *  @param[in] void
 *
@@ -629,10 +781,10 @@ void RHIDevice::CheckBindlessSupport()
 }
 /****************************************************************************
 *                     CheckVRSSupport
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
+****************************************************************************/
+/* @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
 * 
-*  @brief     Variable Rate Shading support
+/* @brief     Variable Rate Shading support
 * 
 *  @param[in] void
 * 
@@ -690,10 +842,10 @@ void RHIDevice::CheckVRSSupport()
 
 /****************************************************************************
 *                     MultiSampleQualityLevels
-*************************************************************************//**
-*  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
+****************************************************************************/
+/* @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
 * 
-*  @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
+/* @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
 * 
 *  @param[in] void
 * 
@@ -717,10 +869,10 @@ void RHIDevice::CheckMultiSampleQualityLevels()
 
 /****************************************************************************
 *                     CheckHDRDisplaySupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckHDRDisplaySupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckHDRDisplaySupport()
 * 
-*  @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
+/* @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 * 
 *  @param[in] void
 * 
@@ -798,10 +950,10 @@ void RHIDevice::SetupDisplayHDRMetaData()
 
 /****************************************************************************
 *                     CheckMeshShadingSupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckMeshShadingSupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckMeshShadingSupport()
 * 
-*  @brief     Mesh Shading support check
+/* @brief     Mesh Shading support check
 * 
 *  @param[in] void
 * 
@@ -822,10 +974,10 @@ void RHIDevice::CheckMeshShadingSupport()
 
 /****************************************************************************
 *                     CheckAllowTearingSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckAllowTearingSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckAllowTearingSupport()
 *
-*  @brief     Allow tearing support
+/* @brief     Allow tearing support
 *            
 *  @param[in] void
 *
@@ -855,19 +1007,19 @@ void RHIDevice::CheckAllowTearingSupport()
 
 /****************************************************************************
 *                     DepthBoundsTestSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckDepthBoundsTestSupport()
-*
-*  @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+****************************************************************************/
+/* @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
 		　　　　 Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
 *              https://microsoft.github.io/DirectX-Specs/d3d/DepthBoundsTest.html
 *              https://shikihuiku.wordpress.com/tag/depthboundstest/
+* 
 *  @param[in] void
 *
 *  @return 　　void
 *****************************************************************************/
 void RHIDevice::CheckDepthBoundsTestSupport()
 {
+	#if PLATFORM_OS_WINDOWS
 	D3D12_FEATURE_DATA_D3D12_OPTIONS2 options{};
 	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))))
 	{
@@ -877,20 +1029,15 @@ void RHIDevice::CheckDepthBoundsTestSupport()
 	{
 		_isSupportedDepthBoundsTest = false;
 	}
+	#endif
 }
 
 /****************************************************************************
 *                     CheckResourceTiers
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckResourceTiers()
-*
-*  @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
-* 　　　　　　　　
-*  @param[in] void
-*
-*  @return 　　void
-*  
-*  @details    大きく異なるのは以下の点です
+****************************************************************************/
+/* @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
+* 
+*  @details   大きく異なるのは以下の点です
 *             1. CBV : Tier 1, 2は14まで. Tier3 はDescripterHeapの最大数
 *             2. SRV : Tier 1は128まで. Tier2, 3はDescripterHeapの最大数
 *             3. UAV : Tier1は機能レベル 11.1+以上で64, それ以外で8, Tier2は64, Tier3はDescripterHeapの最大数
@@ -913,10 +1060,10 @@ void RHIDevice::CheckResourceTiers()
 
 /****************************************************************************
 *                     CheckStencilReferenceFromPixelShaderSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
 *
-*  @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
+/* @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
 *             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/shader-specified-stencil-reference-value
 *
 *  @param[in] void
@@ -930,12 +1077,21 @@ void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
 	_isSupportedStencilReferenceFromPixelShader = options.PSSpecifiedStencilRefSupported != 0;
 }
+
+void RHIDevice::CheckAdditionalUAVType()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_isSupportedAdditionalUAVType = options.TypedUAVLoadAdditionalFormats != 0;
+}
+
 /****************************************************************************
 *                     CheckMaxHeapSize()
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckMaxHeapSize()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckMaxHeapSize()
 *
-*  @brief     最大のHeap Sizeをセットします.
+/* @brief     最大のHeap Sizeをセットします.
 * 
 *  @param[in] void
 *
@@ -962,24 +1118,18 @@ void RHIDevice::CheckMaxHeapSize()
 
 	_maxSamplerHeapCount = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE;
 }
-/****************************************************************************
-*                     FindHighestFeatureLevel
-*************************************************************************//**
-*  @fn        void RHIDevice::FindHighestFeatureLevel()
-*
-*  @brief     Set up max feature level.
-*
+
+/*!**********************************************************************
+*  @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
+*  @note      現在は12_2が最大サポートレベルです
 *  @param[in] void
-*
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::FindHighestFeatureLevel()
 {
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
-#if D3D12_CORE_ENABLED
 		D3D_FEATURE_LEVEL_12_2,
-#endif
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
 		D3D_FEATURE_LEVEL_11_1,
@@ -998,25 +1148,101 @@ void RHIDevice::FindHighestFeatureLevel()
 }
 
 /****************************************************************************
-*                     FindHighestShaderModel
-*************************************************************************//**
-*  @fn        void RHIDevice::FindHighestShaderModel()
-*
-*  @brief     Set up max shader model.
+*                    SetupPlatformPixelFormats
+****************************************************************************/
+/* @brief     DirectX12で使用可能なピクセルフォーマットを設定する
 *
 *  @param[in] void
 *
 *  @return 　　void
 *****************************************************************************/
+void RHIDevice::SetupPlatformPixelFormats()
+{
+	using namespace rhi::core;
+	using enum PixelFormat;
+	
+	PixelFormatInfo::Get(Unknown             ).PlatformFormat = DXGI_FORMAT_UNKNOWN;
+	PixelFormatInfo::Get(R32G32B32A32_FLOAT  ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	PixelFormatInfo::Get(R32G32B32A32_UINT   ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_UINT;
+	PixelFormatInfo::Get(R32G32B32A32_SINT   ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_SINT;
+	PixelFormatInfo::Get(R16G16B16A16_FLOAT  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	PixelFormatInfo::Get(R16G16B16A16_UINT   ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_UINT;
+	PixelFormatInfo::Get(R16G16B16A16_SINT   ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_SINT;
+	PixelFormatInfo::Get(R16G16B16A16_UNORM  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
+	PixelFormatInfo::Get(R16G16B16A16_SNORM  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_SNORM;
+	PixelFormatInfo::Get(R8G8B8A8_UINT       ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UINT;
+	PixelFormatInfo::Get(R8G8B8A8_SINT       ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_SINT;
+	PixelFormatInfo::Get(R8G8B8A8_UNORM      ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PixelFormatInfo::Get(R8G8B8A8_SNORM      ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_SNORM;
+	PixelFormatInfo::Get(R8G8B8A8_UNORM_SRGB ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	PixelFormatInfo::Get(B8G8R8A8_UNORM      ).PlatformFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+	PixelFormatInfo::Get(B8G8R8A8_UNORM_SRGB ).PlatformFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	PixelFormatInfo::Get(R32G32B32_FLOAT     ).PlatformFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	PixelFormatInfo::Get(R32G32B32_UINT      ).PlatformFormat = DXGI_FORMAT_R32G32B32_UINT;
+	PixelFormatInfo::Get(R32G32B32_SINT      ).PlatformFormat = DXGI_FORMAT_R32G32B32_SINT;
+	PixelFormatInfo::Get(R32G32_FLOAT        ).PlatformFormat = DXGI_FORMAT_R32G32_FLOAT;
+	PixelFormatInfo::Get(R32G32_UINT         ).PlatformFormat = DXGI_FORMAT_R32G32_UINT;
+	PixelFormatInfo::Get(R32G32_SINT         ).PlatformFormat = DXGI_FORMAT_R32G32_SINT;
+	PixelFormatInfo::Get(R16G16_FLOAT        ).PlatformFormat = DXGI_FORMAT_R16G16_FLOAT;
+	PixelFormatInfo::Get(R16G16_UINT         ).PlatformFormat = DXGI_FORMAT_R16G16_UINT;
+	PixelFormatInfo::Get(R16G16_SINT         ).PlatformFormat = DXGI_FORMAT_R16G16_SINT;
+	PixelFormatInfo::Get(R8G8_UINT           ).PlatformFormat = DXGI_FORMAT_R8G8_UINT;
+	PixelFormatInfo::Get(R8G8_SINT           ).PlatformFormat = DXGI_FORMAT_R8G8_SINT;
+	PixelFormatInfo::Get(R8G8_UNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_UNORM;
+	PixelFormatInfo::Get(R8G8_SNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_SNORM;
+	PixelFormatInfo::Get(D32_FLOAT           ).PlatformFormat = DXGI_FORMAT_D32_FLOAT;
+	PixelFormatInfo::Get(R32_FLOAT           ).PlatformFormat = DXGI_FORMAT_R32_FLOAT;
+	PixelFormatInfo::Get(R32_UINT            ).PlatformFormat = DXGI_FORMAT_R32_UINT;
+	PixelFormatInfo::Get(R32_SINT            ).PlatformFormat = DXGI_FORMAT_R32_SINT;
+	PixelFormatInfo::Get(D16_UNORM           ).PlatformFormat = DXGI_FORMAT_D16_UNORM;
+	PixelFormatInfo::Get(R16_FLOAT           ).PlatformFormat = DXGI_FORMAT_R16_FLOAT;
+	PixelFormatInfo::Get(R16_UINT            ).PlatformFormat = DXGI_FORMAT_R16_UINT;
+	PixelFormatInfo::Get(R16_SINT            ).PlatformFormat = DXGI_FORMAT_R16_SINT;
+	PixelFormatInfo::Get(R16_UNORM           ).PlatformFormat = DXGI_FORMAT_R16_UNORM;
+	PixelFormatInfo::Get(R16_SNORM           ).PlatformFormat = DXGI_FORMAT_R16_SNORM;
+	PixelFormatInfo::Get(R8_UINT             ).PlatformFormat = DXGI_FORMAT_R8_UINT;
+	PixelFormatInfo::Get(R8_SINT             ).PlatformFormat = DXGI_FORMAT_R8_SINT;
+	PixelFormatInfo::Get(R8_UNORM            ).PlatformFormat = DXGI_FORMAT_R8_UNORM;
+	PixelFormatInfo::Get(R8_SNORM            ).PlatformFormat = DXGI_FORMAT_R8_SNORM;
+	PixelFormatInfo::Get(A8_UNORM            ).PlatformFormat = DXGI_FORMAT_A8_UNORM;
+	PixelFormatInfo::Get(R1_UNORM            ).PlatformFormat = DXGI_FORMAT_R1_UNORM;
+	PixelFormatInfo::Get(D32_FLOAT_S8X24_UINT).PlatformFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	PixelFormatInfo::Get(D24_UNORM_S8_UINT   ).PlatformFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	PixelFormatInfo::Get(R10G10B10A2_UNORM   ).PlatformFormat = DXGI_FORMAT_R10G10B10A2_UNORM;
+	PixelFormatInfo::Get(R10G10B10A2_UINT    ).PlatformFormat = DXGI_FORMAT_R10G10B10A2_UINT;
+	PixelFormatInfo::Get(BC1_UNORM           ).PlatformFormat = DXGI_FORMAT_BC1_UNORM;
+	PixelFormatInfo::Get(BC1_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC1_UNORM_SRGB;
+	PixelFormatInfo::Get(BC2_UNORM           ).PlatformFormat = DXGI_FORMAT_BC2_UNORM;
+	PixelFormatInfo::Get(BC2_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC2_UNORM_SRGB;
+	PixelFormatInfo::Get(BC3_UNORM           ).PlatformFormat = DXGI_FORMAT_BC3_UNORM;
+	PixelFormatInfo::Get(BC3_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC3_UNORM_SRGB;
+	PixelFormatInfo::Get(BC4_UNORM           ).PlatformFormat = DXGI_FORMAT_BC4_UNORM;
+	PixelFormatInfo::Get(BC4_SNORM           ).PlatformFormat = DXGI_FORMAT_BC4_SNORM;
+	PixelFormatInfo::Get(BC5_UNORM           ).PlatformFormat = DXGI_FORMAT_BC5_UNORM;
+	PixelFormatInfo::Get(BC5_SNORM           ).PlatformFormat = DXGI_FORMAT_BC5_SNORM;
+	PixelFormatInfo::Get(BC7_UNORM           ).PlatformFormat = DXGI_FORMAT_BC7_UNORM;
+	PixelFormatInfo::Get(BC7_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
+	PixelFormatInfo::Get(BC6H_UFLOAT16       ).PlatformFormat = DXGI_FORMAT_BC6H_UF16;
+	PixelFormatInfo::Get(BC6H_SFLOAT16       ).PlatformFormat = DXGI_FORMAT_BC6H_SF16;
+}
+
+/*!**********************************************************************
+*  @brief     DirectXで使用可能な最大のシェーダーモデルを設定します
+*  @note      現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります@n
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+*  @param[in] void
+*  @return    void
+*************************************************************************/
 void RHIDevice::FindHighestShaderModel()
 {
+	
 	const D3D_SHADER_MODEL shaderModels[] =
 	{
-#if D3D12_CORE_ENABLED
 		D3D_HIGHEST_SHADER_MODEL,
+		D3D_SHADER_MODEL_6_9,
+		D3D_SHADER_MODEL_6_8,
 		D3D_SHADER_MODEL_6_7,
 		D3D_SHADER_MODEL_6_6,
-#endif
 		D3D_SHADER_MODEL_6_5,
 		D3D_SHADER_MODEL_6_4,
 		D3D_SHADER_MODEL_6_3,
@@ -1036,21 +1262,16 @@ void RHIDevice::FindHighestShaderModel()
 			return;
 		}
 	}
+
+	// 全く見つからなかった場合
+	_maxSupportedShaderModel = D3D_SHADER_MODEL_5_1;
 }
 
-/****************************************************************************
-*                     CheckWaveLaneSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckWaveLaneSupport()
-*
-*  @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
-		       Wave : プロセッサ上の同時に実行されるスレッドの集合
-			   Lane : 個々のスレッド
-*
+/*!**********************************************************************
+*  @brief     HLSLで明示的にGPU上で複数スレッドの使用が可能. Wave : プロセッサ上の同時に実行されるスレッドの集合, Lane : 個々のスレッド
 *  @param[in] void
-*
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::CheckWaveLaneSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS1 options{};
@@ -1063,10 +1284,10 @@ void RHIDevice::CheckWaveLaneSupport()
 
 /****************************************************************************
 *                     CheckNative16bitOperation
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckNative16bitOperation()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckNative16bitOperation()
 *
-*  @brief     16 bitのシェーダー操作が可能かどうかを調べます
+/* @brief     16 bitのシェーダー操作が可能かどうかを調べます
 * 
 *  @param[in] void
 *
@@ -1082,10 +1303,10 @@ void RHIDevice::CheckNative16bitOperation()
 
 /****************************************************************************
 *                     CheckAtomicOperation
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckAtomicOperation()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckAtomicOperation()
 *
-*  @brief     Wave用にAtomic操作が可能かどうかを調べます.
+/* @brief     Wave用にAtomic操作が可能かどうかを調べます.
 *
 *  @param[in] void
 *
@@ -1115,50 +1336,42 @@ void RHIDevice::CheckAtomicOperation()
 }
 
 /****************************************************************************
-*                     CheckMaxRootSignatureVersion
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckMaxRootSignatureVersion()
-*
-*  @brief     RootSignatureの最新バージョンを調べます
-*             1_0 or 1: Default
-*             1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+*                     CheckHighestRootSignatureVersion
+****************************************************************************/
+/* @brief  現在の指定可能な最大のRootSignatureのバージョンを調べます. @n
+*           GetHighestRootSignatureVersionを参照してください
 *
 *  @param[in] void
 *
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckMaxRootSignatureVersion()
+void RHIDevice::CheckHighestRootSignatureVersion()
 {
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE options = {};
-	options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE options{};
 
-	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
+	// 初期値の設定
+	options.HighestVersion = _highestRootSignatureVersion;
+
+	// バージョンを順次遡りながら, サポートされている最大値を取得する
+	while (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
 	{
-		options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+		options.HighestVersion = static_cast<D3D_ROOT_SIGNATURE_VERSION>(options.HighestVersion - 1);
 	}
 
-	_maxRootSignatureVersion = options.HighestVersion;
+	_highestRootSignatureVersion = options.HighestVersion;
 }
 
 #if USE_INTEL_EXTENSION
 
-/****************************************************************************
-*                     CreateIntelExtensionContext
-*************************************************************************//**
-*  @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
-*
-*  @brief     INTCExtensionContextを生成します.
-*
-*  @param[out]void
-*
-*  @return    void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief  Intel extension contextを生成します.
+*************************************************************************/
 void RHIDevice::CreateIntelExtensionContext()
 {
 	_isSupportedIntelEmulatedAtomic64 = false;
 
 	/*-------------------------------------------------------------------
-	-         ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
+	-      ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
 	---------------------------------------------------------------------*/
 	if (FAILED(INTC_LoadExtensionsLibrary(false)))
 	{
@@ -1179,14 +1392,6 @@ void RHIDevice::CreateIntelExtensionContext()
 	// サポートされているバージョン数だけインスタンス作成
 	supportedExtensionsVersions.Resize(supportedExtensionVersionCount);
 
-	// 目標のバージョン
-	const INTCExtensionVersion atomicsRequiredVersion =
-	{
-		.HWFeatureLevel = 4,
-		.APIVersion     = 8,
-		.Revision       = 0
-	};
-
 	/*-------------------------------------------------------------------
 	-         サポートされているバージョン情報を取得する
 	---------------------------------------------------------------------*/
@@ -1198,6 +1403,14 @@ void RHIDevice::CreateIntelExtensionContext()
 	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
 	_RPT0(_CRT_WARN, " Supported Extension Versions in this driver: \n");
 	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+
+	// 目標のバージョン
+	const INTCExtensionVersion atomicsRequiredVersion =
+	{
+		.HWFeatureLevel = 4,
+		.APIVersion     = 8,
+		.Revision       = 0
+	};
 
 	INTCExtensionInfo intelExtensionInfo = {};
 	for (uint32 i = 0; i < supportedExtensionVersionCount; ++i)
@@ -1261,17 +1474,9 @@ void RHIDevice::CreateIntelExtensionContext()
 }
 
 
-/****************************************************************************
-*                     DestroyIntelExtensionContext
-*************************************************************************//**
-*  @fn        void RHIDevice::DestroyIntelExtensionContext()
-*
-*  @brief     INTCExtensionContextを破棄します. 
-*
-*  @param[in] INTCExtensionContext* 
-*
-*  @return    void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief   Intel extension contextを破棄します.
+*************************************************************************/
 void RHIDevice::DestroyIntelExtensionContext()
 {
 	if (_intelExtensionContext == nullptr) { return; }
@@ -1284,16 +1489,6 @@ void RHIDevice::DestroyIntelExtensionContext()
 	/*-------------------------------------------------------------------
 	-              表示
 	---------------------------------------------------------------------*/
-#if PLATFORM_OS_WINDOWS
-	if (result == S_OK)
-	{
-		OutputDebugStringA("Intel Extensions Framework unloaded\n");
-	}
-	else
-	{
-		OutputDebugStringA("Intel Extensions Framework error when unloading\n");
-	}
-#else
 	if (result == S_OK)
 	{
 		_RPT0(_CRT_WARN, "Intel Extensions Framework unloaded\n");
@@ -1302,20 +1497,11 @@ void RHIDevice::DestroyIntelExtensionContext()
 	{
 		_RPT0(_CRT_WARN, "Intel Extensions Framework error when unloading\n");
 	}
-#endif // PLATFORM_OS_WINDOWS
 }
 
-/****************************************************************************
-*                     IsSupportedIntelEmulatedAtomic64
-*************************************************************************//**
-*  @fn        bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
-*
-*  @brief     Atomic 64 bitがサポートされているかを返します.
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief  :Atomic 64 bitがサポートされているかを返します.
+*************************************************************************/
 bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 {
 	/*-------------------------------------------------------------------
@@ -1330,6 +1516,7 @@ bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 	---------------------------------------------------------------------*/
 	return _intelExtensionContext && _isSupportedIntelEmulatedAtomic64;
 }
+
 #endif // USE_INTEL_EXTENSION
 
 
@@ -1338,10 +1525,10 @@ bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 #pragma region Property
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void RHIDevice::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void RHIDevice::SetName(const gu::tstring& name)
 *
-*  @brief     Set Logical device name
+/* @brief     Set Logical device name
 *
 *  @param[in] const gu::tstring& name
 *
@@ -1354,10 +1541,10 @@ void RHIDevice::SetName(const gu::tstring& name)
 
 /****************************************************************************
 *                     GetDefaultHeap
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 *
-*  @brief     Return descriptor heap (CBV, SRV, UAV, RTV, DSV)
+/* @brief     Return descriptor heap (CBV, SRV, UAV, RTV, DSV)
 *
 *  @param[in] const core::DefaultHeapType
 *
@@ -1378,16 +1565,14 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core:
 
 /****************************************************************************
 *                     SetGPUDebugBreak
-*************************************************************************//**
-*  @fn        void RHIDevice::SetGPUDebugBreak()
-*
-*  @brief     Set gpu debug break
+****************************************************************************/
+/* @brief     RHIInstanceで定義した深刻度の大きさにしたがってGPUのDebugBreakを行う
 *
 *  @param[in] void
 *
 *  @return    void
 *****************************************************************************/
-void RHIDevice::SetGPUDebugBreak()
+void RHIDevice::SetGPUDebugBreak() const
 {
 	/*-------------------------------------------------------------------
 	-              GPU debug breakを使用するか
@@ -1402,19 +1587,22 @@ void RHIDevice::SetGPUDebugBreak()
 	_device.As(&infoQueue);
 
 	if (!infoQueue) { return; }
-
+	
 	/*-------------------------------------------------------------------
 	-              深刻度の設定 (現在はerrorのみ対応いたします.)
 	---------------------------------------------------------------------*/
-	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+	for (uint32 i = 0; i <= (uint32)dxInstance->GetMessageSeverity(); ++i)
+	{
+		infoQueue->SetBreakOnSeverity((D3D12_MESSAGE_SEVERITY)i, TRUE);
+	}
 }
 
 /****************************************************************************
 *                     SetupDefaultCommandSignatures
-*************************************************************************//**
-*  @fn        void RHIDevice::SetupDefaultCommandSignatures()
+****************************************************************************/
+/* @fn        void RHIDevice::SetupDefaultCommandSignatures()
 *
-*  @brief     Set up command signatures
+/* @brief     Set up command signatures
 *
 *  @param[in] void
 *
@@ -1426,7 +1614,7 @@ void RHIDevice::SetupDefaultCommandSignatures()
 	-              ExecuteIndirect draw index command signatures
 	---------------------------------------------------------------------*/
 	{
-		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc;
+		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc = {};
 		indirectArgumentDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
 
 		const D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc =

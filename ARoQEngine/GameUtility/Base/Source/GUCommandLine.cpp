@@ -29,10 +29,8 @@ tstring CommandLine::_commandLine    = SP("");
 #pragma region Main Function
 /****************************************************************************
 *                       BuildFromArgumentVector
-*************************************************************************//**
-*  @fn        tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wchar** argumentVector)
-*
-*  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
+****************************************************************************/
+/* @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
 *  @param[in] const wchar** argumentVector : コマンドラインの文字配列 (argumentCount分だけ) 
@@ -43,7 +41,7 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 {
 	/*----------------------------------------------------------------------
 	*  最初の実行ファイル名に対する引数を無視しつつ, 各引数をstringに渡す
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	tstring result = SP("");
 	for (int32 i = 1; i < argumentCount; ++i)
 	{
@@ -84,21 +82,19 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 
 /****************************************************************************
 *                       BuildFromArgumentVector
-*************************************************************************//**
-*  @fn        tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wchar** argumentVector)
-*
-*  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
+****************************************************************************/
+/* @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
 *  @param[in] const char** argumentVector : コマンドラインの文字配列 (argumentCount分だけ)
 *
 *  @return 　　tstring
 *****************************************************************************/
-tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const char8** argumentVector)
+tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const char** argumentVector)
 {
 	/*----------------------------------------------------------------------
 	*  最初の実行ファイル名に対する引数を無視しつつ, 各引数をstringに渡す
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	tstring result = SP("");
 	for (int32 i = 1; i < argumentCount; ++i)
 	{

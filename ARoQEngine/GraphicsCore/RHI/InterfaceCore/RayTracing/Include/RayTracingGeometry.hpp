@@ -28,8 +28,8 @@ namespace rhi::core
 	class GPUBuffer; // vertex buffer and index buffer
 	/****************************************************************************
 	*				  			    Class
-	*************************************************************************//**
-	*  @class     Class
+	****************************************************************************/
+	/* @class     Class
 	*  @brief     temp
 	*****************************************************************************/
 	class RayTracingGeometry : public gu::NonCopyable
@@ -40,7 +40,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		RayTracingGeometryFlags    GetGeometryFlags() const noexcept { return _geometryFlags; }
 		gu::SharedPointer<GPUBuffer> GetVertexBuffer () const noexcept { return _vertexBuffer; }
@@ -60,7 +60,7 @@ namespace rhi::core
 			const gu::SharedPointer<GPUBuffer>& vertexBuffer,
 			const gu::SharedPointer<GPUBuffer>& indexBuffer);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		RayTracingGeometryFlags    _geometryFlags = RayTracingGeometryFlags::None;
 		gu::SharedPointer<GPUBuffer> _vertexBuffer  = nullptr;

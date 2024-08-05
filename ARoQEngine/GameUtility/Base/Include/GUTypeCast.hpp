@@ -30,5 +30,16 @@ namespace gu::type
 
 	template<typename T>
 	__forceinline T&& Forward(typename details::type_traits::RemoveReferenceType<T>::Type&& object) { return (T&&)object; }
+
+	/*---------------------------------------------------------------
+			 ŒÝ‚¢‚Ì—v‘f‚ðŒðŠ·‚µ‚Ü‚·.
+	-----------------------------------------------------------------*/
+	template<typename T>
+	__forceinline void Swap(T& left, T& right) noexcept
+	{
+		T temp = Forward<T>(left);
+		left   = Forward<T>(right);
+		right  = Forward<T>(temp);
+	}
 }
 #endif

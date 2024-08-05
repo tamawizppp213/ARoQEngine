@@ -25,8 +25,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHIResourceLayout
-	*************************************************************************//**
-	*  @class     RHIResourceLayout
+	****************************************************************************/
+	/* @class     RHIResourceLayout
 	*  @brief     GPU resource root signature. shader binding setting.
 	*****************************************************************************/
 	class RHIResourceLayout : public  rhi::core::RHIResourceLayout
@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkPipelineLayout GetLayout() const noexcept { return _pipelineLayout; }
 		
@@ -61,7 +61,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipelineLayout _pipelineLayout = nullptr;
 

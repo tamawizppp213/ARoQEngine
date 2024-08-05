@@ -90,8 +90,8 @@ RayTracingShaderTable::RayTracingShaderTable(const gu::SharedPointer<rhi::core::
 	/*-------------------------------------------------------------------
 	-         Write shader records
 	---------------------------------------------------------------------*/
-	_buffer->CopyStart();
+	//_buffer->CopyStart();
 
-	_buffer->CopyEnd();
+	//_buffer->CopyEnd();
 }
 #pragma endregion Constructor and Destructor 

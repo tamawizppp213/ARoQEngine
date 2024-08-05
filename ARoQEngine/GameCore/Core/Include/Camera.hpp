@@ -27,13 +27,13 @@ namespace rhi::core
 //////////////////////////////////////////////////////////////////////////////////
 //								Camera 
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 
 	/****************************************************************************
 	*				  			PerspectiveInfo
-	*************************************************************************//**
-	*  @struct    PerspectiveInfo
+	****************************************************************************/
+	/* @struct    PerspectiveInfo
 	*  @brief     Perspective camera
 	*****************************************************************************/
 	struct PerspectiveInfo
@@ -48,8 +48,8 @@ namespace gc
 
 	/****************************************************************************
 	*				  			OrthographicInfo
-	*************************************************************************//**
-	*  @struct    OrthographicInfo
+	****************************************************************************/
+	/* @struct    OrthographicInfo
 	*  @brief     Orthographic camera
 	*****************************************************************************/
 	struct OrthographicInfo
@@ -68,8 +68,8 @@ namespace gc
 
 	/****************************************************************************
 	*				  			Camera
-	*************************************************************************//**
-	*  @class     Camera
+	****************************************************************************/
+	/* @class     Camera
 	*  @brief     Camera
 	*****************************************************************************/
 	class Camera : public gu::Copyable
@@ -116,7 +116,7 @@ namespace gc
 		void Walk  (float distance);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		SceneConstantBufferPtr GetSceneBuffer() const { return _sceneConstantBuffer; }
 		
@@ -208,7 +208,7 @@ namespace gc
 		// After modifying camera position / orientation, call to rebuild the matrix.
 		void UpdateViewMatrix();
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Use perspective camera or orthographic camera*/
 		CameraType _type = CameraType::Perspective;

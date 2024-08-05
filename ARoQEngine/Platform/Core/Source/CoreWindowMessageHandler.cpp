@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CoreWindowMessageHandler.hpp"
 #include "../../Core/Include/CoreWindow.hpp"
-
+#include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,3 +29,14 @@ CoreWindowMessageHandler::~CoreWindowMessageHandler()
 
 }
 #pragma endregion Constructor and Destructor
+
+#pragma region Public Function
+
+bool CoreWindowMessageHandler::OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height)
+{
+	Screen::SetScreenWidth(width);
+	Screen::SetScreenHeight(height);
+
+	return true;
+}
+#pragma endregion Public Function

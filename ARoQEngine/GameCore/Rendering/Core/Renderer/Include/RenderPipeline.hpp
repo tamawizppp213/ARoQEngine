@@ -24,19 +24,19 @@ namespace rhi::core
 	class RHIResourceLayout;
 	class GPUGraphicsPipelineState;
 }
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	/****************************************************************************
 	*				  			RenderingEngine
-	*************************************************************************//**
-	*  @class     RenderingEngine
+	****************************************************************************/
+	/* @class     RenderingEngine
 	*  @brief     Rendering Engine
 	*****************************************************************************/
 	class IRenderPipeline : public gu::NonCopyable
@@ -46,7 +46,7 @@ namespace gc
 		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
 	
 	public:
 		/****************************************************************************
@@ -55,7 +55,7 @@ namespace gc
 		virtual bool Draw() = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		virtual ResourceViewPtr GetSceneView() const noexcept = 0;
 		virtual void SetSceneView(const ResourceViewPtr& scene) = 0;
@@ -72,7 +72,7 @@ namespace gc
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// äeÉÇÉfÉãÇë„ì¸èoóàÇÈÇÊÇ§Ç…Ç∑ÇÈ. 
 		LowLevelGraphicsEnginePtr _engine = nullptr;

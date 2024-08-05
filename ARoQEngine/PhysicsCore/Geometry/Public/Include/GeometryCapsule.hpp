@@ -24,8 +24,8 @@ namespace physics::geometry
 {
 	/****************************************************************************
 	*				  			  IGeometry
-	*************************************************************************//**
-	*  @class     IGeometry
+	****************************************************************************/
+	/* @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
 	class GeometryCapsule : public IGeometry
@@ -37,7 +37,7 @@ namespace physics::geometry
 		bool IsValid() const override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		float Radius     = 0.0f; // @brief: the radius of the capsule
 		float HalfHeight = 0.0f; // @brief: half of the capsule's height,  measured between the centers of the hemispherical ends.
@@ -61,7 +61,7 @@ namespace physics::geometry
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 }

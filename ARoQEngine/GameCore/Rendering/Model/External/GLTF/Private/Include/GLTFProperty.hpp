@@ -35,8 +35,8 @@ namespace gltf
 
 		/****************************************************************************
 		*				  			GLTFProperty
-		*************************************************************************//**
-		*  @struct     GLTFProperty
+		****************************************************************************/
+		/* @struct     GLTFProperty
 		*  @brief      Property (has extension and extra)
 		*****************************************************************************/
 		struct GLTFProperty
@@ -69,7 +69,7 @@ namespace gltf
 			template<typename T>
 			void RemoveExtension() { return _registeredExtensions.erase(typeid(T)); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			std::unordered_map<std::string, std::string> Extensions;
 			std::string                                  Extras;
@@ -84,7 +84,7 @@ namespace gltf
 			*****************************************************************************/
 			static bool Equals(const GLTFProperty& lhs, const GLTFProperty& rhs);
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 
 			/****************************************************************************
@@ -99,8 +99,8 @@ namespace gltf
 
 		/****************************************************************************
 		*				  			TemplateStruct
-		*************************************************************************//**
-		*  @struct     TemplateStruct
+		****************************************************************************/
+		/* @struct     TemplateStruct
 		*  @brief     temp
 		*****************************************************************************/
 		struct GLTFChildOfRootProperty : GLTFProperty
@@ -111,7 +111,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			std::string ID;
 			std::string Name;
@@ -129,15 +129,15 @@ namespace gltf
 			GLTFChildOfRootProperty() = default;
 			GLTFChildOfRootProperty(std::string id, std::string name) : ID(std::move(id)), Name(std::move(name)){}
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 		};
 #pragma region Inline Function
 #pragma region GLTFProperty
 		/****************************************************************************
 		*							GetExtension
-		*************************************************************************//**
-		*  @fn        template<typename T> inline const T& GLTFProperty::GetExtension() const
+		****************************************************************************/
+		/* @fn       template<typename T> inline const T& GLTFProperty::GetExtension() const
 		*  @brief     Find Extension from unordered map.
 		*  @param[in] void
 		*  @return 　　const T& extension
@@ -153,8 +153,8 @@ namespace gltf
 		}
 		/****************************************************************************
 		*							GetExtension
-		*************************************************************************//**
-		*  @fn        template<typename T> inline T& GLTFProperty::GetExtension()
+		****************************************************************************/
+		/* @fn       template<typename T> inline T& GLTFProperty::GetExtension()
 		*  @brief     Find Extension from unordered map.
 		*  @param[in] void
 		*  @return 　　const T& extension
@@ -170,8 +170,8 @@ namespace gltf
 		}
 		/****************************************************************************
 		*							SetExtension
-		*************************************************************************//**
-		*  @fn        inline void GLTFProperty::SetExtension(std::unique_ptr<GLTFExtension>&& extension)
+		****************************************************************************/
+		/* @fn       inline void GLTFProperty::SetExtension(std::unique_ptr<GLTFExtension>&& extension)
 		*  @brief     Set extension
 		*  @param[in] std::unique_ptr<GLTFExtension>&& extension
 		*  @return 　　const T& extension

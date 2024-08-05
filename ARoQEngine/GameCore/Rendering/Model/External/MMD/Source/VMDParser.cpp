@@ -9,177 +9,265 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/External/MMD/Include/VMDParser.hpp"
-#include "GameUtility/File/Include/UnicodeUtility.hpp"
-#include "GameUtility/File/Include/FileSystem.hpp"
+#include "Platform/Core/Include/CoreFileSystem.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
+#include "GameUtility/Base/Include/GUCharacterCodeConverter.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace engine::file::vmd;
+using namespace platform::core;
+using namespace gu;
+
 namespace
 {
-	constexpr int INVALID_VALUE = -1;
+	gu::tstring ReadString(const gu::SharedPointer<file::IFileHandle>& fileHandle, const gu::uint64 length)
+	{
+		gu::string result(length, true);
+
+		fileHandle->Read(result.CString(), sizeof(gu::char8) * length);
+
+		return StringConverter::ConvertStringToTString(result);
+	}
+
+	void WriteString(const gu::SharedPointer<file::IFileHandle>& fileHandle, const gu::tstring& input, const int32 requiredLength)
+	{
+		gu::string result = StringConverter::ConvertTStringToString(input);
+
+		fileHandle->Write(result.CString(), sizeof(gu::char8) * result.Size());
+
+		if (requiredLength >= result.Size())
+		{
+			fileHandle->Seek(fileHandle->Tell() + requiredLength - result.Size());
+		}
+		else
+		{
+			throw "Invalid string length.";
+		}
+	}
 }
-using namespace vmd;
-using namespace file;
-void ReadVMDString(FILE* filePtr, std::string* string, UINT32 bufferSize);
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool VMDFile::Load(const std::wstring& filePath)
+#pragma region Constructor and Destructor
+VMDFile::~VMDFile()
+{
+	BoneFrames      .Clear(); BoneFrames      .ShrinkToFit();
+	FaceFrames      .Clear(); FaceFrames      .ShrinkToFit();
+	CameraFrames    .Clear(); CameraFrames    .ShrinkToFit();
+	LightFrames     .Clear(); LightFrames     .ShrinkToFit();
+	SelfShadowFrames.Clear(); SelfShadowFrames.ShrinkToFit();
+	IKFrames        .Clear(); IKFrames        .ShrinkToFit();
+}
+#pragma endregion Constructor and Destructor
+
+#pragma region Public Function
+
+/*!**********************************************************************
+*  @brief     VMDファイルを読み込む関数
+*  @param[in] gu::tsring& ファイルパス
+*  @return    bool
+*************************************************************************/
+bool VMDFile::Read(const gu::tstring& filePath)
 {
 	/*-------------------------------------------------------------------
-	-             Open File
+	-             ファイルハンドルの取得
 	---------------------------------------------------------------------*/
-	FILE* filePtr = file::FileSystem::OpenFile(filePath);
-	if (filePtr == nullptr) { std::cerr << "Invalid vmd file" << std::endl; return false; }
-	Directory    = file::FileSystem::GetDirectory(unicode::ToUtf8String(filePath));
-	/*-------------------------------------------------------------------
-	-             Read Header
-	---------------------------------------------------------------------*/
-	Header.Read(filePtr);
-	/*-------------------------------------------------------------------
-	-             Read BoneFrames
-	---------------------------------------------------------------------*/
-	UINT32 boneFrameCount = 0;
-	fread_s(&boneFrameCount, sizeof(boneFrameCount), sizeof(UINT32), 1, filePtr);
-	BoneFrames.resize(boneFrameCount);
-	for (auto& boneFrame : BoneFrames) { boneFrame.Read(filePtr); }
-	/*-------------------------------------------------------------------
-	-             Read FaceFrames
-	---------------------------------------------------------------------*/
-	UINT32 faceFrameCount = 0;
-	fread_s(&faceFrameCount, sizeof(faceFrameCount), sizeof(UINT32), 1, filePtr);
-	FaceFrames.resize(faceFrameCount);
-	for (auto& faceFrame : FaceFrames) { faceFrame.Read(filePtr); }
-	/*-------------------------------------------------------------------
-	-             Read CameraFrames
-	---------------------------------------------------------------------*/
-	if (!feof(filePtr))
+	const auto fileHandle = IFileSystem::Get()->OpenRead(filePath.CString());
+
+	// ファイルが開けなかった場合はfalseを返す
+	if (!fileHandle)
 	{
-		UINT32 cameraFrameCount = 0;
-		fread_s(&cameraFrameCount, sizeof(cameraFrameCount), sizeof(UINT32), 1, filePtr);
-		CameraFrames.resize(cameraFrameCount);
-		for (auto& cameraFrame : CameraFrames)
-		{ 
-			cameraFrame.Read(filePtr); 
-		}
+		return false;
+	}
+
+	// ディレクトリの取得
+	Directory = IFileSystem::Get()->GetDirectory(filePath.CString());
+
+	/*-------------------------------------------------------------------
+	-            ヘッダ情報の読み込み
+	---------------------------------------------------------------------*/
+	Header.Read(fileHandle);
+
+	if (!Header.IsValid())
+	{
+		return false;
 	}
 
 	/*-------------------------------------------------------------------
-	-             Read LightFrames
+	-           ボーンのキーフレーム情報を格納する構造体です. 
 	---------------------------------------------------------------------*/
-	if (!feof(filePtr))
+	int32 boneFrameCount = 0;
+	fileHandle->Read(&boneFrameCount, sizeof(int32));
+
+	BoneFrames.Resize(boneFrameCount);
+	for (int32 i = 0; i < boneFrameCount; ++i)
 	{
-		UINT32 lightFrameCount = 0;
-		fread_s(&lightFrameCount, sizeof(lightFrameCount), sizeof(UINT32), 1, filePtr);
-		LightFrames.resize(lightFrameCount);
-		for (auto& lightFrame : LightFrames)
-		{
-			lightFrame.Read(filePtr);
-		}
+		BoneFrames[i].Read(fileHandle);
 	}
 
 	/*-------------------------------------------------------------------
-	-             Read ShadowFrames
+	-           表情のキーフレーム情報を格納する構造体です.
 	---------------------------------------------------------------------*/
-	if (!feof(filePtr))
+	int32 faceFrameCount = 0;
+	fileHandle->Read(&faceFrameCount, sizeof(int32));
+
+	FaceFrames.Resize(faceFrameCount);
+	for (int32 i = 0; i < faceFrameCount; ++i)
 	{
-		UINT32 shadowFrameCount;
-		fread_s(&shadowFrameCount, sizeof(shadowFrameCount), sizeof(UINT32), 1, filePtr);
-		ShadowFrames.resize(shadowFrameCount);
-		for (auto& shadowFrame : ShadowFrames) { shadowFrame.Read(filePtr); }
+		FaceFrames[i].Read(fileHandle);
 	}
 
 	/*-------------------------------------------------------------------
-	-             Read IKFrames
+	-           カメラのキーフレーム情報を格納する構造体です.
 	---------------------------------------------------------------------*/
-	if (!feof(filePtr))
+	int32 cameraFrameCount = 0;
+	fileHandle->Read(&cameraFrameCount, sizeof(int32));
+
+	CameraFrames.Resize(cameraFrameCount);
+	for (int32 i = 0; i < cameraFrameCount; ++i)
 	{
-		UINT32 ikFrameCount = 0;
-		fread_s(&ikFrameCount, sizeof(ikFrameCount), sizeof(UINT32), 1, filePtr);
-		IKFrames.resize(ikFrameCount);
-		for (auto& ikFrame : IKFrames) { ikFrame.Read(filePtr); }
+		CameraFrames[i].Read(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           照明のキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 lightFrameCount = 0;
+	fileHandle->Read(&lightFrameCount, sizeof(int32));
+
+	LightFrames.Resize(lightFrameCount);
+	for (int32 i = 0; i < lightFrameCount; ++i)
+	{
+		LightFrames[i].Read(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           セルフ影のキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 selfShadowFrameCount = 0;
+	fileHandle->Read(&selfShadowFrameCount, sizeof(int32));
+
+	SelfShadowFrames.Resize(selfShadowFrameCount);
+	for (int32 i = 0; i < selfShadowFrameCount; ++i)
+	{
+		SelfShadowFrames[i].Read(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           IKのキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 ikFrameCount = 0;
+	fileHandle->Read(&ikFrameCount, sizeof(int32));
+
+	IKFrames.Resize(ikFrameCount);
+	for (int32 i = 0; i < ikFrameCount; ++i)
+	{
+		IKFrames[i].Read(fileHandle);
 	}
 
 	return true;
 }
-VMDFile::~VMDFile()
-{
-	BoneFrames.clear(); BoneFrames.shrink_to_fit();
-	FaceFrames.clear(); FaceFrames.shrink_to_fit();
-	CameraFrames.clear(); CameraFrames.shrink_to_fit();
-	LightFrames.clear(); LightFrames.shrink_to_fit();
-	ShadowFrames.clear(); ShadowFrames.shrink_to_fit();
-	IKFrames.clear(); IKFrames.shrink_to_fit();
-}
-#pragma region EachReadFunction
-void VMDHeader            ::Read(FILE* filePtr)
-{
-	ReadVMDString(filePtr, &Header   , 30);
-	ReadVMDString(filePtr, &ModelName, 20);
 
-}
-void VMDBoneKeyFrame      ::Read(FILE* filePtr)
+/*!**********************************************************************
+*  @brief     VMDファイルを書き込む関数
+*  @param[in] gu::tsring& ファイルパス
+*  @return    void
+*************************************************************************/
+bool VMDFile::Write(const gu::tstring& filePath)
 {
-	ReadVMDString(filePtr, &BoneName, 15);
-	fread_s(&Frame              , sizeof(Frame              ), sizeof(UINT32), 1, filePtr);
-	fread_s(&Translation        , sizeof(Translation        ), sizeof(Float3), 1, filePtr);
-	fread_s(&Quaternion         , sizeof(Quaternion         ), sizeof(Float4), 1, filePtr);
-	fread_s(&BazierInterpolation, sizeof(BazierInterpolation), sizeof(UINT8), 64, filePtr);
-}
-void VMDFaceKeyFrame      ::Read(FILE* filePtr)
-{
-	ReadVMDString(filePtr, &Name, 15);
-	fread_s(&Frame , sizeof(Frame ), sizeof(UINT32), 1, filePtr);
-	fread_s(&Weight, sizeof(Weight), sizeof(float ), 1, filePtr);
-}
-void VMDCameraKeyFrame    ::Read(FILE* filePtr)
-{
-	fread_s(&Frame        , sizeof(Frame        ), sizeof(UINT32), 1, filePtr);
-	fread_s(&Distance     , sizeof(Distance     ), sizeof(float ), 1, filePtr);
-	fread_s(&Position     , sizeof(Position     ), sizeof(Float3), 1, filePtr);
-	fread_s(&Rotation     , sizeof(Rotation     ), sizeof(Float3), 1, filePtr);
-	fread_s(&Interpolation, sizeof(Interpolation), sizeof(UINT8 ), 24, filePtr);
-	fread_s(&ViewAngle    , sizeof(ViewAngle    ), sizeof(UINT32), 1, filePtr);
-	fread_s(&IsPerspective, sizeof(IsPerspective), sizeof(IsPerspective), 1, filePtr);
-	//fread_s(&Unknowns, sizeof(Unknowns), sizeof(UINT8), 2, filePtr);
-}
-void VMDLightKeyFrame     ::Read(FILE* filePtr)
-{
-	fread_s(&Frame, sizeof(Frame), sizeof(UINT32), 1, filePtr);
-	fread_s(&Color, sizeof(Color), sizeof(Float3), 1, filePtr);
-	fread_s(&Position, sizeof(Position), sizeof(Float3), 1, filePtr);
-}
-void VMDSelfShadowKeyFrame::Read(FILE* filePtr)
-{
-	fread_s(&Frame     , sizeof(Frame     ), sizeof(UINT32       ), 1, filePtr);
-	fread_s(&ShadowType, sizeof(ShadowType), sizeof(VMDShadowType), 1, filePtr);
-	fread_s(&Distance  , sizeof(Distance  ), sizeof(float        ), 1, filePtr);
-}
-void VMDIKEnable          ::Read(FILE* filePtr)
-{
-	ReadVMDString(filePtr, &IKName, 20);
-	fread_s(&Enable, sizeof(Enable), sizeof(bool), 1, filePtr);
-}
-void VMDIKKeyFrame        ::Read(FILE* filePtr)
-{
-	fread_s(&Frame, sizeof(Frame), sizeof(UINT32), 1, filePtr);
-	fread_s(&Display, sizeof(Display), sizeof(bool), 1, filePtr);
-	
-	UINT32 ikCount;
-	fread_s(&ikCount, sizeof(ikCount), sizeof(UINT32), 1, filePtr);
-	IKEnables.resize(ikCount);
-	for (auto& ikEnable : IKEnables)
+	/*-------------------------------------------------------------------
+	-             ファイルハンドルの取得
+	---------------------------------------------------------------------*/
+	const auto fileHandle = IFileSystem::Get()->OpenWrite(filePath.CString());
+
+	// ファイルが開けなかった場合はfalseを返す
+	if (!fileHandle)
 	{
-		ikEnable.Read(filePtr);
+		return false;
 	}
-}
-#pragma endregion EachReadFunction
-#pragma region   EachWriteFunction
 
-#pragma endregion EachWriteFunction
-void ReadVMDString(FILE* filePtr, std::string* string, UINT32 bufferSize)
-{
-	std::string utf8String(bufferSize, '\0');
-	fread_s(utf8String.data(), sizeof(char8_t) * utf8String.size(), sizeof(char8_t), utf8String.size(), filePtr);
-	*string = utf8String;
+	// ディレクトリの取得
+	Directory = IFileSystem::Get()->GetDirectory(filePath.CString());
+
+	/*-------------------------------------------------------------------
+	-            ヘッダ情報の読み込み
+	---------------------------------------------------------------------*/
+	Header.Write(fileHandle);
+
+	if (!Header.IsValid())
+	{
+		return false;
+	}
+
+	/*-------------------------------------------------------------------
+	-           ボーンのキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 boneFrameCount = static_cast<int32>(BoneFrames.Size());
+	fileHandle->Write(&boneFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < boneFrameCount; ++i)
+	{
+		BoneFrames[i].Write(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           表情のキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 faceFrameCount = static_cast<int32>(FaceFrames.Size());
+	fileHandle->Write(&faceFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < faceFrameCount; ++i)
+	{
+		FaceFrames[i].Write(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           カメラのキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 cameraFrameCount = static_cast<int32>(CameraFrames.Size());
+	fileHandle->Write(&cameraFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < cameraFrameCount; ++i)
+	{
+		CameraFrames[i].Write(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           照明のキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 lightFrameCount = static_cast<int32>(LightFrames.Size());
+	fileHandle->Write(&lightFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < lightFrameCount; ++i)
+	{
+		LightFrames[i].Write(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           セルフ影のキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 selfShadowFrameCount = static_cast<int32>(SelfShadowFrames.Size());
+	fileHandle->Write(&selfShadowFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < selfShadowFrameCount; ++i)
+	{
+		SelfShadowFrames[i].Write(fileHandle);
+	}
+
+	/*-------------------------------------------------------------------
+	-           IKのキーフレーム情報を格納する構造体です.
+	---------------------------------------------------------------------*/
+	int32 ikFrameCount = static_cast<int32>(IKFrames.Size());
+	fileHandle->Write(&ikFrameCount, sizeof(int32));
+
+	for (int32 i = 0; i < ikFrameCount; ++i)
+	{
+		IKFrames[i].Write(fileHandle);
+	}
+
+	return true;
 }
+#pragma endregion Public Function

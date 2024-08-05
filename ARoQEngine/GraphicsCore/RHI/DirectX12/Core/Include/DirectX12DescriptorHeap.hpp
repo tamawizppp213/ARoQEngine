@@ -30,8 +30,8 @@ namespace rhi::directX12
 {
 	/****************************************************************************
 	*				  			RHIDescriptorHeap
-	*************************************************************************//**
-	*  @class     RHIDescriptorHeap
+	****************************************************************************/
+	/* @class     RHIDescriptorHeap
 	*  @brief     Descriptor Heap (manage resource view) 
 	*****************************************************************************/
 	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap
@@ -54,7 +54,7 @@ namespace rhi::directX12
 		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return directX12 cpu pointer handler*/
 		inline CPU_DESC_HANDLER GetCPUDescHandler(const core::DescriptorHeapType type, const std::uint32_t offsetIndex = 0) 
@@ -91,7 +91,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		DescriptorHeapComPtr _descriptorHeap = nullptr;
 		size_t               _descriptorByteSize = 0;

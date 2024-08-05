@@ -29,8 +29,8 @@ namespace rhi::vulkan
 	class RHISwapchain;
 	/****************************************************************************
 	*				  			Device class
-	*************************************************************************//**
-	*  @class     Device
+	****************************************************************************/
+	/* @class     Device
 	*  @brief     Logical device
 	*****************************************************************************/
 	class RHIDevice : public core::RHIDevice, public gu::EnableSharedFromThis<RHIDevice>
@@ -61,7 +61,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
+		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 3, const gu::uint8 vsync = 0, const bool isValidHDR = true) override;
 		
 		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const core::SwapchainDesc& desc) override;
 
@@ -112,9 +112,9 @@ namespace rhi::vulkan
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		inline VkDevice GetDevice() { return _logicalDevice; }
+		inline VkDevice GetDevice() const { return _logicalDevice; }
 		
 		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		
@@ -127,7 +127,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		
-		std::uint64_t GetDeviceAddress(VkBuffer buffer);
+		std::uint64_t GetDeviceAddress(VkBuffer buffer) const;
 
 		void SetName(const gu::tstring& name) override;
 
@@ -164,7 +164,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/** @ brief: Logical device representation (application's view of the device)  */
 		VkDevice      _logicalDevice    = nullptr;

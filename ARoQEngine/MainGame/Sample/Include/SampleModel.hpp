@@ -16,13 +16,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
 	class Dof;
 }
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
@@ -35,16 +35,16 @@ namespace sample
 
 	/****************************************************************************
 	*				  			SampleSky
-	*************************************************************************//**
-	*  @class     SampleSky
+	****************************************************************************/
+	/* @class     SampleSky
 	*  @brief     Skybox sample
 	*****************************************************************************/
 	class SampleModel : public Scene
 	{
-		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr = gu::SharedPointer<gc::Camera>;
-		using ModelPtr = gu::SharedPointer<gc::core::GameModel>;
-		using DofPtr   = gu::SharedPointer<gc::Dof>;
+		using SkyDomePtr = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr = gu::SharedPointer<engine::Camera>;
+		using ModelPtr = gu::SharedPointer<engine::GameModel>;
+		using DofPtr   = gu::SharedPointer<engine::Dof>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -54,7 +54,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -71,7 +71,7 @@ namespace sample
 		void OnMouseInput() override;
 		void OnGamePadInput() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;

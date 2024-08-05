@@ -35,8 +35,8 @@ Serializer::~Serializer()
 #pragma region Main Function
 /****************************************************************************
 *                      Serialize
-*************************************************************************//**
-*  @fn        void Serializer::Serialize(const std::vector<std::uint8_t>& byte)
+****************************************************************************/
+/* @fn        void Serializer::Serialize(const std::vector<std::uint8_t>& byte)
 *
 *  @brief     Serialize byteData -> Write memory buffer
 *
@@ -51,8 +51,8 @@ void Serializer::Serialize(const std::vector<std::uint8_t>& byte)
 
 /****************************************************************************
 *                      Deserialize
-*************************************************************************//**
-*  @fn        std::string Serializer::Deserialize(const std::uint64_t byteLength)
+****************************************************************************/
+/* @fn        std::string Serializer::Deserialize(const std::uint64_t byteLength)
 *
 *  @brief     Read std::string data
 *
@@ -69,8 +69,8 @@ std::string Serializer::Deserialize(const std::uint64_t byteLength)
 
 /****************************************************************************
 *                      Clear
-*************************************************************************//**
-*  @fn        void Serializer::Clear()
+****************************************************************************/
+/* @fn        void Serializer::Clear()
 *
 *  @brief     Clear memory stream
 *

@@ -32,7 +32,7 @@ namespace rhi::core
 	class GPUBuffer;
 }
 
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
@@ -40,12 +40,12 @@ namespace gc::core
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::rendering
+namespace engine
 {
 	/****************************************************************************
 	*				  			    DebugDrawer
-	*************************************************************************//**
-	*  @class     DebugDrawer
+	****************************************************************************/
+	/* @class     DebugDrawer
 	*  @brief     Wire frame renderer
 	*****************************************************************************/
 	class DebugDrawer : public gu::NonCopyable
@@ -57,7 +57,7 @@ namespace gc::rendering
 		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using TexturePtr         = gu::SharedPointer<rhi::core::GPUTexture>;
 		using RenderPassPtr      = gu::SharedPointer<rhi::core::RHIRenderPass>;
-		using GameModelPtr       = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr       = gu::SharedPointer<engine::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -71,7 +71,7 @@ namespace gc::rendering
 		void Clear(const GameModelPtr& gameModel);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -89,7 +89,7 @@ namespace gc::rendering
 		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

@@ -42,28 +42,8 @@ using namespace DirectX;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-namespace
-{
-	rhi::core::PixelFormat ConvertDXGIIntoRHICoreFormat(DXGI_FORMAT format)
-	{
-		switch (format)
-		{
-			case DXGI_FORMAT_R8G8B8A8_UNORM     : return core::PixelFormat::R8G8B8A8_UNORM;
-			case DXGI_FORMAT_B8G8R8A8_UNORM     : return core::PixelFormat::B8G8R8A8_UNORM;
-			case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return core::PixelFormat::B8G8R8A8_UNORM_SRGB;
-			case DXGI_FORMAT_R16G16B16A16_FLOAT : return core::PixelFormat::R16G16B16A16_FLOAT;
-			case DXGI_FORMAT_R32G32B32A32_FLOAT : return core::PixelFormat::R32G32B32A32_FLOAT;
-			case DXGI_FORMAT_R32G32B32_FLOAT    : return core::PixelFormat::R32G32B32_FLOAT;
-			case DXGI_FORMAT_D24_UNORM_S8_UINT  : return core::PixelFormat::D24_UNORM_S8_UINT;
-			case DXGI_FORMAT_R10G10B10A2_UNORM  : return core::PixelFormat::R10G10B10A2_UNORM;
-			case DXGI_FORMAT_D32_FLOAT          : return core::PixelFormat::D32_FLOAT;
-			case DXGI_FORMAT_BC1_UNORM          : return core::PixelFormat::BC1_UNORM;
-			default:
-				throw std::runtime_error("not supported Format type");
-		}
-	}
-}
 
+#pragma region Constructor and Destructor 
 GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name) : core::GPUTexture(device, name)
 {
 	
@@ -104,6 +84,8 @@ GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const R
 	_hasAllocated = true;
 }
 
+#pragma endregion Constructor and Destructor
+
 #pragma region Public Function
 void GPUTexture::SetName(const gu::tstring& name)
 {
@@ -112,10 +94,8 @@ void GPUTexture::SetName(const gu::tstring& name)
 
 /****************************************************************************
 *                     Load
-*************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
-*
-*  @brief     Load texture 
+****************************************************************************/
+/* @brief     Load texture 
 *
 *  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
@@ -124,12 +104,9 @@ void GPUTexture::SetName(const gu::tstring& name)
 *****************************************************************************/
 void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
-
-#ifdef _DEBUG
-	assert(_device);
-	assert(commandList);
-	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
-#endif
+	Check(_device);
+	Check(commandList);
+	Check(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 
 	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
 	const auto dxCommandList = static_cast<directX12::RHICommandList*>(commandList.Get())->GetCommandList();
@@ -174,16 +151,16 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	---------------------------------------------------------------------*/
 	if (dxMetaData.IsCubemap())
 	{
-		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format, static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(image->width, image->height, dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format), static_cast<gu::uint8>(dxMetaData.mipLevels);
 	}
 	else
 	{
-		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
-			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.arraySize),
+			core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format), static_cast<gu::uint8>(dxMetaData.mipLevels);
 	}
 
 	/*-------------------------------------------------------------------
@@ -281,7 +258,7 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 		.height     = _metaData.Height,
 		.depth      = 1,
 		.arraySize  = _metaData.DepthOrArraySize,
-		.mipLevels  = _metaData.MipLevels,
+		.mipLevels  = _metaData.MipMapLevels,
 		.miscFlags  = 0,
 		.miscFlags2 = 0,
 		.format     = _resource->GetDesc().Format,
@@ -338,15 +315,17 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 	-                 Copy Texture Data
 	---------------------------------------------------------------------*/
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->FlushResourceBarriers();
 	UpdateSubresources(dxCommandList->GetCommandList().Get(), _resource.Get(), uploadBuffer.Get(), 0, 0, static_cast<UINT>(subResources.size()), subResources.data());
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), state);
+	dxCommandList->FlushResourceBarriers();
 }
 
 /****************************************************************************
 *                     Save
-*************************************************************************//**
-*  @fn        void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+****************************************************************************/
+/* @fn        void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 *
 *  @brief     Save the texture already stored in the GPU and record it to the specified file.
 *
@@ -371,7 +350,7 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 		.height     = _metaData.Height,
 		.depth      = 1,
 		.arraySize  = _metaData.DepthOrArraySize,
-		.mipLevels  = _metaData.MipLevels,
+		.mipLevels  = _metaData.MipMapLevels,
 		.miscFlags  = 0,
 		.miscFlags2 = 0,
 		.format     = _resource->GetDesc().Format,
@@ -390,14 +369,15 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	/*-------------------------------------------------------------------
 	-       Create read back buffer to read gpu memory to the cpu memory
 	---------------------------------------------------------------------*/
-	auto metaData       = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
+	auto metaData       = core::GPUBufferMetaData::UploadBuffer(static_cast<gu::uint32>(core::PixelFormatInfo::GetConst(_metaData.PixelFormat).BlockBytes), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
 	metaData.State      = core::ResourceState::CopyDestination;
 	const auto buffer   = _device->CreateBuffer(metaData);
 	const auto dxBuffer = gu::StaticPointerCast<GPUBuffer>(buffer);
 
 	//Transition the resource if necessary
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->FlushResourceBarriers();
 
 	/*-------------------------------------------------------------------
 	-       Get the copy target location
@@ -414,7 +394,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	const auto copySrcLocation  = TEXTURE_COPY_LOCATION(_resource.Get(), 0);
 
 	dxCommandList->GetCommandList()->CopyTextureRegion(&copyDestLocation, 0, 0, 0, &copySrcLocation, nullptr);
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), state);
+	dxCommandList->FlushResourceBarriers();
 
 	/*-------------------------------------------------------------------
 	-       Execute and Wait GPU
@@ -429,9 +410,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	/*-------------------------------------------------------------------
 	-       Buffer copy
 	---------------------------------------------------------------------*/
-	buffer->CopyStart();
-	image.pixels = buffer->GetCPUMemory();
-	buffer->CopyEnd();
+	buffer->UploadByte(buffer->GetCPUMappedAddress(), buffer->GetTotalByteSize());
+	image.pixels = buffer->GetCPUMappedAddress();
 
 	const auto stdFilePath = std::wstring(filePath.CString());
 	const auto extension = file::FileSystem::GetExtension(stdFilePath);
@@ -484,15 +464,11 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 }
 
 #pragma endregion Public Function
-void GPUTexture::Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList)
-{
-	
-}
 
 /****************************************************************************
 *                     AllocateGPUTextureBuffer
-*************************************************************************//**
-*  @fn        void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
+****************************************************************************/
+/* @fn        void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
 *
 *  @brief     Allocate texture buffer in GPU memory
 *
@@ -531,23 +507,23 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	---------------------------------------------------------------------*/
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = resourceDesc.Format;
-	if (gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget))
+	if (gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::RenderTargetable))
 	{
-		clearValue.Color[0] = _metaData.ClearColor.Color[0];
-		clearValue.Color[1] = _metaData.ClearColor.Color[1];
-		clearValue.Color[2] = _metaData.ClearColor.Color[2];
-		clearValue.Color[3] = _metaData.ClearColor.Color[3];
+		clearValue.Color[0] = _metaData.ClearColor.Type.Color[0];
+		clearValue.Color[1] = _metaData.ClearColor.Type.Color[1];
+		clearValue.Color[2] = _metaData.ClearColor.Type.Color[2];
+		clearValue.Color[3] = _metaData.ClearColor.Type.Color[3];
 	}
-	else if(gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil))
+	else if(gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::DepthStencilTargetable))
 	{
-		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Depth;
-		clearValue.DepthStencil.Stencil = _metaData.ClearColor.Stencil;
+		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Type.DSV.Depth;
+		clearValue.DepthStencil.Stencil = (gu::uint8)_metaData.ClearColor.Type.DSV.Stencil;
 	}
 
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
 		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(_metaData.State),
-		gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget) ||
-		gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil) ? &clearValue : nullptr,
+		gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::RenderTargetable) ||
+		gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::DepthStencilTargetable) ? &clearValue : nullptr,
 		IID_PPV_ARGS(_resource.GetAddressOf())));
 
 	/*-------------------------------------------------------------------
@@ -566,11 +542,11 @@ void GPUTexture::ConvertDxMetaData(D3D12_RESOURCE_DESC& resourceDesc)
 	resourceDesc.Width              = _metaData.Width;
 	resourceDesc.Height             = static_cast<UINT>(_metaData.Height);
 	resourceDesc.DepthOrArraySize   = static_cast<UINT16>(_metaData.DepthOrArraySize);
-	resourceDesc.MipLevels          = static_cast<UINT16>(_metaData.MipLevels);
-	resourceDesc.Format             = EnumConverter::Convert(_metaData.PixelFormat);
+	resourceDesc.MipLevels          = static_cast<UINT16>(_metaData.MipMapLevels);
+	resourceDesc.Format             = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_metaData.PixelFormat).PlatformFormat;
 	resourceDesc.SampleDesc.Count   = static_cast<UINT>(_metaData.Sample);
 	resourceDesc.SampleDesc.Quality = 0;
 	resourceDesc.Layout             = D3D12_TEXTURE_LAYOUT::D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	resourceDesc.Flags              = EnumConverter::Convert(_metaData.ResourceUsage);
+	resourceDesc.Flags              = EnumConverter::Convert(_metaData.Usage);
 
 }

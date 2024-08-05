@@ -20,24 +20,21 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
+using namespace engine;
 using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::uint64_t gc::core::Material::InstanceCount = 0;
-gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = nullptr;
+std::uint64_t Material::InstanceCount = 0;
+Material::GPUResourceCachePtr Material::ResourceCache = nullptr;
 
 #pragma region Constructor and Destructor 
 Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::tstring& addName, 
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
-#ifdef _DEBUG
 	Check(bufferInfo.Count == 1);
-	Check(bufferInfo.ResourceUsage == ResourceUsage::ConstantBuffer);
-	Check(bufferInfo.BufferType == BufferType::Constant);
-#endif
+	Check(bufferInfo.Usage == BufferCreateFlags::ConstantBuffer);
 
 	/*-------------------------------------------------------------------
 	-            Set debug name
@@ -85,8 +82,8 @@ Material::~Material()
 #pragma region Main Function
 /****************************************************************************
 *					Bind
-*************************************************************************//**
-*  @fn      void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
+****************************************************************************/
+/* @fn      void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 			const std::uint32_t frameIndex,
 			const std::uint32_t bindID,
 			const gu::DynamicArray<std::uint32_t>& bindTextureIDs)
@@ -105,11 +102,9 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 	const std::uint32_t bindID,
 	const gu::DynamicArray<std::uint32_t>& bindTextureIDs)
 {
-#ifdef _DEBUG
 	Check(commandList->GetType() == CommandListType::Graphics);
 	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
 	Check(bindTextureIDs.Size() == (size_t)UsageTexture::CountOf);
-#endif
 
 	_materialBufferView->Bind(commandList, bindID);
 
@@ -120,8 +115,8 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 }
 /****************************************************************************
 *					PackMaterial
-*************************************************************************//**
-*  @fn        void Material::PackMaterial(const void* data)
+****************************************************************************/
+/* @fn        void Material::PackMaterial(const void* data)
 *
 *  @brief     Pack constant material buffer
 *
@@ -129,16 +124,16 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 *
 *  @return @@void
 *****************************************************************************/
-void Material::PackMaterial(const void* data)
+void Material::PackMaterial([[maybe_unused]]const void* data)
 {
 	const auto buffer = _materialBufferView->GetBuffer();
-	buffer->Update(data, 1);
+	//buffer->Update(data, 1);
 }
 
 /****************************************************************************
 *					LoadTexture
-*************************************************************************//**
-*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
+****************************************************************************/
+/* @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
 *
 *  @brief     Load texture according to the usage texture.
 *
@@ -160,8 +155,8 @@ Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, 
 #pragma region Set up function
 /****************************************************************************
 *					SetUpBuffer
-*************************************************************************//**
-*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 *
 *  @brief     Set up cbv buffer (for material)
 *
@@ -172,7 +167,7 @@ Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, 
 *****************************************************************************/
 void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 {
-	if (bufferInfo.BufferType != BufferType::Constant)
+	if (gu::HasAnyFlags(bufferInfo.Usage, BufferCreateFlags::ConstantBuffer))
 	{
 		OutputDebugStringA("SetUpBuffer: Unavailable buffer type");
 		return;
@@ -187,7 +182,7 @@ void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstrin
 	materialBuffer->SetName(name + SP("CB"));
 	if (bufferInfo.InitData)
 	{
-		materialBuffer->Update(bufferInfo.InitData, 1);
+		materialBuffer->UploadByte(bufferInfo.InitData, materialBuffer->GetTotalByteSize());
 	}
 
 	_materialBufferView = device->CreateResourceView(

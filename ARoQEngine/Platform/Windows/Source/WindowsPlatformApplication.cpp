@@ -10,14 +10,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #if PLATFORM_OS_WINDOWS
-#include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
+#include "../../Windows/Include/WindowsMessage.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
 #include "../../Windows/Include/WindowsPlatformCommand.hpp"
+#include "../../Windows/Include/WindowsOS.hpp"
 #include "../../Core/Include/CoreCommonState.hpp"
+#include "../../Core/Include/CoreWindowMessageHandler.hpp"
 #include "../../Windows/Include/WindowsError.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
 
 #include <SetupAPI.h>
 #include <cfgmgr32.h>
@@ -35,7 +38,7 @@ using namespace gu;
 namespace
 {
 	using GetDPIForMonitorProcedure = HRESULT(WINAPI*)(HMONITOR monitor, int32 dpiType, uint32* dpiX, uint32* dpiY);
-	GetDPIForMonitorProcedure GetDPIForMonitor = nullptr;
+	GetDPIForMonitorProcedure GetDPIForMonitorFunction = nullptr;
 
 	HMODULE SHCoreDLL = nullptr;
 }
@@ -67,7 +70,13 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 	/*---------------------------------------------------------------
 					Create instance handle
 	-----------------------------------------------------------------*/
-	windows::PlatformCommand::CoInitialize();
+	const auto oleResult = OleInitialize(NULL);
+	if(oleResult != S_OK)
+	{
+		printf("Failed to initialize OLE\n");
+	}
+
+	windows::WindowsOS::CoInitialize();
 
 	_instanceHandle = GetModuleHandleA(NULL);
 	Checkf(_instanceHandle, "_instanceHandle is nullptr.\n");
@@ -82,12 +91,17 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 	/*---------------------------------------------------------------
 					Create message handler
 	-----------------------------------------------------------------*/
-	_messageHandler = gu::MakeShared<windows::CoreWindowMessageHandler>();
+	_messageHandler = gu::MakeShared<core::CoreWindowMessageHandler>();
 
 	/*-----------------------------------------------------------------
 					  高DPIが設定可能かどうか
 	--------------------------------------------------------------------*/
 	_enableHighDPIMode = SetHighDPIMode();
+
+	/*-----------------------------------------------------------------
+					 マウスが接続されているか
+	--------------------------------------------------------------------*/
+	_isConnectedMouse = GetConnectedMiceCount() > 0;
 }
 
 PlatformApplication::~PlatformApplication()
@@ -99,6 +113,7 @@ PlatformApplication::~PlatformApplication()
 	_messageList.ShrinkToFit();
 
 	windows::PlatformCommand::CoUnInitialize();
+	OleUninitialize();
 
 	printf_s("Windows application is destroyed\n");
 }
@@ -107,13 +122,21 @@ PlatformApplication::~PlatformApplication()
 
 #pragma region Main Function
 
+/*!***********************************************************************
+*  @brief      Windowsのイベントを実行するコールバック関数
+*  @param[in]  HWND  ウィンドウハンドル
+*  @param[in]  UINT  メッセージ
+*  @param[in]  WPARAM
+*  @param[in]  LPARAM
+*  @return     LRESULT
+**************************************************************************/
 LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PlatformApplication* application = (windows::PlatformApplication*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	
 	if (application)
 	{
-		application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+		return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 	}
 	else
 	{
@@ -125,24 +148,18 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 		if (application)
 		{
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)application);
-			application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+			return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 		}
 	}
 
 	return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
-/****************************************************************************
-*                     RegisterWindowClass
-*************************************************************************//**
-*  @fn        bool PlatformApplication::RegisterWindowClass()
-*
-*  @brief     ウィンドウクラスを登録します
-* 
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Windowアプリケーションで新しいウィンドウクラスを登録します
+*  @param[in]  void
+*  @return     bool : ウィンドウクラスの登録に成功したかどうか
+**************************************************************************/
 bool PlatformApplication::RegisterWindowClass() const
 {
 	/*---------------------------------------------------------------
@@ -163,26 +180,20 @@ bool PlatformApplication::RegisterWindowClass() const
 	windowClass.lpszClassName = APPLICATION_NAME;
 
 	// Register
-	if (!::RegisterClass(&windowClass))
+	if (!::RegisterClassW(&windowClass))
 	{
-		MessageBox(NULL, L"Failed to register class.", NULL, NULL);
+		MessageBoxW(NULL, L"Failed to register class.", NULL, NULL);
 		return false;
 	}
 
 	return true;
 }
 
-/****************************************************************************
-*                     MakeWindow
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
-*
-*  @brief     新規のウィンドウインスタンスを作成します. ここではセットアップは行いません
-*
-*  @param[in] void
-*
-*  @return    gu::SharedPointer<core::CoreWindow>
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      新規のウィンドウインスタンスを作成します. ここではセットアップは行いません
+*  @param[in]  void
+*  @return     SharedPointer<core::CoreWindow> ウィンドウ
+**************************************************************************/
 SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 {
 	return StaticPointerCast<core::CoreWindow>(MakeShared<windows::CoreWindow>());
@@ -190,8 +201,8 @@ SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 
 /****************************************************************************
 *                     MakeCommand
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 *
 *  @brief     新規でコマンドをまとめたクラスのインスタンスを作成します.
 *
@@ -204,19 +215,13 @@ SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 	return StaticPointerCast<core::PlatformCommand>(MakeShared<windows::PlatformCommand>());
 }
 
-/****************************************************************************
-*                     SetUpWindow
-*************************************************************************//**
-*  @fn        void PlatformApplication::SetUpWindow(const gu::SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
-*
-*  @brief     指定のウィンドウを実際に作成するまで行います. セットアップも行います
-*
-*  @param[in] const gu::SharedPointer<core::CoreWindow>& window, 特定のウィンドウ
-*  @param[in] const core:CoreWidowDesc& desc, 設定
-*  @param[in] const gu::SharedPointer<core::CoreWindow>& parentWindow 親のウィンドウ 
-*
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      指定のウィンドウを実際に作成し, セットアップするまで行います (初期化時に呼び出し必要)
+*  @param[in]  const gu::SharedPointer<CoreWindow>& window
+*  @param[in]  const CoreWindowDesc& windowの設定項目
+*  @param[in]  const gu::SharedPointer<CoreWindow>& 親のウィンドウ
+*  @return     SharedPointer<core::CoreWindow> ウィンドウ
+**************************************************************************/
 void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
 {
 	Checkf(window, "window is nullptr");
@@ -229,8 +234,8 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 
 /****************************************************************************
 *                     PumpMessage
-*************************************************************************//**
-*  @fn        bool PlatformApplication::PumpMessage()
+****************************************************************************/
+/* @fn        bool PlatformApplication::PumpMessage()
 *
 *  @brief     メッセージを出します. この関数は仮想キーメッセージが受け取られ, それをメッセージ形式に変換した時にtrueを返します
 *
@@ -240,11 +245,14 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 *****************************************************************************/
 bool PlatformApplication::PumpMessage()
 {
-	if (PeekMessage(&_windowMessage, NULL, 0, 0, PM_REMOVE))
+	MSG message = { 0 };
+
+	if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 	{
 		/*-----------------------------------------------------------------
 				メッセージの変換と割り当て
 		--------------------------------------------------------------------*/
+		_windowMessage = message;
 		TranslateMessage(&_windowMessage);
 		DispatchMessage(&_windowMessage);
 
@@ -265,8 +273,8 @@ bool PlatformApplication::PumpMessage()
 
 /****************************************************************************
 *                     ApplicationWindowMessageProcedure
-*************************************************************************//**
-*  @fn        LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+****************************************************************************/
+/* @fn        LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 *
 *  @brief     メンバ関数で呼び出せるようにした (StaticWindowProcedureの代わり)
 *
@@ -279,42 +287,425 @@ bool PlatformApplication::PumpMessage()
 *****************************************************************************/
 LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	return ProcessImmediateWindowsMessage(hwnd, message, wParam, lParam);
+}
+
+/*!***********************************************************************
+*  @brief      ウィンドウの各メッセージを処理する実体(即時処理を行いたい処理を記述します)
+*  @param[in]  HWND ウィンドウハンドル
+*  @param[in]  UINT メッセージ
+*  @param[in]  WPARAM
+*  @param[in]  LPARAM
+*  @return     LRESULT
+**************************************************************************/
+LRESULT PlatformApplication::PushDeferredWindowsMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
 	if (_allowedToDeferredMessageProcessing)
 	{
 		_messageList.Push(DeferredMessage(hwnd, message, wParam, lParam));
+		return 0;
 	}
 	else
 	{
 		return ProcessDeferredWindowsMessage(DeferredMessage(hwnd, message, wParam, lParam));
 	}
-
-	return DefWindowProc(hwnd, message, wParam, lParam); // default window procedure
 }
 
+/*!***********************************************************************
+*  @brief      ウィンドウの各メッセージを処理する実体(即時処理を行いたい処理を記述します)
+*  @param[in]  const DeferredMessage Windows専用のメッセージ
+*  @return     LRESULT
+**************************************************************************/
+LRESULT PlatformApplication::ProcessImmediateWindowsMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// ウィンドウが存在しない場合は何もしない
+	if (_windows.IsEmpty()) 
+	{
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	} 
+
+	// ウィンドウの取得
+	const auto window = FindWindowByHWND(_windows, hwnd);
+	
+	if (!window) { return DefWindowProc(hwnd, message, wParam, lParam); }
+
+	/*-----------------------------------------------------------------
+		各メッセージの処理
+	--------------------------------------------------------------------*/
+	switch (message)
+	{
+		/*-----------------------------------------------------------------
+			ユーザーがホットキーを使用するか新しい入力言語を選択したときに送信
+			(wParam: 入力ロケール, lParam: 識別子)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-inputlangchangerequest
+		--------------------------------------------------------------------*/
+		case WM_INPUTLANGCHANGEREQUEST:
+		/*-----------------------------------------------------------------
+			入力言語が変更されたときに送信
+			(wParam: 入力言語のBYTEフォント文字, lParam: 識別子)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-inputlangchange
+		--------------------------------------------------------------------*/
+		case WM_INPUTLANGCHANGE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			ウィンドウが非表示または表示されようとしている時にウィンドウに送信
+			(wParam: ウィンドウが表示されているかどうかのフラグ, lParam: 表示されているウィンドウの状態)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-showwindow
+		--------------------------------------------------------------------*/
+		case WM_SHOWWINDOW:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			ウィンドウに対し、そのサイズが変更された後に送信されます
+			(wParam: 要求されたサイズ変更の種類, lParam: 下位はクライアント領域の幅, 上位は高さ)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-size
+		--------------------------------------------------------------------*/
+		case WM_SIZE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+
+			const bool wasMaximized = wParam == SIZE_MAXIMIZED;
+			const bool wasRestored  = wParam == SIZE_RESTORED;
+
+			if (wasMaximized || wasRestored)
+			{
+				_messageHandler->OnWindowAction(window, wasMaximized ? core::WindowActionType::Maximize : core::WindowActionType::Restore);
+			}
+			
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			ウィンドウに対し、そのサイズが変更されている最中に送信されます
+			(wParam: サイズが設定されているウィンドウの端, lParam:  RECT 構造体へのポインタ)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-sizing
+		--------------------------------------------------------------------*/
+		case WM_SIZING:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループに入った後、ウィンドウに 1 回送信
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-entersizemove
+		--------------------------------------------------------------------*/
+		case WM_ENTERSIZEMOVE:
+		{
+			_inModalSizeLoop = true;
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループを終了した後、ウィンドウに 1 回送信されます
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-exitsizemove
+		--------------------------------------------------------------------*/
+		case WM_EXITSIZEMOVE:
+		{
+			_inModalSizeLoop = false;
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			ウィンドウが移動された後に送信されます。
+			(wParam: 使用しない lParam : ウィンドウのクライアント領域の左上隅の x と y 座標 下位ワードには x 座標が含まれ、上位ワードには y 座標が含まれます)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-sizing
+		--------------------------------------------------------------------*/
+		case WM_MOVE:
+		{
+			const int32 x = LOWORD(lParam);
+			const int32 y = HIWORD(lParam);
+
+			_messageHandler->OnWindowMoved(window, x, y);
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+		 特定の画面座標に対応するウィンドウの部分を決定するために、ウィンドウに送信
+		 (wParam : 使用しない, lParam : カーソルのx, y座標)
+		 https://learn.microsoft.com/ja-jp/windows/win32/inputdev/wm-nchittest
+		--------------------------------------------------------------------*/
+		case WM_NCHITTEST:
+		{
+			break;
+		}
+		/*-----------------------------------------------------------------
+		 カーソルが非アクティブウィンドウにあるときにマウスボタンを押すと送信
+		 (wParam : アクティブ化されるウィンドウハンドル, lParam : 下位16ビットにヒットテスト値, 上位16ビットにマウスメッセージ)
+		 https://learn.microsoft.com/ja-jp/windows/win32/inputdev/wm-mouseactivate
+		--------------------------------------------------------------------*/
+		case WM_MOUSEACTIVATE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+				Windowがアクティブ化, 非アクティブ化された時に送られる	
+		--------------------------------------------------------------------*/
+		case WM_ACTIVATE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+		アクティブなウィンドウとは異なるアプリケーションに属するウィンドウがアクティブ化される時に送られる
+		--------------------------------------------------------------------*/
+		case WM_ACTIVATEAPP:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			WM_CLOSEはウィンドウが閉じられたときに送信されます
+		--------------------------------------------------------------------*/
+		case WM_CLOSE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+		  システム全体の設定を変更したとき, ポリシー設定が変更されたときに全ての最上位ウィンドウに送信
+		--------------------------------------------------------------------*/
+		case WM_SETTINGCHANGE:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+		  対象ウィンドウの一部を塗りつぶす要求を行う場合に送信
+		--------------------------------------------------------------------*/
+		case WM_PAINT:
+		{
+			if (_isResizing)
+			{
+				_messageHandler->OnOSPainted(window);
+			}
+			break;
+		}
+		/*-----------------------------------------------------------------
+		 ウィンドウの背景を消去する必要があるとき (たとえば、ウィンドウのサイズを変更する場合) に送信されます
+		--------------------------------------------------------------------*/
+		case WM_ERASEBKGND:
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-erasebkgnd
+			return 1; // 自身で背景の消去を行うため, 0以外の値を返す必要がある. 
+		}
+		/*-----------------------------------------------------------------
+		 ウィンドウの背景を消去する必要があるとき (たとえば、ウィンドウのサイズを変更する場合) に送信されます
+		--------------------------------------------------------------------*/
+		case WM_NCACTIVATE:
+		{
+			//  OSウィンドウのボーダーを使用しない限り、非クライアント領域がアクティブ化または非アクティブ化時にボーダーを描画しないようにします.
+			//  標準的なアクティブ化が行われるようにtrueを返す
+			if (!window->GetDesc().HasWindowOSWindowBorder)
+			{
+				return true;
+			}
+			break;
+		}
+		/*-----------------------------------------------------------------
+		 フレームを塗りつぶす必要があるときにウィンドウに送信される
+		--------------------------------------------------------------------*/
+		case WM_NCPAINT:
+		{
+			//  OSのウィンドウ境界を使用しない限り、クライアント以外の領域を描画する呼び出しをインターセプトする
+			if (!window->GetDesc().HasWindowOSWindowBorder)
+			{
+				return 0;
+			}
+			break;
+		}
+		/*-----------------------------------------------------------------
+		 ウィンドウメニューからコマンドを選択したとき, ユーザーが最大化・最小化・復元・閉じるボタンをクリックしたときに送信
+		--------------------------------------------------------------------*/
+		case WM_SYSCOMMAND:
+		{
+			switch(wParam & 0xFFF0)
+			{
+				case SC_RESTORE:
+				{
+					if (IsIconic(hwnd))
+					{
+						::ShowWindow(hwnd, SW_RESTORE);
+						return 0;
+					}
+					if (!_messageHandler->OnWindowAction(window, core::WindowActionType::Restore))
+					{
+						return 1;
+					}
+					break;
+				}
+				case SC_MINIMIZE:
+				{
+					_messageHandler->OnWindowAction(window, core::WindowActionType::Minimize);
+					break;
+				}
+				case SC_MAXIMIZE:
+				{
+					_messageHandler->OnWindowAction(window, core::WindowActionType::Maximize);
+					break;
+				}
+				case SC_CLOSE:
+				{
+					PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+					break;
+				}
+			}
+			break;
+		}
+		/*-----------------------------------------------------------------
+		 windowのサイズ変更できる最小の大きさと最大の大きさを変更する
+		 (wParam : 使用しない, lParam : MINMAXINFOへのポインタ)
+		 https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-getminmaxinfo
+		--------------------------------------------------------------------*/
+		case WM_GETMINMAXINFO:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+		 非クライアント領域にカーソルがあるときにクリックされたときに送信
+		 (wParam : ヒットテスト値(WM_NCHITTEST), lParam : カーソルのx, y座標を含むPOINTS構造体ではあるが, 使用するなと記載 
+		 https://learn.microsoft.com/ja-jp/windows/win32/inputdev/wm-nclbuttondown)
+		--------------------------------------------------------------------*/
+		case WM_NCLBUTTONDOWN:
+		case WM_NCRBUTTONDOWN:
+		case WM_NCMBUTTONDOWN:
+		{
+			switch (wParam)
+			{
+				case HTMINBUTTON:
+				case HTMAXBUTTON:
+				case HTCLOSE:
+				case HTCAPTION:
+				{
+					if (!_messageHandler->OnWindowAction(window, core::WindowActionType::ClickedNonClientArea))
+					{
+						return 1;
+					}
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			break;
+		}
+		/*-----------------------------------------------------------------
+			ディスプレイの解像度が変更された場合に送信される (最上位ウィンドウ)
+			(wParam:イメージ深度, lParam: 画面の水平(下位), 垂直解像度(上位))
+			https://learn.microsoft.com/ja-jp/windows/win32/gdi/wm-displaychange
+		--------------------------------------------------------------------*/
+		case WM_DISPLAYCHANGE:
+		{
+			break;
+		}
+		/*-----------------------------------------------------------------
+			有効DPIが変更された場合に送信
+			(wParam: dpiのX (HI), Y軸 (LO), lParam: RECT構造体のポインタ)
+			https://learn.microsoft.com/ja-jp/windows/win32/hidpi/wm-dpichanged
+		--------------------------------------------------------------------*/
+		case WM_DPICHANGED:
+		{
+			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			コントロールに関連付けられているキーボード入力メッセージを処理する
+			https://learn.microsoft.com/ja-jp/windows/win32/dlgbox/wm-getdlgcode
+		--------------------------------------------------------------------*/
+		case WM_GETDLGCODE:
+		{
+			return DLGC_WANTALLKEYS;
+		}
+		/*-----------------------------------------------------------------
+			CreateWindowを呼び出してウィンドウの作成を要求するときに送信
+			(wParam : 使用しない, lParam : イベント固有のデータを含む構造体へのポインタ)
+			https://learn.microsoft.com/ja-jp/windows/win32/devio/wm-devicechange
+		--------------------------------------------------------------------*/
+		case WM_CREATE:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			デバイスまたはコンピューターのハードウェア構成の変更をアプリケーションに通知します
+			(wParam : 発生イベント, lParam : CreateStruct構造体へのポインタ)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-create
+		--------------------------------------------------------------------*/
+		case WM_DEVICECHANGE:
+		{
+			break;
+		}
+		/*-----------------------------------------------------------------
+			Windowが破棄された時に送られる
+		--------------------------------------------------------------------*/
+		case WM_DESTROY:
+		{
+			_windows.Remove(window);
+			if (_windows.IsEmpty())
+			{
+				PostQuitMessage(0);
+			}
+			return 0;
+		}
+	}
+
+	return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+/*!***********************************************************************
+*  @brief      ウィンドウの各メッセージを処理する実体
+*  @param[in]  const DeferredMessage Windows専用のメッセージ
+*  @return     LRESULT
+**************************************************************************/
 LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage& message)
 {
 	const auto window      = FindWindowByHWND(_windows, message.WindowHandle);
 	const auto messageCode = message.MessageCode;
 
-	if (!window)          { return 0; }
-	if (!_messageHandler) { return 0; }
+	if (!window)          { return FALSE; }
+	if (!_messageHandler) { return FALSE; }
 
 	switch (messageCode)
 	{
 		/*-----------------------------------------------------------------
-		  Activated or deactivatedの時に送られる
+		  Windowがアクティブ化, 非アクティブ化された時に送られる
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATE:
 		{
+			core::ActivationType activationType = core::ActivationType::InActivate;
 
-			break;
+			if (LOWORD(message.WParam) & WA_ACTIVE)
+			{
+				activationType = _isForceActivateByMouse ? core::ActivationType::ClickActivate : core::ActivationType::Activate;
+			}
+			else if (LOWORD(message.WParam) & WA_CLICKACTIVE)
+			{
+				activationType = core::ActivationType::ClickActivate;
+			}
+
+			_isForceActivateByMouse = false;
+
+			return _messageHandler->OnWindowActivationChanged(window, core::ActivationType::Activate) ? 0 : 1;
 		}
+
 		/*-----------------------------------------------------------------
 		  アクティブなウィンドウとは異なるアプリケーションに属するウィンドウがアクティブ化される時に送られる
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATEAPP:
 		{
-			break;
+			return _messageHandler->OnWindowApplicationActivationChanged(!!message.WParam) ? 0 : 1;
+		}
+		/*-----------------------------------------------------------------
+		  システム全体の設定を変更したとき, ポリシー設定が変更されたときに全ての最上位ウィンドウに送信
+		--------------------------------------------------------------------*/
+		case WM_SETTINGCHANGE:
+		{
+			return _messageHandler->OnSettingChanged() ? 0 : 1;
 		}
 		/*-----------------------------------------------------------------
 		  ウィンドウサイズが変わったときに送られる
@@ -330,7 +721,13 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 				return 0;
 			}
 
-			_messageHandler->OnSizeChanged(window, LOWORD(message.LParam), HIWORD(message.LParam));
+			if(_resizingWidth == LOWORD(message.LParam) && _resizingHeight == HIWORD(message.LParam))
+			{
+				return 0;
+			}
+
+			_resizingWidth  = LOWORD(message.LParam);
+			_resizingHeight = HIWORD(message.LParam);
 
 			switch (message.WParam)
 			{
@@ -367,6 +764,27 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_SIZING:
 		{
+			_messageHandler->OnWindowResizing(window);
+			break;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループに入った後、ウィンドウに 1 回送信
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-entersizemove
+		--------------------------------------------------------------------*/
+		case WM_ENTERSIZEMOVE:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループを終了した後、ウィンドウに 1 回送信されます
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-exitsizemove
+		--------------------------------------------------------------------*/
+		case WM_EXITSIZEMOVE:
+		{
+			_messageHandler->OnSizeChanged(window, _resizingWidth, _resizingHeight);
+
 			return 0;
 		}
 		/*-----------------------------------------------------------------
@@ -381,8 +799,7 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_CLOSE:
 		{
-			_messageHandler->OnWindowClosed(gu::StaticPointerCast<core::CoreWindow>(window));
-			return 0;
+			return _messageHandler->OnWindowClosed(gu::StaticPointerCast<core::CoreWindow>(window)) ? 0 : 1;
 		}
 		/*-----------------------------------------------------------------
 			WM_DESTROY is sent when the window is deleted
@@ -403,8 +820,8 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 
 /****************************************************************************
 *                     ProcessDeferredEvents
-*************************************************************************//**
-*  @fn        void PlatformApplication::ProcessDeferredEvents()
+****************************************************************************/
+/* @fn        void PlatformApplication::ProcessDeferredEvents()
 *
 *  @brief     まとめて一括でためたイベントを発行する
 *
@@ -426,25 +843,18 @@ void PlatformApplication::ProcessDeferredEvents()
 #pragma endregion Main Function
 
 #pragma region Monitor
-/****************************************************************************
-*                     GetMonitorDPI
-*************************************************************************//**
-*  @fn        gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInfo) const
-*
-*  @brief     モニターのDPIを取得します
-*             https://zenn.dev/tenka/articles/windows_display_monitor_dpi
-*
-*  @param[in] const core::MonitorInfo
-*
-*  @return    gu::int32 DPI
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      モニターのdot per inchを取得する.  https://zenn.dev/tenka/articles/windows_display_monitor_dpi
+*  @param[in]  const core::MonitorInfo& monitor
+*  @return     gu::int32 DPI
+**************************************************************************/
 gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInfo) const
 {	
 	if (!EnableHighDPIAwareness()) { return USER_DEFAULT_SCREEN_DPI; }
 
 	int32 displayDPI = USER_DEFAULT_SCREEN_DPI;
 
-	if (GetDPIForMonitor)
+	if (::GetDPIForMonitorFunction)
 	{
 		const RECT monitorDimenstion =
 		{
@@ -456,7 +866,7 @@ gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInf
 		
 		uint32 dpiX = 0, dpiY = 0;
 		HMONITOR monitor = MonitorFromRect(&monitorDimenstion, MONITOR_DEFAULTTONEAREST);
-		if(monitor && SUCCEEDED(GetDPIForMonitor(monitor, 0, &dpiX, &dpiY)))
+		if(monitor && SUCCEEDED(GetDPIForMonitorFunction(monitor, 0, &dpiX, &dpiY)))
 		{
 			displayDPI = dpiX;
 		}
@@ -473,8 +883,8 @@ gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInf
 
 /****************************************************************************
 *                     SetHighDPIMode
-*************************************************************************//**
-*  @fn        void CoreApplication::SetHighDPIMode()
+****************************************************************************/
+/* @fn        void CoreApplication::SetHighDPIMode()
 *
 *  @brief     高DPIの設定に書き換えます.
 *             https://zenn.dev/tenka/articles/windows_display_monitor_dpi
@@ -512,7 +922,7 @@ bool PlatformApplication::SetHighDPIMode()
 
 		auto SetProcessDPIAwareness = (SetProcessDPIAwarenessProcedure)::GetProcAddress(SHCoreDLL, "SetProcessDpiAwareness");
 		auto GetProcessDPIAwareness = (GetProcessDPIAwarenessProcedure)::GetProcAddress(SHCoreDLL, "GetProcessDpiAwareness");
-		GetDPIForMonitor            = (GetDPIForMonitorProcedure)      ::GetProcAddress(SHCoreDLL, "GetDpiForMonitor");
+		GetDPIForMonitorFunction    = (GetDPIForMonitorProcedure)      ::GetProcAddress(SHCoreDLL, "GetDpiForMonitor");
 
 		if (!GetProcessDPIAwareness) { ::FreeLibrary(SHCoreDLL); return false; }
 		if (!SetProcessDPIAwareness) { ::FreeLibrary(SHCoreDLL); return false; }
@@ -562,8 +972,8 @@ bool PlatformApplication::SetHighDPIMode()
 
 /****************************************************************************
 *                     GetDPIScaleFactorAtPixelPoint
-*************************************************************************//**
-*  @fn        float CoreApplication::GetDPIScaleFactorAtPixelPoint(const float x, const float y) const
+****************************************************************************/
+/* @fn        float CoreApplication::GetDPIScaleFactorAtPixelPoint(const float x, const float y) const
 *
 *  @brief     あるピクセル位置でのDPIの拡大率を示します.
 *
@@ -576,13 +986,13 @@ float PlatformApplication::GetDPIScaleFactorAtPixelPoint(const float x, const fl
 {
 	float scale = 1.0f;
 
-	if (GetDPIForMonitor)
+	if (GetDPIForMonitorFunction)
 	{
 		POINT    position = { static_cast<LONG>(x), static_cast<LONG>(y) };
 		HMONITOR monitor  = MonitorFromPoint(position, MONITOR_DEFAULTTONEAREST);
 
 		uint32 dpiX = 0, dpiY = 0;
-		if (monitor && SUCCEEDED(GetDPIForMonitor(monitor, 0, &dpiX, &dpiY)))
+		if (monitor && SUCCEEDED(GetDPIForMonitorFunction(monitor, 0, &dpiX, &dpiY)))
 		{
 			scale = (float)dpiX / USER_DEFAULT_SCREEN_DPI;
 		}
@@ -600,8 +1010,8 @@ float PlatformApplication::GetDPIScaleFactorAtPixelPoint(const float x, const fl
 
 /****************************************************************************
 *                     GetMonitorsInfo
-*************************************************************************//**
-*  @fn        void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const
+****************************************************************************/
+/* @fn        void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const
 *
 *  @brief     モニターの情報を取得する
 *
@@ -695,7 +1105,11 @@ void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& m
 	}
 }
 
-
+/*!***********************************************************************
+*  @brief      Windowアプリケーションで新しいウィンドウクラスを登録します
+*  @param[in]  void
+*  @return     bool : ウィンドウクラスの登録に成功したかどうか
+**************************************************************************/
 BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, [[maybe_unused]]HDC monitorDC, [[maybe_unused]]LPRECT rect, LPARAM userData)
 {
 	MONITORINFOEX monitorInfoExtension = {};
@@ -714,22 +1128,17 @@ BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, [[mayb
 		monitorInfo->WorkArea.Left   = monitorInfoExtension.rcWork.left;
 		monitorInfo->WorkArea.Right  = monitorInfoExtension.rcWork.right;
 		monitorInfo->WorkArea.Top    = monitorInfoExtension.rcWork.top;
-		return false;
+		return FALSE;
 	}
-	return true;
+
+	return TRUE;
 }
 
-/****************************************************************************
-*                     GetWorkArea
-*************************************************************************//**
-*  @fn        core::Rectangle PlatformApplication::GetWorkArea(const core::Rectangle& window)
-*
-*  @brief     タスクバーを含まない実際の作業領域を返す
-*
-*  @param[in] window in the all region
-*
-*  @return    core::rectangle
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      タスクバーなどを無視した作業領域を返します.
+*  @param[in]  const core::Rectangle& ウィンドウ
+*  @return     core::Rectangle 作業領域
+**************************************************************************/
 core::Rectangle PlatformApplication::GetWorkArea(const core::Rectangle& window)
 {
 	const RECT windowsDimension =
@@ -765,5 +1174,72 @@ core::Rectangle PlatformApplication::GetWorkArea(const core::Rectangle& window)
 	return workArea;
 }
 
+/*!***********************************************************************
+*  @brief      接続されているマウスの個数を取得します.
+*  @param[in]  void
+*  @return     gu:int32
+**************************************************************************/
+gu::int32 PlatformApplication::GetConnectedMiceCount()
+{
+	DynamicArray<RAWINPUTDEVICELIST> rawInputDevices = {};
+	
+	gu::uint32 deviceCount = 0;
+
+	/*---------------------------------------------------------------
+				接続されているInputデバイスを取得
+	-----------------------------------------------------------------*/
+	GetRawInputDeviceList(nullptr, &deviceCount, sizeof(RAWINPUTDEVICELIST));
+
+	if (deviceCount == 0)
+	{
+		_isConnectedMouse = false;
+		return 0;
+	}
+
+	rawInputDevices.Resize(deviceCount);
+	GetRawInputDeviceList(rawInputDevices.Data(), &deviceCount, sizeof(RAWINPUTDEVICELIST));
+
+	/*---------------------------------------------------------------
+				マウスの個数の抽出
+	-----------------------------------------------------------------*/
+	gu::int32 mouseCount = 0;
+
+	for (const auto& device : rawInputDevices)
+	{
+		// マウスデバイスのみを抽出
+		if (device.dwType != RIM_TYPEMOUSE) { continue; }
+
+		// 文字数を取得
+		uint32 nameLength = 0;
+		if (GetRawInputDeviceInfoA(device.hDevice, RIDI_DEVICENAME, nullptr, &nameLength) == static_cast<uint32>(-1))
+		{
+			continue;
+		}
+
+		// 文字情報を取得
+		gu::string deviceName(nameLength, true);
+		if (GetRawInputDeviceInfoA(device.hDevice, RIDI_DEVICENAME, deviceName.CString(), &nameLength) == static_cast<uint32>(-1))
+		{
+			continue;
+		}
+
+		if (deviceName.Contains("RDP_MOU", true))
+		{
+			continue;
+		}
+
+		mouseCount++;
+	}
+
+	// リモートデスクトップセッションが存在する場合には, マウスが接続されていると仮定する
+	if (GetSystemMetrics(SM_REMOTESESSION))
+	{
+		mouseCount++;
+	}
+
+	_isConnectedMouse = mouseCount > 0;
+
+	return mouseCount;
+}
 
 #endif

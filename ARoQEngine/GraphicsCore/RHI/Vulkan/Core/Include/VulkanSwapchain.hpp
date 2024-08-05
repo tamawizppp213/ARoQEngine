@@ -30,8 +30,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHISwapchain
-	*************************************************************************//**
-	*  @class     RHISwapchain
+	****************************************************************************/
+	/* @class     RHISwapchain
 	*  @brief     Update frame buffer image
 	*****************************************************************************/
 	class RHISwapchain : public rhi::core::RHISwapchain
@@ -44,29 +44,37 @@ namespace rhi::vulkan
 		gu::uint32 PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue) override;
 		
 		/* @brief : Display front buffer*/
-		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
+		void Present(const gu::SharedPointer<core::RHIFence>& fence, gu::uint64 waitValue) override ;
 		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
-		void Resize(const size_t width, const size_t height) override ;
-		
-		/* @brief : Return current frame buffer*/
-		size_t GetCurrentBufferIndex() const override ;
+		void Resize(const gu::uint32 width, const gu::uint32 height) override ;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  フルスクリーンモードと指定された解像度のスクリーンモードを切り替える
+		/*!**********************************************************************
+		*  @brief     フルスクリーンモードと指定された解像度のスクリーンモードを切り替える
 		* 　　　　　　  (isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
-		/*----------------------------------------------------------------------*/
+		*  @param[in] const bool isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する
+		*  @return    void
+		*************************************************************************/
 		void SwitchFullScreenMode([[maybe_unused]] const bool isOn) override {};
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  HDRモードとSDRモードを切り替える
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     HDRモードとSDRモードを切り替える.
+		*  @param[in] const bool enableHDR : true -> HDR, false -> SDR
+		*  @return    void
+		*************************************************************************/
 		void SwitchHDRMode([[maybe_unused]]const bool enableHDR) override {};
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		VkSwapchainKHR GetSwapchain() { return _swapchain; }
+		/*!**********************************************************************
+		*  @brief     現在描画コマンドを詰め込みたいバックバッファのインデックスを返します
+		*  @param[in] void
+		*  @return    gu::uint32 スワップチェインの描画する幅
+		*************************************************************************/
+		gu::uint8 GetCurrentBufferIndex() const override;
+
+		VkSwapchainKHR GetSwapchain() const { return _swapchain; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -77,7 +85,7 @@ namespace rhi::vulkan
 			const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue,
 			const core::WindowInfo& windowInfo,
 			const core::PixelFormat& pixelFormat,
-			const size_t frameBufferCount = 3,std::uint32_t vsync = 0, bool isValidHDR = true);
+			const gu::uint8 frameBufferCount = 3,gu::uint8 vsync = 0, bool isValidHDR = true);
 
 		explicit RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device,
 			const core::SwapchainDesc& desc);
@@ -90,7 +98,7 @@ namespace rhi::vulkan
 		void SetUp();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
 

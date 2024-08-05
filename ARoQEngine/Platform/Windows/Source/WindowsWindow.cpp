@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   Application.cpp
-///             @brief  Main Window
-///             @author Toide Yutaro
-///             @date   2022_04_13
+///  @file   WindowsWindow.hpp
+///  @brief  ウィンドウを作成するクラス
+///  @author Toide Yutaro
+///  @date   2023_08_31
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -12,10 +12,13 @@
 #if PLATFORM_OS_WINDOWS
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsError.hpp"
+#include "../../Windows/Include/WindowsCommonState.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
 #include <stdexcept>
 #include <dwmapi.h>
+#include <ShlObj.h>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -27,6 +30,11 @@ using namespace platform::windows;
 using namespace gu;
 
 #pragma warning(disable: 4312)
+
+namespace
+{
+	platform::windows::details::DragDropOLEData DecipherOLEData(IDataObject* data);
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
@@ -45,25 +53,20 @@ CoreWindow::~CoreWindow()
 }
 #pragma endregion Constructor and Destructor
 #pragma region Main Function
-/****************************************************************************
-*                     Create
-*************************************************************************//**
-*  @fn        void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
-*
-*  @brief     ウィンドウを作成します
-*
-*  @param[in] const SharedPointer<core::PlatformApplication>& application
-*  @param[in] const core::CoreWindowDesc& desc
-*  @param[in] const gu::SharedPointer<core::CoreWindow>& parentWindow : 親ウィンドウ
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Applicationに登録しつつ, 指定したDescriptorでウィンドウを作成します.
+*  @param[in]  const gu::SharedPointer<core::PlatformApplication>& application
+*  @param[in]  const core::CoreWindowDesc& desc
+*  @param[in]  const gu::SharedPointer<core::CoreWindow>& parentWindow
+*  @return     bool
+**************************************************************************/
 void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
 {
 	/*-----------------------------------------------------------------
 					   Prepare 
 	--------------------------------------------------------------------*/
 	Checkf(application, "application is nullptr");
+	_application = application;
 
 	const auto windowsApplication = StaticPointerCast<windows::PlatformApplication>(application);
 
@@ -81,7 +84,7 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 	int32 windowCenterY = static_cast<int32>(desc.DesiredScreenPositionY);
 	
 	// サイズ決定時にDPI scaleも考慮する
-	_dpiScaleFactor = windowsApplication->GetDPIScaleFactorAtPixelPoint(static_cast<float>(windowCenterX), static_cast<float>(windowCenterY));
+	_dpiScaleFactor = windowsApplication->GetDPIScaleFactorAtPixelPoint(static_cast<float32>(windowCenterX), static_cast<float32>(windowCenterY));
 
 	// https://learn.microsoft.com/ja-jp/windows/win32/winmsg/extended-window-styles
 	DWORD windowExtensionStyle = 0;
@@ -160,6 +163,30 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 			windowExtensionStyle |= WS_EX_TRANSPARENT;
 		}
 	}
+
+	/*-----------------------------------------------------------------
+					 埋め込みモードの対応
+	--------------------------------------------------------------------*/
+	if (EmbeddedWindow.UseEmbeddedMode && EmbeddedWindow.WindowHandle && EmbeddedWindow.IsOverride)
+	{
+		_hwnd = *(HWND*)EmbeddedWindow.WindowHandle;
+		
+		// 最初だけ上書き
+		EmbeddedWindow.IsOverride = false;
+
+		// サイズ設定
+		RECT rectangle = {};
+		::GetClientRect(_hwnd, &rectangle);
+
+		_regionWidth  = _virtualWindowWidth  = rectangle.right - rectangle.left;
+		_regionHeight = _virtualWindowHeight = rectangle.bottom - rectangle.top;
+
+		EmbeddedWindow.Width  = _regionWidth;
+		EmbeddedWindow.Height = _regionHeight;
+
+		return;
+	}
+
 
 	/*-----------------------------------------------------------------
 	                	Create window
@@ -278,20 +305,16 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 	if (_windowDesc.IsVanillaWindow)
 	{
 		RegisterDragDrop(_hwnd, this);
+
+		::AddClipboardFormatListener(_hwnd);
 	}
 }
 
-/****************************************************************************
-*                     Show
-*************************************************************************//**
-*  @fn        bool CoreWindow::Show()
-*
-*  @brief     ウィンドウを表示します
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Native Windowを表示します
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::Show()
 {
 	if (_isVisible) { return true; }
@@ -329,17 +352,11 @@ bool CoreWindow::Show()
 	return ErrorLogger::Succeed();
 }
 
-/****************************************************************************
-*                     Hide
-*************************************************************************//**
-*  @fn        bool CoreWindow::Hide()
-*
-*  @brief     Visibleであった場合にウィンドウを隠します
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Native Windowを非表示にします
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::Hide()
 {
 	if (_isVisible)
@@ -351,17 +368,11 @@ bool CoreWindow::Hide()
 	return true;
 }
 
-/****************************************************************************
-*                     Minimize
-*************************************************************************//**
-*  @fn        bool CoreWindow::Minimize()
-*
-*  @brief     ウィンドウを最小化します.
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウを最小化します
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::Minimize()
 {
 	if (_isFirstTimeVisible)
@@ -377,17 +388,11 @@ bool CoreWindow::Minimize()
 	}
 }
 
-/****************************************************************************
-*                     Maximize
-*************************************************************************//**
-*  @fn        bool CoreWindow::Maximize()
-*
-*  @brief     ウィンドウを最大化します
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウを最大化します
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::Maximize()
 {
 	if (_isFirstTimeVisible)
@@ -404,17 +409,11 @@ bool CoreWindow::Maximize()
 	}
 }
 
-/****************************************************************************
-*                     ReStore
-*************************************************************************//**
-*  @fn        bool CoreWindow::ReStore()
-*
-*  @brief     ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウをアクティブにして表示する. 最小化・最大化されている場合は元のサイズと位置に復元される.
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::ReStore()
 {
 	// ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
@@ -431,36 +430,30 @@ bool CoreWindow::ReStore()
 	}
 }
 
-/****************************************************************************
-*                     Destroy
-*************************************************************************//**
-*  @fn        bool CoreWindow::Destroy()
-*
-*  @brief     ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウを破棄します
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::Destroy()
 {
+	if (_oleReferenceCount > 0 && IsWindow(_hwnd))
+	{
+		::RevokeDragDrop(_hwnd);
+		_oleReferenceCount = 0;
+	}
+
 	return ::DestroyWindow(_hwnd);
 }
 
-/****************************************************************************
-*                     Resize
-*************************************************************************//**
-*  @fn        void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height)
-*
-*  @brief     ウィンドウのサイズを変更します
-*
-*  @param[in] const int32 window center position x
-*  @param[in] const int32 window center position y
-*  @param[in] const int32 window width
-*  @param[in] const int32 window height
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウサイズを変更します
+*  @param[in]  const gu::int32 x
+*  @param[in]  const gu::int32 y
+*  @param[in]  const gu::int32 width
+*  @param[in]  const gu::int32 height
+*  @return     void
+**************************************************************************/
 void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height)
 {
 	/*---------------------------------------------------------------
@@ -544,18 +537,13 @@ void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 wi
 		AdjustWindowRegion(_virtualWindowWidth, _virtualWindowHeight);
 	}
 }
-/****************************************************************************
-*                     DisableTouchFeedback
-*************************************************************************//**
-*  @fn        void CoreWindow::DisableTouchFeedback()
-*
-*  @brief     タッチ入力を無効化します. 
-*
-*  @param[in] void
-*
-*  @return    void
-*****************************************************************************/
-void CoreWindow::DisableTouchFeedback()
+
+/*!***********************************************************************
+*  @brief      タッチフィードバックを無効化する.
+*  @param[in]  void
+*  @return     void
+**************************************************************************/
+void CoreWindow::DisableTouchFeedback() const
 {
 #if WINVER < 0x0602
 	const auto userDLL = GetModuleHandle(L"user32.dll");
@@ -601,31 +589,25 @@ void CoreWindow::DisableTouchFeedback()
 	-----------------------------------------------------------------*/
 	if (SetWindowFeedbackSetting)
 	{
-		BOOL enabled = 0;
+		BOOL enabled = FALSE;
 		SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_CONTACTVISUALIZATION, 0, sizeof(enabled), &enabled);
 		SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_TAP, 0         , sizeof(enabled), &enabled);
 		SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_PRESSANDHOLD, 0, sizeof(enabled), &enabled);
 	}
 #else
-	BOOL enabled = 0;
+	BOOL enabled = FALSE;
 	SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_CONTACTVISUALIZATION, 0, sizeof(enabled), &enabled);
 	SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_TAP, 0         , sizeof(enabled), &enabled);
 	SetWindowFeedbackSetting(_hwnd, FEEDBACK_TOUCH_PRESSANDHOLD, 0, sizeof(enabled), &enabled);
 #endif
 }
 
-/****************************************************************************
-*                     AdjustWindowRegion
-*************************************************************************//**
-*  @fn        void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
-*
-*  @brief     ウィンドウ領域の調整
-*
-*  @param[in] const int32 width
-*  @param[in] const int32 height
-*
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウ領域の調整
+*  @param[in]  const gu::int32 幅
+*  @param[in]  const gu::int32 高さ
+*  @return     void
+**************************************************************************/
 void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
 {
 	_regionWidth  = width;
@@ -635,17 +617,11 @@ void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
 	Confirm(SetWindowRgn(_hwnd, regionHandle, false))
 }
 
-/****************************************************************************
-*                     CreateWindowRegionObject
-*************************************************************************//**
-*  @fn        HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) const
-*
-*  @brief     Regionオブジェクトの作成
-*
-*  @param[in] const bool useBorderWhenMaximizedは最大化しているときにも境界部分を使うか.
-*
-*  @return    HRGN 
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Regionオブジェクトの作成
+*  @param[in]  const bool useBorderWhenMaximizedは最大化しているときにも境界部分を使うか.
+*  @return     void
+**************************************************************************/
 HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) const
 {
 	HRGN region = nullptr;
@@ -717,8 +693,8 @@ HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) con
 
 /****************************************************************************
 *                     GetFullScreenInfo
-*************************************************************************//**
-*  @fn        bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const
+****************************************************************************/
+/* @fn        bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const
 *
 *  @brief     現在指定したウィンドウに最も交差しているモニターのサイズを取得します. 
 *
@@ -754,20 +730,11 @@ bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width,
 	return true;
 }
 
-/****************************************************************************
-*                     BringToFront
-*************************************************************************//**
-*  @fn        void BringToFront(const bool forceFront)
-*
-*  @brief     既に設定されたウィンドウを最前面に表示する
-* 
-*  @param[in] bool force front 
-　　　　　　　　　 他のウィンドウからフォーカスを奪うことになっても、ウィンドウを強制的にZ順の先頭にする
-		     これはゲーム・ウィンドウのように、強制的に最前面に移動させないとマウス・キャプチャやマウス・ロックが起こるが、
-			 ウィンドウが表示されないようなウィンドウにのみ有効である。
-*
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      既に設定されたウィンドウを最前面に表示する
+*  @param[in]  const bool 強制的に最前面に表示するか
+*  @return     void
+**************************************************************************/
 void CoreWindow::BringToFront(const bool forceFront)
 {
 	if (_windowDesc.IsVanillaWindow)
@@ -791,25 +758,22 @@ void CoreWindow::BringToFront(const bool forceFront)
 		
 		// 現在の位置 + サイズ + zOrderを保持する. (zOrderはinsertAfter以外)
 		uint32 flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER;
-		if (!forceFront) { flags |= SWP_NOACTIVATE; }
+		if (!forceFront) 
+		{
+			flags |= SWP_NOACTIVATE; 
+		}
 
 
 		::SetWindowPos(_hwnd, hwndInsertAfter, 0, 0, 0, 0, flags);
 	}
 }
 
-/****************************************************************************
-*                     Move
-*************************************************************************//**
-*  @fn        void CoreWindow::Move(const int32 x, const int32 y)
-*
-*  @brief     指定したx, y座標にウィンドウを移動させます
-*
-*  @param[in] int32 x
-*  @param[in] int32 y
-*
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      指定したx, y座標にウィンドウを移動させます
+*  @param[in]  const gu::int32 x
+*  @param[in]  const gu::int32 y
+*  @return     void
+**************************************************************************/
 void CoreWindow::Move(const int32 x, const int32 y)
 {
 	int32 correctedX = x;
@@ -838,19 +802,14 @@ void CoreWindow::Move(const int32 x, const int32 y)
 	::SetWindowPos(_hwnd, nullptr, correctedX, correctedY, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
 }
 
-/****************************************************************************
-*                     SetWindowMode
-*************************************************************************//**
-*  @fn        void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
-*
-*  @brief     ウィンドウモードの設定
-*
-*  @param[in] const core::WindowMode windowMode
-*
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      フルスクリーンやウィンドウモードといったWindowの状態を設定します
+*  @param[in]  const WindowMode ウィンドウモード
+*  @return     void
+**************************************************************************/
 void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 {
+	// 同じモードの場合は切り替えの必要がないため終了
 	if (_windowDesc.WindowMode == windowMode) { return; }
 
 	/*---------------------------------------------------------------
@@ -859,10 +818,9 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 	const auto previousWindowMode = _windowDesc.WindowMode;
 	_windowDesc.WindowMode        = windowMode;
 
-	auto windowDefaultStyle  = GetWindowLong(_hwnd, GWL_STYLE);
-	auto windowedModeStyle   = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
-	auto fullScreenModeStyle = WS_POPUP;
-	const auto isTrueFullScreen = windowMode == core::WindowMode::FullScreen;
+	LONG windowDefaultStyle  = GetWindowLong(_hwnd, GWL_STYLE);
+	LONG windowedModeStyle   = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
+	LONG fullScreenModeStyle = WS_POPUP;
 
 	if (_windowDesc.IsVanillaWindow)
 	{
@@ -913,7 +871,7 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 		GetClientRect(_hwnd, &clientRectangle);
 
 		// モニター情報の取得
-		HMONITOR    monitor = MonitorFromWindow(_hwnd, isTrueFullScreen? MONITOR_DEFAULTTOPRIMARY : MONITOR_DEFAULTTONEAREST);
+		HMONITOR    monitor = MonitorFromWindow(_hwnd, windowMode == core::WindowMode::FullScreen ? MONITOR_DEFAULTTOPRIMARY : MONITOR_DEFAULTTONEAREST);
 		
 		MONITORINFO monitorInfo = {};
 		monitorInfo.cbSize = sizeof(MONITORINFO);
@@ -924,8 +882,8 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 		-----------------------------------------------------------------*/
 		const auto monitorWidth       = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 		const auto monitorHeight      = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
-		const auto targetClientWidth  = isTrueFullScreen ? min(monitorWidth, clientRectangle.right - clientRectangle.left) : monitorWidth;
-		const auto targetClientHeight = isTrueFullScreen ? min(monitorHeight, clientRectangle.bottom - clientRectangle.top) : monitorHeight;
+		const auto targetClientWidth  = windowMode == core::WindowMode::FullScreen ? min(monitorWidth, clientRectangle.right - clientRectangle.left) : monitorWidth;
+		const auto targetClientHeight = windowMode == core::WindowMode::FullScreen ? min(monitorHeight, clientRectangle.bottom - clientRectangle.top) : monitorHeight;
 
 		/*---------------------------------------------------------------
 				サイズを変更する
@@ -956,17 +914,11 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 	}
 }
 
-/****************************************************************************
-*                     GetWindowBorderSize
-*************************************************************************//**
-*  @fn        int32 CoreWindow::GetWindowBorderSize() const
-*
-*  @brief     ウィンドウの境界部分のサイズを返す
-*
-*  @param[in] void
-*
-*  @return    int32 border size
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Windowのボーダーサイズを取得します.
+*  @param[in]  void
+*  @return     gu::int32
+**************************************************************************/
 int32 CoreWindow::GetWindowBorderSize() const
 {
 	/*---------------------------------------------------------------
@@ -989,34 +941,22 @@ int32 CoreWindow::GetWindowBorderSize() const
 	return windowInfo.cxWindowBorders;
 }
 
-/****************************************************************************
-*                     GetWindowTitleBarSize
-*************************************************************************//**
-*  @fn        int32 CoreWindow::GetWindowTitleBarSize() const
-*
-*  @brief     ウィンドウのタイトルバーのサイズを返す
-*
-*  @param[in] void
-*
-*  @return    int32 size
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      Windowのタイトルバーのサイズを取得します.
+*  @param[in]  void
+*  @return     gu::int32
+**************************************************************************/
 int32 CoreWindow::GetWindowTitleBarSize() const
 {
 	return ::GetSystemMetrics(SM_CYCAPTION);
 }
 
-/****************************************************************************
-*                     GetWindowPostion
-*************************************************************************//**
-*  @fn        void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
-*
-*  @brief     ウィンドウの左上の位置を返します
-*
+/*!***********************************************************************
+*  @brief      Windowの左上位置を取得します.
 *  @param[out] gu::int32& x
-*  @param[out] gu::int32& y 
-* 
-*  @return    int32 size
-*****************************************************************************/
+*  @param[out] gu::int32& y
+*  @return     void
+**************************************************************************/
 void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
 {
 	RECT rect = { NULL };
@@ -1027,15 +967,14 @@ void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
 	}
 }
 
-/****************************************************************************
-*                     GetRestoredDimensions
-*************************************************************************//**
-*  @fn        bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height)
-*
-*  @brief     サイズとウィンドウの位置を取得します
-*
-*  @return   bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      ウィンドウが復元されたときのサイズと位置を返す
+*  @param[out] gu::int32& x
+*  @param[out] gu::int32& y
+*  @param[out] gu::int32& width
+*  @param[out] gu::int32& height
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height)
 {
 	/*---------------------------------------------------------------
@@ -1076,18 +1015,11 @@ bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& wi
 	return true;
 }
 
-/****************************************************************************
-*                     ExistPointInWindow
-*************************************************************************//**
-*  @fn        bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
-*
-*  @brief     指定した位置がウィンドウ中に存在するかを判定します.
-*
-*  @param[in] const gu::int32 x
-*  @param[in] const gu::int32 y
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      座標の下にウィンドウが存在する場合はtrueを返す
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
 {
 	const auto region = CreateWindowRegionObject(false);
@@ -1097,67 +1029,43 @@ bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
 	return result;
 }
 
-/****************************************************************************
-*                     SetOpacity
-*************************************************************************//**
-*  @fn        void CoreWindow::SetOpacity(const float opacity) const
-*
-*  @brief     不透明度を0～1の範囲で設定します
-*
-*  @param[in] const float opacity (不透明度0～1)
-* 
-*  @return    void
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      透過度を設定する
+*  @param[in]  const float 透過度
+*  @return     void
+**************************************************************************/
 void CoreWindow::SetOpacity(const float opacity) const
 {
 	const auto adjustOpacity = max(0, min(static_cast<BYTE>(opacity), 255));
 	SetLayeredWindowAttributes(_hwnd, 0, (BYTE)adjustOpacity, LWA_ALPHA);
 }
 
-/****************************************************************************
-*                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
-*
+/*!***********************************************************************
 *  @brief      KeyboardFocusにこのウィンドウを設定する
-*
-*  @param[in] void
-*
-*  @return    void
-*****************************************************************************/
+*  @param[in]  void
+*  @return     void
+**************************************************************************/
 void CoreWindow::SetKeyboardFocus()
 {
 	if (GetFocus() != _hwnd) { ::SetFocus(_hwnd); }
 }
 
-/****************************************************************************
-*                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
-*
-*  @brief     親ウィンドウが最小化されたときに呼び出される関数
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!***********************************************************************
+*  @brief      親ウィンドウが最小化されたときに呼び出される関数
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
 bool CoreWindow::OnParentWindowMinimized()
 {
 	return !!::GetWindowPlacement(_hwnd, &_previousParentMinimizedWindowPlacement);
 }
 
-/****************************************************************************
-*                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
-*
-*  @brief     親ウィンドウが最小化されたときに呼び出される関数
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
-bool CoreWindow::OnParentWindowRestored()
+/*!***********************************************************************
+*  @brief      親ウィンドウがRestoreされたときに呼び出される関数
+*  @param[in]  void
+*  @return     bool
+**************************************************************************/
+bool CoreWindow::OnParentWindowRestored() const
 {
 	return !!::SetWindowPlacement(_hwnd, &_previousParentMinimizedWindowPlacement);
 }
@@ -1168,10 +1076,10 @@ bool CoreWindow::OnParentWindowRestored()
 　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::DragEnter(
-	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }
@@ -1180,9 +1088,9 @@ HRESULT STDMETHODCALLTYPE CoreWindow::DragEnter(
 　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::DragOver(
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }
@@ -1199,10 +1107,10 @@ HRESULT STDMETHODCALLTYPE CoreWindow::DragLeave()
 　　　　　@brief : オブジェクトがドロップするときに発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::Drop(
-	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }
@@ -1210,6 +1118,12 @@ HRESULT STDMETHODCALLTYPE CoreWindow::Drop(
 #pragma endregion IDropTarget
 
 #pragma region IUnknown Interface
+/*!***********************************************************************
+*  @brief      インタフェース (Droptarget)のポインタを返す
+*  @param[in]  REFIID riid
+*  @param[out] ppvObject
+*  @return     HRESULT
+**************************************************************************/
 HRESULT STDMETHODCALLTYPE CoreWindow::QueryInterface(
 	/* [in] */ REFIID riid,
 	/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject)
@@ -1227,12 +1141,22 @@ HRESULT STDMETHODCALLTYPE CoreWindow::QueryInterface(
 	}
 }
 
+/*!***********************************************************************
+*  @brief      OLEの参照カウンタを一つ上げる
+*  @param[in]  void
+*  @return     ULONG 参照カウンタ
+**************************************************************************/
 ULONG STDMETHODCALLTYPE CoreWindow::AddRef()
 {
 	::_InterlockedIncrement((long*)&_oleReferenceCount);
 	return _oleReferenceCount;
 }
 
+/*!***********************************************************************
+*  @brief      OLEの参照カウンタを一つ下げる
+*  @param[in]  void
+*  @return     ULONG 参照カウンタ
+**************************************************************************/
 ULONG STDMETHODCALLTYPE CoreWindow::Release()
 {
 	::_InterlockedDecrement((long*)&_oleReferenceCount);
@@ -1252,18 +1176,12 @@ bool CoreWindow::IsFullscreenSupported() const
 	return !::GetSystemMetrics(SM_REMOTESESSION);
 }
 
-/****************************************************************************
-*                     OnTransparenySupportChanged
-*************************************************************************//**
-*  @fn        void CoreWindow::OnTransparenySupportChanged(const core::WindowTransparency transparency)
-*
-*  @brief     透過度の設定
-*
-*  @param[in] const core::WindowTransparency 透過度の設定
-*
-*  @return    void
-*****************************************************************************/
-void CoreWindow::OnTransparenySupportChanged(const core::WindowTransparency transparency)
+/*!***********************************************************************
+*  @brief      透過度を変更する
+*  @param[in]  const core::WindowTransparency 透過度
+*  @return     void
+**************************************************************************/
+void CoreWindow::OnTransparencySupportChanged(const core::WindowTransparency transparency)
 {
 	if (transparency != core::WindowTransparency::PerPixel) { return; }
 
@@ -1289,4 +1207,94 @@ void CoreWindow::OnTransparenySupportChanged(const core::WindowTransparency tran
 }
 #pragma endregion Supported Check Function
 
+namespace
+{
+	platform::windows::details::DragDropOLEData DecipherOLEData(IDataObject* data)
+	{
+		using namespace platform::windows::details;
+
+		// ドロップされたデータを取得する
+		DragDropOLEData oleData = {};
+
+		struct OLEResourceGuard
+		{
+			STGMEDIUM& StorageMedium;
+			LPVOID     Data;
+
+			OLEResourceGuard(STGMEDIUM& storageMedium) : StorageMedium(storageMedium), Data(GlobalLock(storageMedium.hGlobal)) {};
+
+			~OLEResourceGuard() { GlobalUnlock(StorageMedium.hGlobal); ReleaseStgMedium(&StorageMedium); }
+		};
+
+		/*---------------------------------------------------------------
+　　　　　		 ドラッグドロップ操作から得られるテキストデータの形式, ファイルのリストを取得する
+		-----------------------------------------------------------------*/
+		FORMATETC formatEncodeAnsi    = { CF_TEXT, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+		FORMATETC formatEncodeUnicode = { CF_UNICODETEXT, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+		FORMATETC formatEncodeFile    = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+
+		const bool hasAnsiText    = SUCCEEDED(data->QueryGetData(&formatEncodeAnsi));
+		const bool hasUnicodeText = SUCCEEDED(data->QueryGetData(&formatEncodeUnicode));
+		const bool hasFileList    = SUCCEEDED(data->QueryGetData(&formatEncodeFile));
+
+		STGMEDIUM storageMedium = {};
+
+		/*---------------------------------------------------------------
+　　　　　		 UniCodeテキストの取得
+		-----------------------------------------------------------------*/
+		if (hasUnicodeText && data->GetData(&formatEncodeUnicode, &storageMedium) == S_OK)
+		{
+			OLEResourceGuard guard(storageMedium);
+			oleData.TypeFlag  |= DragDropOLEData::WindowsOLEDataType::Text;
+			oleData.TextString = static_cast<const gu::tchar*>(guard.Data);
+		}
+
+		/*---------------------------------------------------------------
+　　　　　		 Ansiテキストの取得
+		-----------------------------------------------------------------*/
+		if (hasAnsiText && data->GetData(&formatEncodeAnsi, &storageMedium) == S_OK)
+		{
+			OLEResourceGuard guard(storageMedium);
+			oleData.TypeFlag |= DragDropOLEData::WindowsOLEDataType::Text;
+
+			gu::string ansiText((const char*)guard.Data);
+			oleData.TextString = gu::StringConverter::ConvertStringToTString(ansiText);
+		}
+
+		/*---------------------------------------------------------------
+　　　　　		 ファイルリストを取得
+		-----------------------------------------------------------------*/
+		if(hasFileList && data->GetData(&formatEncodeFile, &storageMedium) == S_OK)
+		{
+			OLEResourceGuard guard(storageMedium);
+			oleData.TypeFlag |= DragDropOLEData::WindowsOLEDataType::Files;
+
+			const DROPFILES* dropFiles = static_cast<const DROPFILES*>(guard.Data);
+			LPVOID fileListStart = (BYTE*)guard.Data + dropFiles->pFiles;
+
+			if (dropFiles->fWide)
+			{
+				tchar* position = static_cast<tchar*>(fileListStart);
+				while (position[0] != 0)
+				{
+					const tstring element = position;
+					oleData.FileNameList.Push(element);
+					position += element.Size() + 1;
+				}
+			}
+			else
+			{
+				char* position = static_cast<char*>(fileListStart);
+				while (position[0] != 0)
+				{
+					const string element = position;
+					oleData.FileNameList.Push(gu::StringConverter::ConvertStringToTString(element));
+					position += element.Size() + 1;
+				}
+			}
+		}
+
+		return oleData;
+	};
+}
 #endif

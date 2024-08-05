@@ -28,8 +28,8 @@ namespace gc
 	class IPAddress;
 	/****************************************************************************
 	*				  			    Socket
-	*************************************************************************//**
-	*  @class     Socket
+	****************************************************************************/
+	/* @class     Socket
 	*  @brief     socket
 	*****************************************************************************/
 	class Socket
@@ -67,7 +67,7 @@ namespace gc
 		/* @brief : Shutdown socket*/
 		void Shutdown(const ShutdownType type);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Done connect to server socket. */
 		bool         Connected      () const { return _connected; }
@@ -96,7 +96,7 @@ namespace gc
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		SOCKET       _socket       = INVALID_SOCKET;
 		SocketType   _socketType   = SocketType::Unknown;

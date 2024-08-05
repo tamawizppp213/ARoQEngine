@@ -25,8 +25,8 @@ namespace rhi::directX12
 {
 	/****************************************************************************
 	*				  			EnumConverter
-	*************************************************************************//**
-	*  @class     EnumConverter
+	****************************************************************************/
+	/* @class     EnumConverter
 	*  @brief     RHI::Core -> DirectX12
 	*****************************************************************************/
 	class EnumConverter
@@ -35,6 +35,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		static D3D12_MESSAGE_SEVERITY Convert(const rhi::core::MessageSeverity severity);
 #pragma region CommandList
 		static D3D12_COMMAND_LIST_TYPE    Convert(const rhi::core::CommandListType type);
 #pragma endregion CommandList
@@ -43,13 +44,10 @@ namespace rhi::directX12
 		static D3D12_ROOT_SIGNATURE_FLAGS Convert1(const rhi::core::ShaderVisibleFlag visibility);
 #pragma endregion Shader
 #pragma region Sampler State
-		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);
 		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::SamplerAddressMode addressingMode);
 		static D3D12_STATIC_BORDER_COLOR  Convert(const rhi::core::BorderColor borderColor);
 #pragma endregion Sampler State
-		static DXGI_FORMAT                Convert(const rhi::core::PixelFormat pixelFormat);
-		static DXGI_FORMAT                Convert(const rhi::core::IndexType   indexFormat);
-		static DXGI_FORMAT                Convert(const rhi::core::InputFormat inputFormat);
+		
 #pragma region BlendState
 		static D3D12_BLEND_OP             Convert(const rhi::core::BlendOperator blendOperator);
 		static D3D12_BLEND                Convert(const rhi::core::BlendFactor blendFactor);
@@ -72,7 +70,8 @@ namespace rhi::directX12
 #pragma region GPUResource
 		static D3D12_DESCRIPTOR_HEAP_TYPE  Convert(const rhi::core::DescriptorHeapType heapType);
 		static D3D12_DESCRIPTOR_RANGE_TYPE Convert1(const rhi::core::DescriptorHeapType descriptorType);
-		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::ResourceUsage usage);
+		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::BufferCreateFlags usage);
+		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::TextureCreateFlags usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
 		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceState resourceLayout);
@@ -94,6 +93,10 @@ namespace rhi::directX12
 		static D3D12_QUERY_HEAP_TYPE Convert (const rhi::core::QueryHeapType heapType);
 		static D3D12_QUERY_TYPE      Convert1(const rhi::core::QueryHeapType heapType);
 #pragma endregion Query
+#pragma region Variable Shading Rate
+		static D3D12_SHADING_RATE Convert(const rhi::core::ShadingRate shadingRate);
+		static D3D12_SHADING_RATE_COMBINER Convert(const rhi::core::ShadingRateCombiner combiner);
+#pragma endregion Variable Shading Rate
 #pragma endregion GPUResource
 	};
 }

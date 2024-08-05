@@ -22,8 +22,8 @@ static constexpr int INVALID_ID = -1;
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *							ExistsFile
-*************************************************************************//**
-*  @fn        bool FileSystem::ExistsFile(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        bool FileSystem::ExistsFile(const std::wstring& filePath)
 *  @brief     Exists file
 *  @param[in] const std::wstring& filePath
 *  @return 　　bool
@@ -40,8 +40,8 @@ bool FileSystem::ExistsFile(const std::string& filePath)
 }
 /****************************************************************************
 *							GetExtension
-*************************************************************************//**
-*  @fn        std::wstring FileSystem::GetExtension(const std::wstring& path)
+****************************************************************************/
+/* @fn        std::wstring FileSystem::GetExtension(const std::wstring& path)
 *  @brief     Get File Extension
 *  @param[in] const std::wstring& filePath
 *  @return 　　std::wstring
@@ -58,8 +58,8 @@ std::string FileSystem::GetExtension(const std::string& path)
 }
 /****************************************************************************
 *							GetDirectory
-*************************************************************************//**
-*  @fn        std::wstring FileSystem::GetDirectory(const std::wstring& path)
+****************************************************************************/
+/* @fn        std::wstring FileSystem::GetDirectory(const std::wstring& path)
 *  @brief     Get File Directory
 *  @param[in] const std::wstring& filePath
 *  @return 　　std::wstring
@@ -83,8 +83,8 @@ bool FileSystem::MakeDirectory(const std::wstring& path)
 
 /****************************************************************************
 *							GetFileName
-*************************************************************************//**
-*  @fn        std::wstring FileSystem::GetFileName(const std::wstring& path)
+****************************************************************************/
+/* @fn        std::wstring FileSystem::GetFileName(const std::wstring& path)
 *  @brief     Get File Name
 *  @param[in] const std::wstring& filePath
 *  @return 　　std::wstring
@@ -112,8 +112,8 @@ std::string FileSystem::GetFileName(const std::string& path, bool useExtension)
 }
 /****************************************************************************
 *							OpenFile
-*************************************************************************//**
-*  @fn        FILE* FileSystem::OpenFile(const std::wstring& filePath, const std::string& mode)
+****************************************************************************/
+/* @fn        FILE* FileSystem::OpenFile(const std::wstring& filePath, const std::string& mode)
 *  @brief     OpenFile
 *  @param[in] const std::wstring& filePath
 *  @param[in] const std::string& readMode
@@ -147,8 +147,8 @@ FILE* FileSystem::OpenFile(const std::string& filePath, const std::string& mode)
 }
 /****************************************************************************
 *							Split
-*************************************************************************//**
-*  @fn        std::pair<std::string, std::string> FileSystem::Split(const std::string& string, const char splitter = '*')
+****************************************************************************/
+/* @fn        std::pair<std::string, std::string> FileSystem::Split(const std::string& string, const char splitter = '*')
 *  @brief     Split string
 *  @param[in] const std::wstring& filePath
 *  @param[in] const char splitter

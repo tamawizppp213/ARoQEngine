@@ -30,8 +30,8 @@ namespace sample
 {
 	/****************************************************************************
 	*				  			SampleRectangle
-	*************************************************************************//**
-	*  @class     SampleRectangle
+	****************************************************************************/
+	/* @class     SampleRectangle
 	*  @brief     Rectangle color mesh sample 
 	*****************************************************************************/
 	class SampleRectangle : public Scene
@@ -49,7 +49,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -67,7 +67,7 @@ namespace sample
 		void OnGamePadInput() override;
 		void ExecuteSceneTransition() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VertexBufferPtr   _vertexBuffer   = nullptr;
 		IndexBufferPtr    _indexBuffer    = nullptr;

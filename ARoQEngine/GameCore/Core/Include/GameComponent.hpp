@@ -24,8 +24,8 @@ namespace gc::core
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			TemplateClass
-*************************************************************************//**
-*  @class     TemplateClass
+****************************************************************************/
+/* @class     TemplateClass
 *  @brief     temp
 *****************************************************************************/
 class Component
@@ -36,7 +36,7 @@ public:
 	*****************************************************************************/
 	virtual void Update(float deltaTime) = 0;
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	inline unsigned int GetUpdateOrder() const { return _updateOrder; }
 	inline bool ExistsOwner() { return _owner != nullptr; }
@@ -57,7 +57,7 @@ private:
 	*****************************************************************************/
 	enum {DEFAULT_UPDATE_ORDER = 100};
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	gc::core::GameObject* _owner          = nullptr;
 	unsigned int _updateOrder   = DEFAULT_UPDATE_ORDER; // The smaller its value, the faster the update order.

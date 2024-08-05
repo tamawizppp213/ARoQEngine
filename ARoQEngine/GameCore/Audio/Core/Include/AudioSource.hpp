@@ -28,8 +28,8 @@ namespace gc::audio
 	class AudioMaster;
 	class AudioClip;
 
-	/*************************************************************************//**
-	*  @enum      SoundType
+	/****************************************************************************
+	   @enum      SoundType
 	*****************************************************************************/
 	enum class SoundType
 	{
@@ -42,8 +42,8 @@ namespace gc::audio
 
 	/****************************************************************************
 	*				  			AudioSource
-	*************************************************************************//**
-	*  @class     AudioSource
+	****************************************************************************/
+	/* @class     AudioSource
 	*  @brief     Play, Stop, Pause sound file.
 	*****************************************************************************/
 	class AudioSource : public gu::NonCopyable
@@ -80,7 +80,7 @@ namespace gc::audio
 		bool ExitLoop();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : (true-> loop, false -> not loop)*/
 		bool IsLoop() const { return _isLoop; };
@@ -137,7 +137,7 @@ namespace gc::audio
 		bool IsExistedSourceVoice() const { return  _sourceVoice != nullptr; };
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : Fader. Play and Stop function are called once, start fade in and fade out.*/
 		AudioFader _fader;

@@ -18,32 +18,21 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class GameTimer;
-namespace gc
+namespace engine
 {
 	class SSAO;
 
-	namespace ui
-	{
-		class UIRenderer;
-	}
-
-	namespace basepass
-	{
-		class ZPrepass;
-		class LightCulling;
-		class GBuffer;
-	}
-
-	namespace rendering
-	{
-		class CascadeShadow;
-	}
+	class UIRenderer;
+	class ZPrepass;
+	class LightCulling;
+	class GBuffer;
+	class CascadeShadow;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	enum URPDrawType
 	{
@@ -54,19 +43,19 @@ namespace gc
 
 	/****************************************************************************
 	*				  			URP
-	*************************************************************************//**
-	*  @class     URP
+	****************************************************************************/
+	/* @class     URP
 	*  @brief     Universal Rendering Pipeline
 	*****************************************************************************/
 	class URP : public IRenderPipeline
 	{
-		using UIRendererPtr   = gu::SharedPointer<ui::UIRenderer>;
-		using ZPrepassPtr     = gu::SharedPointer<basepass::ZPrepass>;
-		using LightCullingPtr = gu::SharedPointer<basepass::LightCulling>;
-		using GBufferPtr      = gu::SharedPointer<basepass::GBuffer>; 
+		using UIRendererPtr   = gu::SharedPointer<UIRenderer>;
+		using ZPrepassPtr     = gu::SharedPointer<ZPrepass>;
+		using LightCullingPtr = gu::SharedPointer<LightCulling>;
+		using GBufferPtr      = gu::SharedPointer<GBuffer>; 
 		using SSAOPtr         = gu::SharedPointer<SSAO>;
-		using ShadowMapPtr    = gu::SharedPointer<rendering::CascadeShadow>;
-		using DirectionalLightPtr = gu::SharedPointer<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
+		using ShadowMapPtr    = gu::SharedPointer<CascadeShadow>;
+		using DirectionalLightPtr = gu::SharedPointer<SceneLightBuffer<DirectionalLightData>>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -76,15 +65,15 @@ namespace gc
 		void Add(const URPDrawType type, const GameModelPtr& gameModel);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		UIRendererPtr GetUIRenderer() const noexcept { return _uiRenderer; }
 
 		ResourceViewPtr GetSceneView() const noexcept override { return _scene; }
 		void SetSceneView(const ResourceViewPtr& scene) override { _scene = scene; }
 
-		template<class TLight> requires std::is_base_of_v<gc::rendering::LightData, TLight> 
-		void SetLight(const gc::rendering::LightType type, const std::uint32_t index, const TLight& light);
+		template<class TLight> requires std::is_base_of_v<LightData, TLight> 
+		void SetLight(const LightType type, const std::uint32_t index, const TLight& light);
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -100,7 +89,7 @@ namespace gc
 		void PrepareModelPipeline();
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		UIRendererPtr _uiRenderer = nullptr;
 
@@ -129,10 +118,10 @@ namespace gc
 		static constexpr std::uint32_t MAX_UI_COUNT = 1024;
 	};
 
-	template<class TLight> requires std::is_base_of_v<gc::rendering::LightData, TLight>
-	void URP::SetLight(const gc::rendering::LightType type, const std::uint32_t index, const TLight& light)
+	template<class TLight> requires std::is_base_of_v<LightData, TLight>
+	void URP::SetLight(const LightType type, const std::uint32_t index, const TLight& light)
 	{
-		using namespace gc::rendering;
+		using namespace engine;
 
 		switch (type)
 		{

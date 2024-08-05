@@ -63,8 +63,8 @@ RHICommandList::~RHICommandList()
 #pragma region SetUp Draw Frame
 /****************************************************************************
 *                     BeginRecording
-*************************************************************************//**
-*  @fn        void RHICommandList::BeginRecording()
+****************************************************************************/
+/* @fn        void RHICommandList::BeginRecording()
 *
 *  @brief     This function must be called at draw function initially (stillMidFrame = false
 *             If still mid frame is set false, this function clears the command allocator
@@ -94,8 +94,8 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 
 /****************************************************************************
 *                     EndRecording
-*************************************************************************//**
-*  @fn        void RHICommandList::EndRecording()
+****************************************************************************/
+/* @fn        void RHICommandList::EndRecording()
 *
 *  @brief     Call at end draw frame. Close executed command list.
 *              The command list is closed, it transits the executable state.
@@ -162,8 +162,8 @@ void RHICommandList::EndRenderPass()
 #pragma region GPU Command
 /****************************************************************************
 *                       SetViewport
-*************************************************************************//**
-*  @fn        void rhi::vulkan::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+****************************************************************************/
+/* @fn        void rhi::vulkan::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
 *  @brief     Regist multi viewport to command list
 *  @param[in] const core::Viewport view port
 *  @param[in] std::uint32_t viewport count
@@ -185,8 +185,8 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint
 }
 /****************************************************************************
 *                       SetScissorRect
-*************************************************************************//**
-*  @fn        void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+****************************************************************************/
+/* @fn        void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
 *  @brief     Regist multi scissorRect to command list
 *  @param[in] const core::ScissorRect*
 *  @param[in] std::uint32_t numRect
@@ -206,8 +206,8 @@ void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32
 }
 /****************************************************************************
 *                       SetViewportAndScissor
-*************************************************************************//**
-*  @fn        void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
+****************************************************************************/
+/* @fn        void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
 *  @brief     Regist viewport and scissorRect to command list
 *  @param[in] const core::Viewport& viewport
 *  @param[in] const core::ScissorRect& rect
@@ -236,8 +236,8 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 #pragma region Graphics Command 
 /****************************************************************************
 *                       SetPrimitiveTopology
-*************************************************************************//**
-*  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+****************************************************************************/
+/* @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 *
 *  @brief     Regist Primitive topology to command list
 *
@@ -277,80 +277,80 @@ void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<c
 	vkCmdBindVertexBuffers(_commandBuffer, static_cast<std::uint32_t>(startSlot), 
 		static_cast<std::uint32_t>(vkBuffers.Size()), vkBuffers.Data(), offsets.Data());
 }
-void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
+void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType)
 {
 	const auto vkBuffer = gu::StaticPointerCast<vulkan::GPUBuffer>(buffer)->GetBuffer();
-	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, EnumConverter::Convert(indexType));
+	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, (VkIndexType)core::PixelFormatInfo::GetConst(indexType).PlatformFormat);
 }
 #pragma endregion Graphics Command
 #pragma region TransitionResourceLayout
-/****************************************************************************
-*                     TransitionResourceStates
-*************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
-*
-*  @brief     Transition a single resource layout using barrier
-*
-*  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
-*  @param[in] core::ResourceState state array
-
-*  @return 　　void
-*****************************************************************************/
-void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
-{
-	TransitionResourceStates(1, &texture, &after);
-}
-
-/****************************************************************************
-*                     TransitionResourceStates
-*************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
-*
-*  @brief     Transition resource layout using barrier
-*
-*  @param[in] const std::uint32_t numStates
-*  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
-*  @param[in] core::ResourceState* state array
-
-*  @return 　　void
-*****************************************************************************/
-void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
-{
-	if (numStates <= 0) { return; }
-
-	gu::DynamicArray<VkImageMemoryBarrier> imageMemoryBarriers(numStates);
-	for (size_t i = 0; i < numStates; ++i)
-	{
-		const auto vkTexture = gu::StaticPointerCast<vulkan::GPUTexture>(textures[i]);
-
-		auto& imageMemoryBarrier               = imageMemoryBarriers[i];
-		imageMemoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		imageMemoryBarrier.pNext               = nullptr;
-		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
-		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
-		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetResourceState());
-		imageMemoryBarrier.newLayout           = EnumConverter::Convert(afters[i]);
-		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.image               = vkTexture->GetImage();
-		imageMemoryBarrier.subresourceRange.aspectMask     = EnumConverter::Convert(vkTexture->GetPixelFormat(), vkTexture->GetUsage());
-		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
-		imageMemoryBarrier.subresourceRange.baseMipLevel   = 0;
-		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
-		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
-
-		vkTexture->TransitionResourceState(afters[i]);
-	}
-
-	vkCmdPipelineBarrier(_commandBuffer, 
-		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 
-		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-		VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT,
-		0, nullptr, // memory barrier
-		0, nullptr,  // buffer memory barrier
-		static_cast<std::uint32_t>(imageMemoryBarriers.Size()), imageMemoryBarriers.Data()
-	);
-}
+//****************************************************************************
+/*                     TransitionResourceStates
+/****************************************************************************/
+//* @fn        void RHICommandList::TransitionResourceStates(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
+/*
+/*  @brief     Transition a single resource layout using barrier
+/*
+/*  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
+/*  @param[in] core::ResourceState state array
+//
+/*  @return 　　void
+/*****************************************************************************/
+//void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
+//{
+//	TransitionResourceStates(1, &texture, &after);
+//}
+//
+//****************************************************************************
+/*                     TransitionResourceStates
+/****************************************************************************/
+//* @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+/*
+/*  @brief     Transition resource layout using barrier
+/*
+/*  @param[in] const std::uint32_t numStates
+/*  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
+/*  @param[in] core::ResourceState* state array
+//
+/*  @return 　　void
+/*****************************************************************************/
+//void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+//{
+//	if (numStates <= 0) { return; }
+//
+//	gu::DynamicArray<VkImageMemoryBarrier> imageMemoryBarriers(numStates);
+//	for (size_t i = 0; i < numStates; ++i)
+//	{
+//		const auto vkTexture = gu::StaticPointerCast<vulkan::GPUTexture>(textures[i]);
+//
+//		auto& imageMemoryBarrier               = imageMemoryBarriers[i];
+//		imageMemoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+//		imageMemoryBarrier.pNext               = nullptr;
+//		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
+//		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
+//		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetResourceState());
+//		imageMemoryBarrier.newLayout           = EnumConverter::Convert(afters[i]);
+//		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//		imageMemoryBarrier.image               = vkTexture->GetImage();
+//		imageMemoryBarrier.subresourceRange.aspectMask     = EnumConverter::Convert(vkTexture->GetPixelFormat(), vkTexture->GetUsage());
+//		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+//		imageMemoryBarrier.subresourceRange.baseMipLevel   = 0;
+//		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
+//		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
+//
+//		//vkTexture->TransitionResourceState(afters[i]);
+//	}
+//
+//	vkCmdPipelineBarrier(_commandBuffer, 
+//		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 
+//		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+//		VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT,
+//		0, nullptr, // memory barrier
+//		0, nullptr,  // buffer memory barrier
+//		static_cast<std::uint32_t>(imageMemoryBarriers.Size()), imageMemoryBarriers.Data()
+//	);
+//}
 
 VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout)
 {

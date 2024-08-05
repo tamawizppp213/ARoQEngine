@@ -21,15 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::basepass
+namespace engine
 {
 	/****************************************************************************
 	*				  			GBuffer
-	*************************************************************************//**
-	*  @class     GBuffer
+	****************************************************************************/
+	/* @class     GBuffer
 	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer : public gc::rendering::GBuffer
+	class GBuffer : public GBufferBase
 	{
 	public:
 		enum BufferType
@@ -46,7 +46,7 @@ namespace gc::basepass
 		void Draw(const GPUResourceViewPtr& scene) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -55,7 +55,7 @@ namespace gc::basepass
 		GBuffer() = default;
 		
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
-			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)BufferType::CountOf),
+			const GBufferDesc& desc = GBufferDesc((std::uint64_t)BufferType::CountOf),
 			const gu::tstring& addName = SP(""));
 
 		~GBuffer();
@@ -69,7 +69,7 @@ namespace gc::basepass
 		void PrepareFrameBuffers(const gu::tstring& name) override;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		
 	};

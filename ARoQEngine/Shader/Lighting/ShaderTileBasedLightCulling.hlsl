@@ -41,8 +41,8 @@ groupshared uint TileNumSpotLights;
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  		InitializeGroupMemory
-*************************************************************************//**
-*  @class     void InitializeGroupMemory(uint groupIndex)
+****************************************************************************/
+/* @class     void InitializeGroupMemory(uint groupIndex)
 
 *  @brief     Initialize Group shared memories.
 
@@ -62,8 +62,8 @@ void InitializeGroupMemory(const uint groupIndex)
 
 /****************************************************************************
 *				  		ComputePositionInCamera
-*************************************************************************//**
-*  @class     void ComputePositionInCamera(const uint2 globalCoords)
+****************************************************************************/
+/* @class     void ComputePositionInCamera(const uint2 globalCoords)
 *
 *  @brief     Calculate position in camera space.
 *
@@ -86,8 +86,8 @@ float3 ComputePositionInCamera(const uint2 globalCoordinate)
 
 /****************************************************************************
 *				  		GetTileFrustumPlane
-*************************************************************************//**
-*  @class     void GetTileFrustumPlane(out float4 frustumPlanes[6], const uint3 groupID)
+****************************************************************************/
+/* @class     void GetTileFrustumPlane(out float4 frustumPlanes[6], const uint3 groupID)
 *
 *  @brief     Calculate the visual frustum plane for eachTile. 
 *             カメラからの一個一個のタイルが視錐台になっており, これらとライトとの衝突判定を行う. 

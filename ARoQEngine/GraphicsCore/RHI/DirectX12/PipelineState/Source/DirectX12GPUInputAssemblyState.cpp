@@ -8,14 +8,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/DirectX12GPUInputAssemblyState.hpp"
-#include "../../Core/Include/DirectX12EnumConverter.hpp"
-#include <stdexcept>
+#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUInputAssemblyState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GameUtility/Container/Include/GUPair.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,47 +27,61 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 	const core::PrimitiveTopology primitiveTopology
 ) : core::GPUInputAssemblyState(device, elements, primitiveTopology)
 {
-	auto offsetInBytes = gu::DynamicArray<std::uint32_t>(_slotCount); // slotごとのOffset
+	/*-------------------------------------------------------------------
+	-         入力レイアウトの事前準備
+	---------------------------------------------------------------------*/
+	_inputLayoutElements.Resize(_elements.Size());
 
-	gu::DynamicArray<std::pair<bool, core::InputClassification>> inputTypes(
+	// Slot毎に, 各入力データを連続して配置させるためのoffsetバイトを指定します. 
+	auto offsetInBytes = gu::DynamicArray<uint32>(_slotCount); // slotごとのOffset
+
+	// 入力レイアウトの分類 (頂点ごとかインスタンスごとか)の配列です. 
+	// gu::PairはKeyが既に初期化済みの内容かどうか, Valueが分類が一致するかを確認するために使用します. 
+	gu::DynamicArray<gu::Pair<bool, core::InputClassification>> inputClassifications
+	(
 		_slotCount,
-		std::pair<bool, core::InputClassification>(false, core::InputClassification::PerVertex));
+		gu::Pair<bool, core::InputClassification>(false, core::InputClassification::PerVertex)
+	);
 
-	for (auto& element : _elements)
+	/*-------------------------------------------------------------------
+	-         入力レイアウト設定
+	---------------------------------------------------------------------*/
+	for (uint32 i = 0; i < _elements.Size(); ++i)
 	{
-		const auto slot = element.Slot;
+		const auto& element = _elements[i];
 
-		_inputLayoutElements.Push(
+		_inputLayoutElements[i] = D3D12_INPUT_ELEMENT_DESC
 			{
-				element.SemanticName.CString(),                // SemanticName
-				0,                                           // SemanticIndex
-				EnumConverter::Convert(element.Format),      // Format
-				static_cast<std::uint32_t>(element.Slot),    // InputSlot
-				offsetInBytes[element.Slot],                 // AlignedByteOffset
-				EnumConverter::Convert(element.Classification), // InputSlotClass
-				element.Classification == core::InputClassification::PerInstance  // InstanceDataStepRate
+				.SemanticName         = element.SemanticName.CString(),
+				.SemanticIndex        = element.SemanticIndex,
+				.Format               = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(element.Format).PlatformFormat,
+				.InputSlot            = static_cast<uint32>(element.Slot),
+				.AlignedByteOffset    = offsetInBytes[element.Slot],
+				.InputSlotClass       = EnumConverter::Convert(element.Classification),
+				.InstanceDataStepRate = static_cast<uint32>(element.Classification == core::InputClassification::PerInstance)
 			}
-		);
+		;
 
 		/*-------------------------------------------------------------------
-		-                 Check the ClassificationType for the slot
+		-           スロットごとに適切に入力レイアウトの分類がなされているかを確認する. 
 		---------------------------------------------------------------------*/
-		if (inputTypes[slot].first)
+		if (inputClassifications[element.Slot].Key) // 初期化済み
 		{
-			if (inputTypes[slot].second != element.Classification)
+			if (inputClassifications[element.Slot].Value != element.Classification)
 			{
-				throw std::runtime_error("You set the different classification type. InputClassification should be unified for each slot.");
+				throw ("You set the different classification type. InputClassification should be unified for each slot.");
 			}
 		}
-		else
+		else // 初期化が行われていない場合
 		{
-			inputTypes[slot].first = true; // has initial value 
-			inputTypes[slot].second = element.Classification;
+			inputClassifications[element.Slot].Key   = true; // 初期化済み
+			inputClassifications[element.Slot].Value = element.Classification;
 		}
 
-		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(element.Format));
+		// 各スロットに対してメモリの空きが出ないように配置する.
+		offsetInBytes[element.Slot] += static_cast<uint32>(core::PixelFormatInfo::GetConst(element.Format).BlockBytes);
 	}
 
-	_inputLayout.NumElements        = static_cast<std::uint32_t>(_inputLayoutElements.Size());
+	_inputLayout.NumElements        = static_cast<uint32>(_inputLayoutElements.Size());
 	_inputLayout.pInputElementDescs = _inputLayoutElements.Data();
 }

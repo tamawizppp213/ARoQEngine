@@ -26,8 +26,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUShaderState : public rhi::core::GPUShaderState
@@ -37,13 +37,13 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = 6.0f, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) override;
+		void Compile(const core::ShaderCompilerOption& option) override;
 		
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkShaderModule GetModule() const noexcept { return _module; }
 		
@@ -65,7 +65,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipelineShaderStageCreateInfo _stage = {};
 

@@ -28,14 +28,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::rendering
+namespace engine
 {
 	using namespace rhi::core;
 
 	/****************************************************************************
 	*				  			   SceneLightBuffer
-	*************************************************************************//**
-	*  @class     SceneLightBuffer
+	****************************************************************************/
+	/* @class     SceneLightBuffer
 	*  @brief     Scene light buffer
 	*****************************************************************************/
 	template<typename TLight> requires std::is_base_of_v<LightData, TLight>
@@ -65,7 +65,7 @@ namespace gc::rendering
 		);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : return settable light data count. */
 		std::uint64_t GetMaxCount() const { return _lights.size(); }
@@ -99,7 +99,7 @@ namespace gc::rendering
 		void UpdateLightData();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
@@ -140,8 +140,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       BindHitLightIDLists
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::BindHitLightIDListss
 
 	*  @brief     Bind UAV about the HitLightIDLists In Tile.
@@ -162,8 +162,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       SetLight
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::SetLight(const std::uint32_t index, const TLight& light)
 
 	*  @brief     Set light and prepare copy to the GPU.
@@ -189,8 +189,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       UpdateLightData
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::UpdateLightData()
 
 	*  @brief     Copy the CPU light data to the GPU buffer
@@ -208,12 +208,12 @@ namespace gc::rendering
 		const auto lightBuffer = _lightDataView->GetBuffer();
 
 		// clear
-		lightBuffer->CopyStart();
+		lightBuffer->Map();
 		for (std::uint32_t i = 0; i < (std::uint32_t)_updateIDs.size(); ++i)
 		{
-			lightBuffer->CopyData(&_lights[i], _updateIDs[i]);
+			lightBuffer->UploadIndex(&_lights[i], _updateIDs[i], 0, nullptr, true);
 		}
-		lightBuffer->CopyEnd();
+		lightBuffer->Unmap();
 
 		// clear update IDs
 		_updateIDs.clear();
@@ -240,7 +240,7 @@ namespace gc::rendering
 		-              Create Light Data View
 		---------------------------------------------------------------------*/
 		{
-			const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(TLight), count);
+			const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(TLight), (gu::uint32)count);
 			const auto buffer     = device->CreateBuffer(bufferInfo, L"LightData");
 
 			_lightDataView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
@@ -254,8 +254,8 @@ namespace gc::rendering
 			const int tileCount = static_cast<int>((Screen::GetScreenWidth() / TILE_LENGTH) * (Screen::GetScreenHeight()/ TILE_LENGTH));
 
 			// set up light ID buffer ()
-			auto bufferInfo          = GPUBufferMetaData::DefaultBuffer(sizeof(std::int32_t), count * tileCount);
-			bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
+			auto bufferInfo          = GPUBufferMetaData::DefaultBuffer(sizeof(gu::uint32), (gu::uint32)count * tileCount);
+			bufferInfo.Usage = BufferCreateFlags::UnorderedAccess;
 			const auto buffer        = device->CreateBuffer(bufferInfo, L"LightID");
 
 			// Create light id uav resource view
