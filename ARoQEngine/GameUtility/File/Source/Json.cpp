@@ -22,7 +22,6 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gu::file;
-using namespace gu::file::json;
 using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,33 +36,7 @@ using namespace gu;
 #pragma endregion Public Function
 
 #pragma region Private Function
-/*!**********************************************************************
-*  @brief     Jsonファイルを読み込みます.
-*  @param[in] const gu::tstring& ファイルパス
-*  @param[in] const bool 非同期で読み込みを行うか
-*  @return    bool 成功したかどうか
-*************************************************************************/
-bool Json::Load(const gu::tstring& filePath, const bool useAsync)
-{
-	_reader = gu::MakeShared<JsonReader>(filePath, useAsync);
-	return _reader->Load(filePath, useAsync);
-}
 
-/*!**********************************************************************
-*  @brief     Jsonファイルを読み込みます.
-*  @param[in] const gu::tstring& ファイルパス
-*  @param[in] const bool 非同期で読み込みを行うか
-*  @return    bool 成功したかどうか
-*************************************************************************/
-bool Json::Save(const gu::tstring& filePath, const bool writeAsync)
-{
-	if (!_writer)
-	{
-		return false;
-	}
-
-	return _writer->Flush(filePath, writeAsync);
-}
 
 /*!**********************************************************************
 *  @brief      デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.
@@ -73,15 +46,15 @@ bool Json::Save(const gu::tstring& filePath, const bool writeAsync)
 *  @param[in]  const bool readAsync = false
 *  @return     bool 成功したかどうか
 *************************************************************************/
-bool Json::Deserialize(gu::SharedPointer<JsonObject>& object, const ReadFlags flags)
+bool Json::Deserialize(const gu::tstring& filePath, gu::SharedPointer<json::JsonObject>& object, const ReadFlags flags, const bool readAsync)
 {
 	State stackState = {};
-	if(!Deserialize(stackState, flags))
+	if(!Deserialize(filePath, stackState, flags, readAsync))
 	{
 		return false;
 	}
 
-	if(stackState.Type != JsonValueType::Object)
+	if(stackState.Type != json::JsonValueType::Object)
 	{
 		return false;
 	}
@@ -94,19 +67,21 @@ bool Json::Deserialize(gu::SharedPointer<JsonObject>& object, const ReadFlags fl
 
 /*!**********************************************************************
 *  @brief     デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.
+*  @param[in] const gu::SharedPointer<JsonReader>& jsonを読み込むクラス
 *  @param[in] gu::DynamicArray<gu::SharedPointer<JsonValue>>& デシリアライズしたいオブジェクト
 *  @param[in] const ReadFlags flags = ReadFlags::None
+*  @param[in] const bool readAsync = false
 *  @return    bool 成功したかどうか
 *************************************************************************/
-bool Json::Deserialize(gu::DynamicArray<gu::SharedPointer<JsonValue>>& outArray, const ReadFlags flags)
+bool Json::Deserialize(const gu::tstring& filePath, gu::DynamicArray<gu::SharedPointer<json::JsonValue>>& outArray, const ReadFlags flags, const bool readAsync)
 {
 	State stackState = {};
-	if(!Deserialize(stackState, flags))
+	if(!Deserialize(filePath, stackState, flags, readAsync))
 	{
 		return false;
 	}
 
-	if(stackState.Type != JsonValueType::Array)
+	if(stackState.Type != json::JsonValueType::Array)
 	{
 		return false;
 	}
@@ -118,32 +93,33 @@ bool Json::Deserialize(gu::DynamicArray<gu::SharedPointer<JsonValue>>& outArray,
 
 /*!**********************************************************************
 *  @brief      デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.
+*  @param[in]  const gu::tstring& ファイルパス
 *  @param[out] gu::SharedPointer<JsonValue>& Json解析するためのデータ構造
 *  @param[in]  const  ReadFlags フラグ
 *  @return     bool   成功したかどうか
 *************************************************************************/
-bool Json::Deserialize(gu::SharedPointer<JsonValue>& value, const ReadFlags flags)
+bool Json::Deserialize(const gu::tstring& filePath, gu::SharedPointer<json::JsonValue>& value, const ReadFlags flags, const bool readAsync)
 {
 	State stackState = {};
-	if(!Deserialize(stackState, flags))
+	if(!Deserialize(filePath, stackState, flags, readAsync))
 	{
 		return false;
 	}
 
 	switch(stackState.Type)
 	{
-		case JsonValueType::Object:
+		case json::JsonValueType::Object:
 		{
 			if(!stackState.Object)
 			{
 				return false;
 			}
-			value = MakeShared<JsonValueObject>(stackState.Object);
+			value = MakeShared<json::JsonValueObject>(stackState.Object);
 			break;
 		}
-		case JsonValueType::Array:
+		case json::JsonValueType::Array:
 		{
-			value = MakeShared<JsonValueArray>(stackState.Array);
+			value = MakeShared<json::JsonValueArray>(stackState.Array);
 			break;
 		}
 		default:
@@ -157,20 +133,18 @@ bool Json::Deserialize(gu::SharedPointer<JsonValue>& value, const ReadFlags flag
 
 /*!**********************************************************************
 *  @brief     デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.
+*  @param[in] const  gu::tstring ファイルパス
 *  @param[out]State& Json解析するためのデータ構造
 *  @param[in] const  ReadFlags フラグ
 *  @return    bool   成功したかどうか
 *************************************************************************/
-bool Json::Deserialize(State& outStackState, const ReadFlags flags)
+bool Json::Deserialize(const gu::tstring& filePath, State& outStackState, const ReadFlags flags, const bool useAsync)
 {
 	/*-------------------------------------------------------------------
 	-          Stateの準備
 	---------------------------------------------------------------------*/
-	if (!_reader)
-	{
-		_RPT0(_CRT_WARN, "JsonReader is not initialized.\n Please call the Load function \n");
-		return false;
-	}
+	// Jsonを読み取る
+	const auto reader = gu::MakeShared<json::JsonReader>(filePath, useAsync);
 
 	// ObjectやArrayといった複数の要素を一時的に貯めておく
 	Stack<SharedPointer<State>> stackState = {};
@@ -179,19 +153,19 @@ bool Json::Deserialize(State& outStackState, const ReadFlags flags)
 	SharedPointer<State> currentState = nullptr;
 
 	// 現在の読み取り値
-	SharedPointer<JsonValue> newValue = nullptr;
+	SharedPointer<json::JsonValue> newValue = nullptr;
 
 	// 読み取っているNotation
-	JsonNotation notation = JsonNotation::None;
+	json::JsonNotation notation = json::JsonNotation::None;
 
-	while (_reader->ReadNext(notation))
+	while (reader->ReadNext(notation))
 	{
-		tstring key = _reader->GetKey();
+		tstring key = reader->GetKey();
 		newValue.Reset();
 
 		switch (notation)
 		{
-			case JsonNotation::ObjectStart:
+			case json::JsonNotation::ObjectStart:
 			{
 				// Objectの開始
 				if (currentState)
@@ -202,23 +176,23 @@ bool Json::Deserialize(State& outStackState, const ReadFlags flags)
 
 				// 新しいObjectを作成
 				currentState         = gu::MakeShared<State>();
-				currentState->Type   = JsonValueType::Object;
+				currentState->Type   = json::JsonValueType::Object;
 				currentState->Key    = key;
-				currentState->Object = gu::MakeShared<JsonObject>();
+				currentState->Object = gu::MakeShared<json::JsonObject>();
 				break;
 			}
-			case JsonNotation::ObjectEnd:
+			case json::JsonNotation::ObjectEnd:
 			{
 				if (stackState.Size() > 0)
 				{
 					key          = currentState->Key;
-					newValue     = MakeShared<JsonValueObject>(currentState->Object);
+					newValue     = MakeShared<json::JsonValueObject>(currentState->Object);
 					currentState = stackState.Top();
 					stackState.Pop();
 				}
 				break;
 			}
-			case JsonNotation::ArrayStart:
+			case json::JsonNotation::ArrayStart:
 			{
 				// Arrayの開始
 				if (currentState)
@@ -227,49 +201,49 @@ bool Json::Deserialize(State& outStackState, const ReadFlags flags)
 				}
 
 				currentState         = gu::MakeShared<State>();
-				currentState->Type   = JsonValueType::Array;
+				currentState->Type   = json::JsonValueType::Array;
 				currentState->Key    = key;
 				break;
 			}
-			case JsonNotation::ArrayEnd:
+			case json::JsonNotation::ArrayEnd:
 			{
 				if (stackState.Size() > 0)
 				{
 					key          = currentState->Key;
-					newValue     = MakeShared<JsonValueArray>(currentState->Array);
+					newValue     = MakeShared<json::JsonValueArray>(currentState->Array);
 					currentState = stackState.Top();
 					stackState.Pop();
 				}
 				break;
 			}
-			case JsonNotation::Boolean:
+			case json::JsonNotation::Boolean:
 			{
-				newValue = MakeShared<JsonValueBoolean>(_reader->GetValueAsBoolean());
+				newValue = MakeShared<json::JsonValueBoolean>(reader->GetValueAsBoolean());
 				break;
 			}
-			case JsonNotation::Number:
+			case json::JsonNotation::Number:
 			{
 				if (flags == ReadFlags::StoreNumberAsString)
 				{
-					newValue = MakeShared<JsonValueNumberString>(_reader->GetValueAsNumberString());
+					newValue = MakeShared<json::JsonValueNumberString>(reader->GetValueAsNumberString());
 				}
 				else
 				{
-					newValue = MakeShared<JsonValueNumber>(_reader->GetValueAsNumber());
+					newValue = MakeShared<json::JsonValueNumber>(reader->GetValueAsNumber());
 				}
 				break;
 			}
-			case JsonNotation::String:
+			case json::JsonNotation::String:
 			{
-				newValue = MakeShared<JsonValueString>(_reader->GetValueAsString());
+				newValue = MakeShared<json::JsonValueString>(reader->GetValueAsString());
 				break;
 			}
-			case JsonNotation::Null:
+			case json::JsonNotation::Null:
 			{
-				newValue = MakeShared<JsonValueNull>();
+				newValue = MakeShared<json::JsonValueNull>();
 				break;
 			}
-			case JsonNotation::Error:
+			case json::JsonNotation::Error:
 			{
 				return false;
 			}
@@ -277,7 +251,7 @@ bool Json::Deserialize(State& outStackState, const ReadFlags flags)
 
 		if (newValue && currentState)
 		{
-			if (currentState->Type == JsonValueType::Object)
+			if (currentState->Type == json::JsonValueType::Object)
 			{
 				currentState->Object->AddMember(key, newValue);
 			}
@@ -298,87 +272,85 @@ bool Json::Deserialize(State& outStackState, const ReadFlags flags)
 	return true;
 }
 
-bool Json::Serialize(const gu::SharedPointer<Element>& startElement)
+bool Json::Serialize(const gu::tstring& filePath, const gu::SharedPointer<Element>& startElement, const bool writeAsync)
 {
-	if (!_writer)
-	{
-		_writer = gu::MakeShared<JsonWriter>();
-	}
-
 	gu::Stack<gu::SharedPointer<Element>> stackElements = {};
 	stackElements.Push(startElement);
 
 	/*-------------------------------------------------------------------
 	-          Jsonを書き込む
 	---------------------------------------------------------------------*/
+	// Json書き込みクラス
+	const auto writer = gu::MakeShared<json::JsonWriter>();
+
 	while (stackElements.Size() > 0)
 	{
 		const gu::SharedPointer<Element> element = *(&stackElements.Top());
 		stackElements.Pop();
 
-		const bool writeValueOnly = !element->IsKeyValue || (element->Key.IsEmpty() && _writer->GetCurrentValueType() != JsonValueType::Object);
+		const bool writeValueOnly = !element->IsKeyValue || (element->Key.IsEmpty() && writer->GetCurrentValueType() != json::JsonValueType::Object);
 
 		/*-------------------------------------------------------------------
 		-          各JsonValueTypeにしたがって書き込む
 		---------------------------------------------------------------------*/
 		switch (element->Value->GetValueType())
 		{
-			case JsonValueType::Number:
+			case json::JsonValueType::Number:
 			{
 				if (writeValueOnly)
 				{
 					if (element->Value->UseStringRepresentation())
 					{
-						_writer->WriteValue(SP(""), StaticPointerCast<JsonValueNumberString>(element->Value)->GetString());
+						writer->WriteValue(SP(""), StaticPointerCast<json::JsonValueNumberString>(element->Value)->GetString());
 					}
 					else
 					{
-						_writer->WriteValue(SP(""), StaticPointerCast<JsonValueNumber>(element->Value)->GetDouble());
+						writer->WriteValue(SP(""), StaticPointerCast<json::JsonValueNumber>(element->Value)->GetDouble());
 					}
 				}
 				else 
 				{
 					if (element->Value->UseStringRepresentation())
 					{
-						_writer->WriteValue(element->Key, StaticPointerCast<JsonValueNumberString>(element->Value)->GetString());
+						writer->WriteValue(element->Key, StaticPointerCast<json::JsonValueNumberString>(element->Value)->GetString());
 					}
 					else
 					{
-						_writer->WriteValue(element->Key, StaticPointerCast<JsonValueNumber>(element->Value)->GetDouble());
+						writer->WriteValue(element->Key, StaticPointerCast<json::JsonValueNumber>(element->Value)->GetDouble());
 					}
 				}
 				break;
 			}
-			case JsonValueType::String:
+			case json::JsonValueType::String:
 			{
 				if(writeValueOnly)
 				{
-					_writer->WriteValue(SP(""), StaticPointerCast<JsonValueString>(element->Value)->GetString());
+					writer->WriteValue(SP(""), StaticPointerCast<json::JsonValueString>(element->Value)->GetString());
 				}
 				else
 				{
-					_writer->WriteValue(element->Key, StaticPointerCast<JsonValueString>(element->Value)->GetString());
+					writer->WriteValue(element->Key, StaticPointerCast<json::JsonValueString>(element->Value)->GetString());
 				}
 				break;
 			}
-			case JsonValueType::True:
-			case JsonValueType::False:
+			case json::JsonValueType::True:
+			case json::JsonValueType::False:
 			{
 				if (writeValueOnly)
 				{
-					_writer->WriteValue(SP(""), StaticPointerCast<JsonValueBoolean>(element->Value)->GetBool());
+					writer->WriteValue(SP(""), StaticPointerCast<json::JsonValueBoolean>(element->Value)->GetBool());
 				}
 				else
 				{
-					_writer->WriteValue(element->Key, StaticPointerCast<JsonValueBoolean>(element->Value)->GetBool());
+					writer->WriteValue(element->Key, StaticPointerCast<json::JsonValueBoolean>(element->Value)->GetBool());
 				}
 				break;
 			}
-			case JsonValueType::Array:
+			case json::JsonValueType::Array:
 			{
 				if (element->IsExecuted)
 				{
-					_writer->WriteArrayEnd();
+					writer->WriteArrayEnd();
 				}
 				else
 				{
@@ -388,14 +360,14 @@ bool Json::Serialize(const gu::SharedPointer<Element>& startElement)
 
 					if(writeValueOnly)
 					{
-						_writer->WriteArrayStart();
+						writer->WriteArrayStart();
 					}
 					else
 					{
-						_writer->WriteArrayStart(element->Key);
+						writer->WriteArrayStart(element->Key);
 					}
 
-					const auto& values = StaticPointerCast<JsonValueArray>(element->Value)->GetArray();
+					const auto& values = StaticPointerCast<json::JsonValueArray>(element->Value)->GetArray();
 					for (int64 i = static_cast<int64>(values.Size()) - 1; i >= 0; --i)
 					{
 						stackElements.Push(MakeShared<Element>(values[i]));
@@ -403,30 +375,30 @@ bool Json::Serialize(const gu::SharedPointer<Element>& startElement)
 				}
 				break;
 			}
-			case JsonValueType::Object:
+			case json::JsonValueType::Object:
 			{
 				if (element->IsExecuted)
 				{
-					_writer->WriteObjectEnd();
+					writer->WriteObjectEnd();
 				}
 				else
 				{
 					element->IsExecuted = true;
 
-					const auto& objects = StaticPointerCast<JsonValueObject>(element->Value)->GetObject();
+					const auto& objects = StaticPointerCast<json::JsonValueObject>(element->Value)->GetObject();
 
 					stackElements.Push(element);
 
 					if (writeValueOnly)
 					{
-						_writer->WriteObjectStart();
+						writer->WriteObjectStart();
 					}
 					else
 					{
-						_writer->WriteObjectStart(element->Key);
+						writer->WriteObjectStart(element->Key);
 					}
 								
-					DynamicArray<Pair<tstring, SharedPointer<JsonValue>>*> tempPairs = {};
+					DynamicArray<Pair<tstring, SharedPointer<json::JsonValue>>*> tempPairs = {};
 					for (auto& keyValue : objects->Data())
 					{
 						tempPairs.Push(&keyValue);
@@ -439,18 +411,18 @@ bool Json::Serialize(const gu::SharedPointer<Element>& startElement)
 				}
 				break;
 			}
-			case JsonValueType::Null:
+			case json::JsonValueType::Null:
 			{
-				_writer->WriteValue(element->Key, SP("null"));
+				writer->WriteValue(element->Key, SP("null"));
 				break;
 			}
 			default:
 			{
-				return false;
+				break;
 			}
 		}
 	}
 
-	return true;
+	return writer->Flush(filePath, writeAsync);
 }
 #pragma endregion Private Function
