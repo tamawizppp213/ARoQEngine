@@ -202,6 +202,10 @@
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource.hpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Core\Include\Archive.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\BaseObject.hpp">
       <SubType>
       </SubType>
@@ -306,6 +310,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAtomic.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUCharacter.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -523,6 +531,11 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\File\Include\JsonOld.hpp" />
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueNumberString.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\File\Private\Json\Include\JsonReader.hpp">
       <SubType>
       </SubType>
@@ -560,6 +573,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValue.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonWritePolicy.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -808,47 +825,8 @@
     <ClInclude Include="GameUtility\Base\Include\GUSmartPointer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUValueRange.hpp" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\allocators.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\cursorstreamwrapper.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\document.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\encodedstream.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\encodings.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\error\en.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\error\error.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\filereadstream.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\filewritestream.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\fwd.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\biginteger.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\clzll.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\diyfp.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\ieee754.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\itoa.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\meta.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\pow10.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\regex.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\stack.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\strtod.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\internal\swap.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\istreamwrapper.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\memorybuffer.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\memorystream.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\ostreamwrapper.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\pointer.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\prettywriter.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\rapidjson.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\reader.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\schema.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\stream.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\stringbuffer.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\uri.h" />
-    <ClInclude Include="GameUtility\File\External\rapidjson\writer.h" />
     <ClInclude Include="GameUtility\File\Include\Csv.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
-    <ClInclude Include="GameUtility\File\Include\JsonOld.hpp" />
     <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
@@ -1153,6 +1131,10 @@
     <ClCompile Include="GameCore\Audio\Core\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioSubmix.cpp" />
     <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp" />
+    <ClCompile Include="GameCore\Core\Source\Archive.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />
@@ -1223,6 +1205,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Private\CharacterCode\Source\GUWindowsCodePage.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUCharacter.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -1299,6 +1285,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueNumberString.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueObject.cpp">
       <SubType>
       </SubType>
@@ -1308,6 +1298,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValue.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonWriter.cpp">
       <SubType>
       </SubType>
     </ClCompile>
