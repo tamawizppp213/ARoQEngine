@@ -32,7 +32,7 @@ CoreWindowMessageHandler::~CoreWindowMessageHandler()
 
 #pragma region Public Function
 
-bool CoreWindowMessageHandler::OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height)
+bool CoreWindowMessageHandler::OnSizeChanged([[maybe_unused]]const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height)
 {
 	Screen::SetScreenWidth(width);
 	Screen::SetScreenHeight(height);

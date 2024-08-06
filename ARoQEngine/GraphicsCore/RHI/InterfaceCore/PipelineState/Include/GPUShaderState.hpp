@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
-///             @author Toide Yutaro
-///             @date   2022_06_28
+///   @file   GPUShaderState.hpp
+///   @brief  シェーダーコードを格納するクラスです.
+///   @author Toide Yutaro
+///   @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GPU_SHADER_STATE_HPP

@@ -376,7 +376,7 @@ uint64 WindowsCodePage::GetCharacterLength(const void* buffer, const uint64 buff
 *  @param[in] const uint64 bufferSize 文字列のバイト数
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-uint64 WindowsCodePage::GetLeadExtraLength(const void* buffer, const uint64 bufferSize) const
+uint64 WindowsCodePage::GetLeadExtraLength(const void* buffer,[[maybe_unused]] const uint64 bufferSize) const
 {
 	return (::IsDBCSLeadByteEx(_codePageInfo.CodePage, *((const uint8*)buffer))) ? 1 : 0;
 }
