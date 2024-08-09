@@ -169,6 +169,23 @@ namespace gu::file
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
+		Json() = default;
+
+		/*! @brief デストラクタ*/
+		~Json() = default;
+
+		/*! @brief コピーコンストラクタ*/
+		Json(const Json&) = delete;
+
+		/*! @brief コピー演算子*/
+		Json& operator=(const Json&) = delete;
+
+		/*! @brief ムーブコンストラクタ*/
+		Json(Json&&) = default;
+
+		/*! @brief ムーブ演算子*/
+		Json& operator=(Json&&) = default;
 
 		#pragma endregion 
 
