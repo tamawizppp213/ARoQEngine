@@ -67,6 +67,7 @@ namespace gu
 		}
 
 		Pair(Pair&& other) = default;
+
 		#pragma endregion
 	protected:
 		#pragma region Protected Function
